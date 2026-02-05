@@ -1,0 +1,3 @@
+[submodule "hwgw-data"]
+	path = hwgw-data
+	url = https://github.com/swiss-art-research-net/hwgw-data.git
