@@ -5,6 +5,9 @@ vars:
   X3ML_ENDPOINT: http://localhost:8089/transform
   GENERATOR_POLICY: /mapping/generator-policy.xml
   NAMESPACE: http://hwgw.uzh.ch/
+  REGISTERS: bibliography,objects,organizations,persons,places
+  SCHRIFTEN: 01,02,03,04,06,08
+  SOURCE_FOLDER: /hwgw-data/data/source
 
 dotenv: 
   - /.env
@@ -27,12 +30,65 @@ tasks:
     interactive: true
     vars:
       DOWNLOAD_WHAT: "all"
-      FOLDER:
-        sh: echo "/data/source"
     cmds:
       - echo "Downloading all data from GitHub..."
-      - mkdir -p {{.FOLDER}}
-      - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data hw-anno/data/s01/s01-app.xml {{.FOLDER}}
+      - mkdir -p {{.SOURCE_FOLDER}}
+      - echo "Downloading Schriften..."
+      - for:
+          var: SCHRIFTEN
+          split: ','
+          as: SCHRIFT
+        task: _download_individual_schrift_file_from_github
+        vars:
+          FILE_TYPE: "{{.SCHRIFT}}"
+          PARTS: app,app-notiz,ed,in
+      - echo "Downloading REGISTERS..."
+      - for:
+          var: REGISTERS
+          split: ','
+          as: REGISTER
+        task: _download_individual_register_file_from_github
+        vars:
+          FILE_TYPE: "{{.REGISTER}}"
+
+  _download_individual_register_file_from_github:
+    internal: true
+    requires:
+      vars: [FILE_TYPE]
+    vars:
+      FILEPATH: "hw-anno/data/registers/{{.FILE_TYPE}}.xml" # ex. hw-anno/data/registers/bibliography.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers" # ex. hwgw-data/data/source/registers
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. hwgw-data/data/source/bibliography.xml
+    cmds:
+      - mkdir -p {{.LOCAL_FOLDER}}
+      - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
+
+
+  _download_individual_schrift_file_from_github:
+    internal: true
+    requires:
+      vars: [FILE_TYPE, PARTS]
+    cmds:
+      - for:
+          var: PARTS
+          split: ','
+          as: PART
+        task: _download_individual_schrift_part_file_from_github
+        vars:
+          PART: "{{.PART}}"
+          FILE_TYPE: "{{.FILE_TYPE}}"
+
+  _download_individual_schrift_part_file_from_github:
+    internal: true
+    requires:
+      vars: [FILE_TYPE, PART]
+    vars:
+      FILEPATH: "hw-anno/data/s{{.FILE_TYPE}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. hw-anno/data/s01/s01-app.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/s{{.FILE_TYPE}}" # ex. hwgw-data/data/source/s01
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. hwgw-data/data/source/s01/s01-app.xml
+    cmds:
+      - mkdir -p {{.LOCAL_FOLDER}}
+      - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
 
   download-mapping-files-from-3M:
     desc: Downloads the mapping file from the 3M
