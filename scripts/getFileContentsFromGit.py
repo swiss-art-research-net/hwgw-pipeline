@@ -12,19 +12,21 @@ from urllib.request import urlopen
 # 2: GitHub personal access token
 # 3: Repository
 # 4: path to file
-if len(sys.argv) < 5:
+if len(sys.argv) < 6:
     sys.stderr.write("Insufficient arguments\n")
     exit()
+
 username = sys.argv[1]
 token = sys.argv[2]
 repo = sys.argv[3]
 path = sys.argv[4]
 localfile = sys.argv[5]
+branch = sys.argv[6] if len(sys.argv) > 6 else "main"
 
 folder = path.rsplit('/',1)[0]
 file = path.rsplit('/',1)[1]
 
-folderURL = 'https://api.github.com/repos/' + repo + '/contents/' + folder
+folderURL = f'https://api.github.com/repos/{repo}/contents/{folder}?ref={branch}'
 folderRequest = requests.get(folderURL, auth=(username, token))
 folderData = folderRequest.json()
 
