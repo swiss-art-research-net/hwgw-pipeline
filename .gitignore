@@ -1,0 +1,54 @@
+# Ignore macOS system files
+.DS_Store
+
+# Ignore BBedit files
+*.bbprojectd
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+
+# Ignore build directories
+/dist/
+/build/
+
+# Ignore environment variables files
+.env
+
+# Ignore Python cache files
+__pycache__/
+
+# Ignore compiled code
+*.pyc
+
+# Ignore .task files
+*.task
+
+# Ignore .vscode files
+*.vscode
+
+# Ignore journal files
+*.jnl
+
+# ignore blazegraph backups:
+blazegraph-backup
+
+# Ignore temporary input and output
+/mapping/input/
+/mapping/output/
+
+# Folder structure
+data/**/*.*
+!data/temp/.gitkeep
+!data/rdf/.gitkeep
+!data/ttl/additional/classifications/.gitkeep
+!data/ttl/additional/external/.gitkeep
+
+# Local configuration files
+docker-compose.override.yml
+services/platform/apps/static/assets/no_auth/*.jpg
