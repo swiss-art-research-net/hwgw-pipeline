@@ -43,6 +43,7 @@ services:
     volumes:
       - ./mapping:/mapping
       - ./data:/data
+      - ./hwgw-data:/hwgw-data
       - ./logs:/logs
       - ./scripts:/scripts
     environment:
