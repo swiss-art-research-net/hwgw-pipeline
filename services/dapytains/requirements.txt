@@ -1,0 +1,9 @@
+saxonche==12.9.0
+lxml
+flask
+flask-sqlalchemy
+click
+uritemplate
+tqdm
+dotenv_flow
+waitress
