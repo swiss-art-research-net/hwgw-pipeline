@@ -7,7 +7,7 @@ vars:
   NAMESPACE: http://hwgw.uzh.ch/
   REGISTERS: bibliography,objects,organizations,persons,places
   SCHRIFTEN: 01,02,03,04,06,08
-  SOURCE_FOLDER: /hwgw-data/data/source
+  SOURCE_FOLDER: /data/source
 
 dotenv: 
   - /.env
@@ -57,8 +57,8 @@ tasks:
       vars: [FILE_TYPE]
     vars:
       FILEPATH: "hw-anno/data/registers/{{.FILE_TYPE}}.xml" # ex. hw-anno/data/registers/bibliography.xml
-      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers" # ex. hwgw-data/data/source/registers
-      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. hwgw-data/data/source/bibliography.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers" # ex. /data/source/registers
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. /data/source/bibliography.xml
     cmds:
       - mkdir -p {{.LOCAL_FOLDER}}
       - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
@@ -84,8 +84,8 @@ tasks:
       vars: [FILE_TYPE, PART]
     vars:
       FILEPATH: "hw-anno/data/s{{.FILE_TYPE}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. hw-anno/data/s01/s01-app.xml
-      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/s{{.FILE_TYPE}}" # ex. hwgw-data/data/source/s01
-      LOCAL_PATH: "{{.LOCAL_FOLDER}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. hwgw-data/data/source/s01/s01-app.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/s{{.FILE_TYPE}}" # ex. /data/source/s01
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. /data/source/s01/s01-app.xml
     cmds:
       - mkdir -p {{.LOCAL_FOLDER}}
       - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
@@ -432,13 +432,6 @@ tasks:
           FILE: /mapping/schemas/rs-ontology.ttl
           TYPE: application/x-turtle
           GRAPH: http://www.researchspace.org/ontology
-      - task: _ingest-data-from-file
-        vars:
-          NAME: Monteiato Ontology
-          FILE: /mapping/schemas/monteiato-ontology.ttl
-          TYPE: application/x-turtle
-          GRAPH: https://ontology.monteiato.uzh.ch
-
 
 # RESET FUNCTIONS
   reset:
@@ -447,12 +440,7 @@ tasks:
     cmds:
       - rm -f /scripts/.task/checksum/*
       - for:
-        - bilder
-        - fund
-        - zeichnung
-        - muenze
-        - aussenaufnahme
-        - fundorttopographie
+        - xxx
         task: reset-module
         vars:
           MODULE: "{{.ITEM}}"
