@@ -43,7 +43,6 @@ services:
     volumes:
       - ./mapping:/mapping
       - ./data:/data
-      - ./hwgw-data:/hwgw-data
       - ./logs:/logs
       - ./scripts:/scripts
     environment:
@@ -51,6 +50,28 @@ services:
       - COMPOSE_PROJECT_NAME=${PROJECT_NAME}
       - GITHUB_USERNAME=${GITHUB_USERNAME}
       - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  
+  dapytains:
+    build: ./services/dapytains
+    container_name: ${PROJECT_NAME}_dapytains
+    restart: unless-stopped
+    environment:
+      - DATABASE_URI=${DATABASE_URI}
+      - DTSCATALOG=${DTSCATALOG}
+      - SERVER_ENV=${SERVER_ENV}
+      - SERVER_HOST=${SERVER_HOST}
+      - SERVER_PORT=${SERVER_PORT}
+    volumes:
+      - ./data:/data
+      - ./scripts:/scripts
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
     logging:
       driver: json-file
       options:
