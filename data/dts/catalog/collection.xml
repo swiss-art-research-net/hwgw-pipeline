@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="schema.rng" type="xml" ?>
+<collection identifier="https://example.org/dts/collections/hwgw">
+    <title>Heinrich Wölfflin - Gesammelte Werke</title>
+    
+    <dublinCore>
+        <creator xmlns="http://purl.org/dc/terms/">Heinrich Wölfflin</creator>
+        <language xmlns="http://purl.org/dc/terms/">de</language>
+    </dublinCore>
+
+    <members>
+        <collection filepath="./s01.xml"/>
+    </members>
+</collection>
