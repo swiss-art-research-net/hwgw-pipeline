@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?oxygen RNGSchema="schema.rng" type="xml"?>
+<collection identifier="https://example.org/dts/collections/hwgw/s04">
+  <title>Schriften 4</title>
+  <title>Die Jugendwerke des Michelangelo</title>
+  <members>
+    <resource identifier="https://example.org/dts/collections/hwgw/s04/app" filepath="../tei/s04/s04-app.xml">
+      <title>S04 app</title>
+    </resource>
+    <resource identifier="https://example.org/dts/collections/hwgw/s04/ed" filepath="../tei/s04/s04-ed.xml">
+      <title>S04 ed</title>
+    </resource>
+    <resource identifier="https://example.org/dts/collections/hwgw/s04/in" filepath="../tei/s04/s04-in.xml">
+      <title>S04 in</title>
+    </resource>
+  </members>
+</collection>

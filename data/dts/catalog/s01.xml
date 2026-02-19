@@ -1,21 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?oxygen RNGSchema="schema.rng" type="xml" ?>
+<?xml version='1.0' encoding='UTF-8'?>
+<?oxygen RNGSchema="schema.rng" type="xml"?>
 <collection identifier="https://example.org/dts/collections/hwgw/s01">
-    <title>Schriften 1 - Prolegomena zu einer Psychologie der Architektur</title>
-
-    <members>
-
-        <resource identifier="https://example.org/dts/collections/hwgw/s01/app" filepath="../tei/s01/s01-app.xml">
-            <title>S01 Apparat</title>
-        </resource>
-
-        <resource identifier="https://example.org/dts/collections/hwgw/s01/ed" filepath="../tei/s01/s01-ed.xml">
-            <title>S01 Text</title>
-        </resource>
-
-        <resource identifier="https://example.org/dts/collections/hwgw/s01/in" filepath="../tei/s01/s01-in.xml">
-            <title>S01 Einleitung</title>
-        </resource>
-
-    </members>
+  <title>Schriften 1</title>
+  <title>Prolegomena zu einer Psychologie der Architektur</title>
+  <members>
+    <resource identifier="https://example.org/dts/collections/hwgw/s01/app" filepath="../tei/s01/s01-app.xml">
+      <title>S01 app</title>
+    </resource>
+    <resource identifier="https://example.org/dts/collections/hwgw/s01/ed" filepath="../tei/s01/s01-ed.xml">
+      <title>S01 ed</title>
+    </resource>
+    <resource identifier="https://example.org/dts/collections/hwgw/s01/in" filepath="../tei/s01/s01-in.xml">
+      <title>S01 in</title>
+    </resource>
+  </members>
 </collection>
