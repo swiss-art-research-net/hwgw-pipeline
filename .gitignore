@@ -44,7 +44,7 @@ blazegraph-backup
 
 # Folder structure
 data/source/**/*.*
-data/dts/tei/**/*.*
+# data/dts/tei/**/*.*
 !data/temp/.gitkeep
 !data/rdf/.gitkeep
 !data/ttl/additional/classifications/.gitkeep
