@@ -1,0 +1,1910 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?teipublisher template="woelfflin-index.html"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" n="999">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Ortsverzeichnis</title>
+        <funder ref="http://p3.snf.ch/Project-198243">Schweizerischer Nationalfonds zur Förderung der wissenschaftlichen Forschung</funder>
+      </titleStmt>
+      <editionStmt>
+        <edition>
+          <title>Online-Edition</title>
+        </edition>
+      </editionStmt>
+      <publicationStmt>
+        <publisher>Universität Zürich: Kunsthistorisches Institut</publisher>
+        <pubPlace>Zürich</pubPlace>
+        <availability>Lizenz zu definieren</availability>
+        <date when="2021-12"/>
+      </publicationStmt>
+      <seriesStmt>
+        <title>Heinrich Wölfflin: Gesammelte Werke</title>
+        <respStmt>
+          <resp>Herausgegeben von</resp>
+          <name>Tristan Weddigen</name>
+          <name>Oskar Bätschmann</name>
+        </respStmt>
+        <biblScope unit="volume">95</biblScope>
+      </seriesStmt>
+      <sourceDesc>
+        <p/>
+      </sourceDesc>
+    </fileDesc>
+    <profileDesc>
+      <textClass>
+        <catRef scheme="#genre" target="#index"/>
+      </textClass>
+      <langUsage>
+        <language ident="de">Deutsch</language>
+      </langUsage>
+    </profileDesc>
+    <revisionDesc>
+      <listChange>
+            </listChange>
+    </revisionDesc>
+    <refsDecl default="true" n="logical_structure">
+            <citeStructure unit="chapter" match="//body/div" use="@xml:id">
+                <citeStructure unit="subchapter" match="div" use="@xml:id" delim=":">
+                    <citeStructure unit="paragraph" match="p" use="@xml:id" delim=":"/>
+                </citeStructure>
+            </citeStructure>
+        </refsDecl>
+    <refsDecl n="published_page">
+            <citeStructure unit="page" match="//pb" use="@xml:id"/>
+        </refsDecl>
+  </teiHeader>
+  <text>
+    <body/>
+    <back>
+      <div xml:id="index-place">
+        <head>Ortsverzeichnis</head>
+        <listPlace>
+          <place xml:id="gnd-4000018-7">
+            <placeName type="main">Aarau</placeName>
+            <note/>
+            <idno type="GND">4000018-7</idno>
+          </place>
+          <place xml:id="gnd-4004164-5">
+            <placeName type="main">Baden</placeName>
+            <note>Aargau</note>
+            <idno type="GND">4004164-5</idno>
+          </place>
+          <place xml:id="gnd-4004617-5">
+            <placeName type="main">Basel</placeName>
+            <note/>
+            <idno type="GND">4004617-5</idno>
+          </place>
+          <place xml:id="gnd-4005406-8">
+            <placeName type="main">Belgien</placeName>
+            <note/>
+            <idno type="GND">4005406-8</idno>
+          </place>
+          <place xml:id="gnd-4543293-4">
+            <placeName type="main">Berg am Irchel</placeName>
+            <note>Kanton Zürich</note>
+            <idno type="GND">4543293-4</idno>
+          </place>
+          <place xml:id="gnd-4005728-8">
+            <placeName type="main">Berlin</placeName>
+            <note/>
+            <idno type="GND">4005728-8</idno>
+          </place>
+          <place xml:id="gnd-4006424-4">
+            <placeName type="main">Biberach an der Riß</placeName>
+            <note/>
+            <idno type="GND">4006424-4</idno>
+          </place>
+          <place xml:id="gnd-4080438-0">
+            <placeName type="main">Blois</placeName>
+            <note/>
+            <idno type="GND">4080438-0</idno>
+          </place>
+          <place xml:id="gnd-4093015-4">
+            <!-- TODO maybe move -->
+            <placeName type="main">Boboligarten</placeName>
+            <note>Florenz</note>
+            <idno type="GND">4093015-4</idno>
+          </place>
+          <place xml:id="gnd-4007616-7">
+            <placeName type="main">Bologna</placeName>
+            <note/>
+            <idno type="GND">4007616-7</idno>
+          </place>
+          <place xml:id="gnd-4008065-1">
+            <placeName type="main">Braunschweig</placeName>
+            <note/>
+            <idno type="GND">4008065-1</idno>
+          </place>
+          <place xml:id="gnd-4008216-7">
+            <placeName type="main">Breslau</placeName>
+            <placeName type="alternative">Wrocław</placeName>
+            <note/>
+            <idno type="GND">4008216-7</idno>
+          </place>
+          <place xml:id="gnd-4069688-1">
+            <placeName type="main">Brügge</placeName>
+            <note/>
+            <idno type="GND">4069688-1</idno>
+          </place>
+          <place xml:id="gnd-4085158-8">
+            <placeName type="main">Carrara</placeName>
+            <note>Provinz Massa-Carrara, Toskana</note>
+            <idno type="GND">4085158-8</idno>
+          </place>
+          <place xml:id="gnd-4065382-1">
+            <placeName type="main">Charlottenburg</placeName>
+            <note>Berlin</note>
+            <idno type="GND">4065382-1</idno>
+          </place>
+          <place xml:id="gnd-4127101-4">
+            <placeName type="main">Churwalden</placeName>
+            <note/>
+            <idno type="GND">4127101-4</idno>
+          </place>
+          <place xml:id="gnd-1268051020">
+            <!-- TODO maybe move -->
+            <placeName type="main">Château de Bury</placeName>
+            <note>Molineuf</note>
+            <idno type="GND">1268051020</idno>
+          </place>
+          <place xml:id="gnd-1268056375">
+            <!-- TODO maybe move -->
+            <placeName type="main">Château de Villeroy</placeName>
+            <note>Mennecy</note>
+            <idno type="GND">1268056375</idno>
+          </place>
+          <place xml:id="gnd-4070370-8">
+            <placeName type="main">Deutsches Sprachgebiet</placeName>
+            <note/>
+            <idno type="GND">4070370-8</idno>
+          </place>
+          <place xml:id="gnd-4011882-4">
+            <placeName type="main">Deutschland</placeName>
+            <note/>
+            <idno type="GND">4011882-4</idno>
+          </place>
+          <place xml:id="gnd-5336722-4">
+            <placeName type="main">Dornach</placeName>
+            <note>Mülhausen</note>
+            <idno type="GND">5336722-4</idno>
+          </place>
+          <place xml:id="gnd-4012995-0">
+            <placeName type="main">Dresden</placeName>
+            <note/>
+            <idno type="GND">4012995-0</idno>
+          </place>
+          <place xml:id="gnd-4013557-3">
+            <placeName type="main">Edinburgh</placeName>
+            <note/>
+            <idno type="GND">4013557-3</idno>
+          </place>
+          <place xml:id="gnd-4014770-8">
+            <placeName type="main">England</placeName>
+            <note/>
+            <idno type="GND">4014770-8</idno>
+          </place>
+          <place xml:id="gnd-4015310-1">
+            <placeName type="main">Erlenbach</placeName>
+            <note>Kanton Zürich</note>
+            <idno type="GND">4015310-1</idno>
+          </place>
+          <place xml:id="gnd-4015701-5">
+            <placeName type="main">Europa</placeName>
+            <note/>
+            <idno type="GND">4015701-5</idno>
+          </place>
+          <place xml:id="gnd-4017581-9">
+            <placeName type="main">Florenz</placeName>
+            <note/>
+            <idno type="GND">4017581-9</idno>
+          </place>
+          <place xml:id="gnd-1061006522">
+            <!-- TODO maybe move -->
+            <placeName type="main">Forsthaus Sihlwald</placeName>
+            <note>Horgen</note>
+            <idno type="GND">1061006522</idno>
+          </place>
+          <place xml:id="gnd-4225183-7">
+            <placeName type="main">Fort Worth, Texas</placeName>
+            <note/>
+            <idno type="GND">4225183-7</idno>
+          </place>
+          <place xml:id="gnd-4018118-2">
+            <placeName type="main">Frankfurt am Main</placeName>
+            <note/>
+            <idno type="GND">4018118-2</idno>
+          </place>
+          <place xml:id="gnd-4018145-5">
+            <placeName type="main">Frankreich</placeName>
+            <note/>
+            <idno type="GND">4018145-5</idno>
+          </place>
+          <place xml:id="gnd-4018220-4">
+            <placeName type="main">Frauenfeld</placeName>
+            <note/>
+            <idno type="GND">4018220-4</idno>
+          </place>
+          <place xml:id="gnd-4018272-1">
+            <placeName type="main">Freiburg im Breisgau</placeName>
+            <note/>
+            <idno type="GND">4018272-1</idno>
+          </place>
+          <place xml:id="gnd-4119866-9">
+            <placeName type="main">Gardone Riviera</placeName>
+            <note>Kurort am Gardasee, Provinz Brescia, Lombardei</note>
+            <idno type="GND">4119866-9</idno>
+          </place>
+          <place xml:id="gnd-4020185-5">
+            <placeName type="main">Genua</placeName>
+            <note/>
+            <idno type="GND">4020185-5</idno>
+          </place>
+          <place xml:id="gnd-7724398-5">
+            <placeName type="main">Goldbach</placeName>
+            <note>Küsnacht, Kanton Zürich</note>
+            <idno type="GND">7724398-5</idno>
+          </place>
+          <place xml:id="gnd-4021691-3">
+            <placeName type="main">Gotthardbahn</placeName>
+            <note/>
+            <idno type="GND">4021691-3</idno>
+          </place>
+          <place xml:id="gnd-4021881-8">
+            <placeName type="main">Graubünden</placeName>
+            <note/>
+            <idno type="GND">4021881-8</idno>
+          </place>
+          <place xml:id="gnd-4022047-3">
+            <placeName type="main">Griechenland</placeName>
+            <note/>
+            <idno type="GND">4022047-3</idno>
+          </place>
+          <place xml:id="gnd-4022987-7">
+            <placeName type="main">Halberstadt</placeName>
+            <note>Kreisstadt des Landkreises Harz</note>
+            <idno type="GND">4022987-7</idno>
+          </place>
+          <place xml:id="gnd-4023025-9">
+            <placeName type="main">Halle (Saale)</placeName>
+            <note/>
+            <idno type="GND">4023025-9</idno>
+          </place>
+          <place xml:id="gnd-4023118-5">
+            <placeName type="main">Hamburg</placeName>
+            <note/>
+            <idno type="GND">4023118-5</idno>
+          </place>
+          <place xml:id="gnd-1302307541">
+            <!-- TODO maybe move -->
+            <placeName type="main">Haus zum Schwanen (Zürich)</placeName>
+            <note>Münstergasse 9-11</note>
+            <idno type="GND">1302307541</idno>
+          </place>
+          <place xml:id="gnd-4024025-3">
+            <placeName type="main">Heilbronn</placeName>
+            <note/>
+            <idno type="GND">4024025-3</idno>
+          </place>
+          <place xml:id="gnd-4501235-0">
+            <placeName type="main">Holkham Hall</placeName>
+            <note>Holkham</note>
+            <idno type="GND">4501235-0</idno>
+          </place>
+          <place xml:id="gnd-4133959-9">
+            <placeName type="main">Holland</placeName>
+            <note/>
+            <idno type="GND">4133959-9</idno>
+          </place>
+          <place xml:id="gnd-1302309501">
+            <placeName type="main">Irchel</placeName>
+            <note>Höhenzug zwischen Töss und Thur</note>
+            <idno type="GND">1302309501</idno>
+          </place>
+          <place xml:id="gnd-4027833-5">
+            <placeName type="main">Italien</placeName>
+            <note/>
+            <idno type="GND">4027833-5</idno>
+          </place>
+          <place xml:id="gnd-4028557-1">
+            <placeName type="main">Jena</placeName>
+            <note/>
+            <idno type="GND">4028557-1</idno>
+          </place>
+          <place xml:id="gnd-4021141-1">
+            <placeName type="main">Kanton Glarus</placeName>
+            <note/>
+            <idno type="GND">4021141-1</idno>
+          </place>
+          <place xml:id="gnd-4076805-3">
+            <!-- TODO maybe move -->
+            <placeName type="main">Kapitol Rom</placeName>
+            <note/>
+            <idno type="GND">4076805-3</idno>
+          </place>
+          <place xml:id="gnd-4097898-9">
+            <placeName type="main">Kilchberg</placeName>
+            <note>Kanton Zürich</note>
+            <idno type="GND">4097898-9</idno>
+          </place>
+          <place xml:id="gnd-4031483-2">
+            <placeName type="main">Köln</placeName>
+            <note/>
+            <idno type="GND">4031483-2</idno>
+          </place>
+          <place xml:id="gnd-4031541-1">
+            <placeName type="main">Königsberg</placeName>
+            <note>Kaliningrad</note>
+            <idno type="GND">4031541-1</idno>
+          </place>
+          <place xml:id="gnd-1211198634">
+            <!-- TODO maybe move -->
+            <placeName type="main">Künstlergut</placeName>
+            <note>Zürich</note>
+            <idno type="GND">1211198634</idno>
+          </place>
+          <place xml:id="gnd-4034750-3">
+            <placeName type="main">Lausanne</placeName>
+            <note/>
+            <idno type="GND">4034750-3</idno>
+          </place>
+          <place xml:id="gnd-4035206-7">
+            <placeName type="main">Leipzig</placeName>
+            <note/>
+            <idno type="GND">4035206-7</idno>
+          </place>
+          <place xml:id="gnd-4114418-1">
+            <placeName type="main">Lille</placeName>
+            <note/>
+            <idno type="GND">4114418-1</idno>
+          </place>
+          <place xml:id="gnd-4074335-4">
+            <placeName type="main">London</placeName>
+            <note/>
+            <idno type="GND">4074335-4</idno>
+          </place>
+          <place xml:id="gnd-4036361-2">
+            <placeName type="main">Los Angeles, California</placeName>
+            <note/>
+            <idno type="GND">4036361-2</idno>
+          </place>
+          <place xml:id="gnd-4074354-8">
+            <placeName type="main">Lucca</placeName>
+            <note/>
+            <idno type="GND">4074354-8</idno>
+          </place>
+          <place xml:id="gnd-4037100-1">
+            <placeName type="main">Mailand</placeName>
+            <note/>
+            <idno type="GND">4037100-1</idno>
+          </place>
+          <place xml:id="gnd-4037124-4">
+            <placeName type="main">Mainz</placeName>
+            <note/>
+            <idno type="GND">4037124-4</idno>
+          </place>
+          <place xml:id="gnd-4037286-8">
+            <placeName type="main">Manchester</placeName>
+            <note/>
+            <idno type="GND">4037286-8</idno>
+          </place>
+          <place xml:id="gnd-4115205-0">
+            <placeName type="main">Monte Pellegrino</placeName>
+            <note/>
+            <idno type="GND">4115205-0</idno>
+          </place>
+          <place xml:id="gnd-4115218-9">
+            <placeName type="main">Montmorency</placeName>
+            <note>Stadt im Ar. Sarcelles, Dep. Val-d'Oise</note>
+            <idno type="GND">4115218-9</idno>
+          </place>
+          <place xml:id="gnd-4127793-4">
+            <placeName type="main">München</placeName>
+            <note/>
+            <idno type="GND">4127793-4</idno>
+          </place>
+          <place xml:id="gnd-4041476-0">
+            <placeName type="main">Neapel</placeName>
+            <note/>
+            <idno type="GND">4041476-0</idno>
+          </place>
+          <place xml:id="gnd-4669196-0">
+            <placeName type="main">Newa</placeName>
+            <note>Fluss in Russland</note>
+            <idno type="GND">4669196-0</idno>
+          </place>
+          <place xml:id="gnd-4075454-6">
+            <placeName type="main">Norddeutschland</placeName>
+            <note/>
+            <idno type="GND">4075454-6</idno>
+          </place>
+          <place xml:id="gnd-4117918-3">
+            <placeName type="main">Norfolk</placeName>
+            <note>County in Ost-England</note>
+            <idno type="GND">4117918-3</idno>
+          </place>
+          <place xml:id="gnd-4117934-1">
+            <placeName type="main">Novara</placeName>
+            <note/>
+            <idno type="GND">4117934-1</idno>
+          </place>
+          <place xml:id="gnd-4042547-2">
+            <placeName type="main">Oberitalien</placeName>
+            <note/>
+            <idno type="GND">4042547-2</idno>
+          </place>
+          <place xml:id="gnd-4043271-3">
+            <placeName type="main">Österreich</placeName>
+            <note/>
+            <idno type="GND">4043271-3</idno>
+          </place>
+          <place xml:id="gnd-4044234-2">
+            <placeName type="main">Oxford</placeName>
+            <note/>
+            <idno type="GND">4044234-2</idno>
+          </place>
+          <place xml:id="gnd-4044295-0">
+            <placeName type="main">Padua</placeName>
+            <note/>
+            <idno type="GND">4044295-0</idno>
+          </place>
+          <place xml:id="gnd-4044402-8">
+            <placeName type="main">Palermo</placeName>
+            <note/>
+            <idno type="GND">4044402-8</idno>
+          </place>
+          <place xml:id="gnd-4044660-8">
+            <placeName type="main">Paris</placeName>
+            <note/>
+            <idno type="GND">4044660-8</idno>
+          </place>
+          <place xml:id="gnd-4205363-8">
+            <placeName type="main">Pasadena, California</placeName>
+            <note/>
+            <idno type="GND">4205363-8</idno>
+          </place>
+          <place xml:id="gnd-1302308904">
+            <!-- TODO maybe move -->
+            <placeName type="main">Pfarrhaus (Berg am Irchel)</placeName>
+            <note>Hauptstrasse 4</note>
+            <idno type="GND">1302308904</idno>
+          </place>
+          <place xml:id="gnd-4526460-0">
+            <!-- TODO maybe move -->
+            <placeName type="main">Piazza della Signoria</placeName>
+            <note>Florenz</note>
+            <idno type="GND">4526460-0</idno>
+          </place>
+          <place xml:id="gnd-4046151-8">
+            <placeName type="main">Pisa</placeName>
+            <note/>
+            <idno type="GND">4046151-8</idno>
+          </place>
+          <place xml:id="gnd-4420481-4">
+            <!-- TODO maybe move -->
+            <placeName type="main">Platzspitz</placeName>
+            <note>Zürich (auch Sihlpromenade)</note>
+            <idno type="GND">4420481-4</idno>
+          </place>
+          <place xml:id="gnd-4404646-7">
+            <placeName type="main">Poggibonsi</placeName>
+            <note/>
+            <idno type="GND">4404646-7</idno>
+          </place>
+          <place xml:id="gnd-4046755-7">
+            <placeName type="main">Pompeji</placeName>
+            <note/>
+            <idno type="GND">4046755-7</idno>
+          </place>
+          <place xml:id="gnd-4046948-7">
+            <placeName type="main">Potsdam</placeName>
+            <note/>
+            <idno type="GND">4046948-7</idno>
+          </place>
+          <place xml:id="gnd-4047820-8">
+            <placeName type="main">Pullach i. Isartal</placeName>
+            <note/>
+            <idno type="GND">4047820-8</idno>
+          </place>
+          <place xml:id="gnd-4621034-9">
+            <!-- TODO maybe move -->
+            <placeName type="main">Quai Voltaire</placeName>
+            <note>Paris</note>
+            <idno type="GND">4621034-9</idno>
+          </place>
+          <place xml:id="gnd-4050471-2">
+            <placeName type="main">Rom</placeName>
+            <note/>
+            <idno type="GND">4050471-2</idno>
+          </place>
+          <place xml:id="gnd-4051362-2">
+            <placeName type="main">Salerno</placeName>
+            <note/>
+            <idno type="GND">4051362-2</idno>
+          </place>
+          <place xml:id="gnd-4118331-9">
+            <placeName type="main">San Gimignano</placeName>
+            <note/>
+            <idno type="GND">4118331-9</idno>
+          </place>
+          <place xml:id="gnd-4120012-3">
+            <placeName type="main">San Miniato</placeName>
+            <note/>
+            <idno type="GND">4120012-3</idno>
+          </place>
+          <place xml:id="gnd-4267026-3">
+            <placeName type="main">Sankt Petersburg</placeName>
+            <note/>
+            <idno type="GND">4267026-3</idno>
+          </place>
+          <place xml:id="gnd-4051993-4">
+            <placeName type="main">Schaffhausen</placeName>
+            <note/>
+            <idno type="GND">4051993-4</idno>
+          </place>
+          <place xml:id="gnd-1051766532">
+            <!-- TODO maybe move -->
+            <placeName type="main">Schloss Schwandegg</placeName>
+            <note>Waltalingen</note>
+            <idno type="GND">1051766532</idno>
+          </place>
+          <place xml:id="gnd-1047943247">
+            <!-- TODO maybe move -->
+            <placeName type="main">Schlosspark Versailles</placeName>
+            <note>Versailles</note>
+            <idno type="GND">1047943247</idno>
+          </place>
+          <place xml:id="gnd-4215236-7">
+            <!-- TODO maybe move -->
+            <placeName type="main">Schooren</placeName>
+            <note/>
+            <idno type="GND">4215236-7</idno>
+          </place>
+          <place xml:id="gnd-4053881-3">
+            <placeName type="main">Schweiz</placeName>
+            <note/>
+            <idno type="GND">4053881-3</idno>
+          </place>
+          <place xml:id="gnd-4054330-4">
+            <placeName type="main">Seine</placeName>
+            <note/>
+            <idno type="GND">4054330-4</idno>
+          </place>
+          <place xml:id="gnd-4054903-3">
+            <placeName type="main">Siena</placeName>
+            <note/>
+            <idno type="GND">4054903-3</idno>
+          </place>
+          <place xml:id="gnd-4391290-4">
+            <placeName type="main">Sihl</placeName>
+            <note>Linker Nebenfluß der Limmat, mündet am Platzspitz in Zürich</note>
+            <idno type="GND">4391290-4</idno>
+          </place>
+          <place xml:id="gnd-4054957-4">
+            <placeName type="main">Sihlwald</placeName>
+            <note>Naturwaldreservat, das der Stadt Zürich gehört</note>
+            <idno type="GND">4054957-4</idno>
+          </place>
+          <place xml:id="gnd-4055193-3">
+            <placeName type="main">Sizilien</placeName>
+            <note/>
+            <idno type="GND">4055193-3</idno>
+          </place>
+          <place xml:id="gnd-4759524-3">
+            <placeName type="main">Stettfurt</placeName>
+            <note/>
+            <idno type="GND">4759524-3</idno>
+          </place>
+          <place xml:id="gnd-1268211303">
+            <!-- TODO maybe move -->
+            <placeName type="main">Stoke Park</placeName>
+            <note>Stoke Poges</note>
+            <idno type="GND">1268211303</idno>
+          </place>
+          <place xml:id="gnd-4057878-1">
+            <placeName type="main">Straßburg</placeName>
+            <note/>
+            <idno type="GND">4057878-1</idno>
+          </place>
+          <place xml:id="gnd-4058282-6">
+            <placeName type="main">Stuttgart</placeName>
+            <note/>
+            <idno type="GND">4058282-6</idno>
+          </place>
+          <place xml:id="gnd-4078022-3">
+            <placeName type="main">Süddeutschland</placeName>
+            <note/>
+            <idno type="GND">4078022-3</idno>
+          </place>
+          <place xml:id="gnd-4106215-2">
+            <placeName type="main">Thalwil</placeName>
+            <note>Kanton Zürich</note>
+            <idno type="GND">4106215-2</idno>
+          </place>
+          <place xml:id="gnd-4060207-2">
+            <placeName type="main">Tirol</placeName>
+            <note/>
+            <idno type="GND">4060207-2</idno>
+          </place>
+          <place xml:id="gnd-4106969-9">
+            <placeName type="main">Trogen</placeName>
+            <note>Appenzell Ausserrhoden</note>
+            <idno type="GND">4106969-9</idno>
+          </place>
+          <place xml:id="gnd-4061147-4">
+            <placeName type="main">Tübingen</placeName>
+            <note/>
+            <idno type="GND">4061147-4</idno>
+          </place>
+          <place xml:id="gnd-4061245-4">
+            <placeName type="main">Turin</placeName>
+            <note/>
+            <idno type="GND">4061245-4</idno>
+          </place>
+          <place xml:id="gnd-4107330-7">
+            <placeName type="main">Tutzing</placeName>
+            <note/>
+            <idno type="GND">4107330-7</idno>
+          </place>
+          <place xml:id="gnd-4078704-7">
+            <placeName type="main">USA</placeName>
+            <note/>
+            <idno type="GND">4078704-7</idno>
+          </place>
+          <place xml:id="gnd-4062404-3">
+            <placeName type="main">Vatikanstadt</placeName>
+            <note/>
+            <idno type="GND">4062404-3</idno>
+          </place>
+          <place xml:id="gnd-4062501-1">
+            <placeName type="main">Venedig</placeName>
+            <note/>
+            <idno type="GND">4062501-1</idno>
+          </place>
+          <place xml:id="gnd-7548093-1">
+            <!-- TODO maybe move -->
+            <placeName type="main">Via dei Tornabuoni</placeName>
+            <note>Florenz</note>
+            <idno type="GND">7548093-1</idno>
+          </place>
+          <place xml:id="gnd-4605519-8">
+            <!-- TODO maybe move -->
+            <placeName type="main">Via del Corso</placeName>
+            <note>Rom</note>
+            <idno type="GND">4605519-8</idno>
+          </place>
+          <place xml:id="gnd-4063445-0">
+            <placeName type="main">Vicenza</placeName>
+            <note/>
+            <idno type="GND">4063445-0</idno>
+          </place>
+          <place xml:id="gnd-130231002X">
+            <placeName type="main">Vier Wachten</placeName>
+            <note>Innere Vogtei, dann Obervogtei Zürichs; umfasste Hottingen, Ober- und Unterstrass, Fluntern und ab 1637 Wipkingen</note>
+            <idno type="GND">130231002X</idno>
+          </place>
+          <place xml:id="gnd-126815606X">
+            <!-- TODO maybe move -->
+            <placeName type="main">Vittoriale degli Italiani (Gardone Riviera) / La Prioria / Sala del mappamondo</placeName>
+            <note/>
+            <idno type="GND">126815606X</idno>
+          </place>
+          <place xml:id="gnd-1268042714">
+            <!-- TODO maybe move -->
+            <placeName type="main">Waldhof</placeName>
+            <note>Winterthur</note>
+            <idno type="GND">1268042714</idno>
+          </place>
+          <place xml:id="gnd-4064466-2">
+            <placeName type="main">Wallis</placeName>
+            <note/>
+            <idno type="GND">4064466-2</idno>
+          </place>
+          <place xml:id="gnd-4065105-8">
+            <placeName type="main">Weimar</placeName>
+            <note/>
+            <idno type="GND">4065105-8</idno>
+          </place>
+          <place xml:id="gnd-4066009-6">
+            <placeName type="main">Wien</placeName>
+            <note/>
+            <idno type="GND">4066009-6</idno>
+          </place>
+          <place xml:id="gnd-4066337-1">
+            <placeName type="main">Winterthur</placeName>
+            <note/>
+            <idno type="GND">4066337-1</idno>
+          </place>
+          <place xml:id="gnd-1091248427">
+            <!-- TODO maybe move -->
+            <placeName type="main">Zoologischer Garten Berlin (Berlin) / Marmorsaal</placeName>
+            <note>erbaut 1910-1912, zerstört im 2. Weltkrieg</note>
+            <idno type="GND">1091248427</idno>
+          </place>
+          <place xml:id="gnd-4068038-1">
+            <placeName type="main">Zürich</placeName>
+            <note/>
+            <idno type="GND">4068038-1</idno>
+          </place>
+          <place xml:id="gnd-4068043-5">
+            <placeName type="main">Zürichsee</placeName>
+            <note/>
+            <idno type="GND">4068043-5</idno>
+          </place>
+          <!--New additions-->
+          <place xml:id="gnd-4010292-0">
+            <placeName type="main">Cleveland, Ohio</placeName>
+            <note>Stadt am Eriesee, 22.7.1796 gegründet, 1836 City</note>
+            <idno type="GND">4010292-0</idno>
+          </place>
+          <place xml:id="gnd-4093055-5">
+            <placeName type="main">Fontainebleau</placeName>
+            <note>Hauptstadt des gleichnamigen Arr., Dep. Seine-et-Marne, Île-de-France, 1169 urkundl. erwähnt</note>
+            <idno type="GND">4093055-5</idno>
+          </place>
+          <place xml:id="gnd-4036862-2">
+            <placeName type="main">Madrid</placeName>
+            <note>Hauptstadt Spaniens (seit 1561/1606) u. der Comunidad de Madrid, jungsteinzeitl. besiedelt, im 9. Jh. von Mauren gegründet, 939 urkundl. erwähnt, 1202 Stadtrechte</note>
+            <idno type="GND">4036862-2</idno>
+          </place>
+          <place xml:id="gnd-4053684-1">
+            <placeName type="main">Schwäbisch Hall</placeName>
+            <note>Große Kreisstadt (seit 1960) des gleichnamigen Landkreises, um 1037/90 als Halle urkundl. erwähnt, 1204 Stadt, 1276/80 Reichsstadt, heutiger Name 1489-15.11.1802 u. seit 7.11.1934</note>
+            <idno type="GND">4053684-1</idno>
+          </place>
+          <place xml:id="gnd-4064682-8">
+            <placeName type="main">Washington, DC</placeName>
+            <note>Hauptstadt und Regierungssitz der USA an der Ostküste</note>
+            <idno type="GND">4064682-8</idno>
+          </place>
+          <place xml:id="gnd-4108401-9">
+            <placeName type="main">Windsor</placeName>
+            <note>Stadt in der Unitary Authority Windsor and Maidenhead, England, an der Themse gegenüber von Eton</note>
+            <idno type="GND">4108401-9</idno>
+          </place>
+          <place xml:id="gnd-4114978-6">
+            <placeName type="main">Mantua</placeName>
+            <note>Hauptstadt der gleichnamigen Provinz, Lombardei</note>
+            <idno type="GND">4114978-6</idno>
+          </place>
+          <place xml:id="gnd-4000554-9">
+            <placeName type="main">Ägina</placeName>
+            <note/>
+            <idno type="GND">4000554-9</idno>
+          </place>
+          <place xml:id="gnd-4068475-1">
+            <placeName type="main">Agrigent</placeName>
+            <note/>
+            <idno type="GND">4068475-1</idno>
+          </place>
+          <place xml:id="gnd-4002888-4">
+            <placeName type="main">Arezzo</placeName>
+            <note/>
+            <idno type="GND">4002888-4</idno>
+          </place>
+          <place xml:id="gnd-4003366-1">
+            <placeName type="main">Athen</placeName>
+            <note/>
+            <idno type="GND">4003366-1</idno>
+          </place>
+          <place xml:id="gnd-4024881-1">
+            <placeName type="main">Hildesheim</placeName>
+            <note/>
+            <idno type="GND">4024881-1</idno>
+          </place>
+          <place xml:id="gnd-4060267-9">
+            <placeName type="main">Tivoli</placeName>
+            <note/>
+            <idno type="GND">4060267-9</idno>
+          </place>
+          <place xml:id="gnd-4003260-7">
+            <placeName type="main">Assisi</placeName>
+            <note/>
+            <idno type="GND">4003260-7</idno>
+          </place>
+          <place xml:id="gnd-4477958-6">
+            <placeName type="main">Bagnaia (Viterbo)</placeName>
+            <note/>
+            <idno type="GND">4477958-6</idno>
+          </place>
+          <place xml:id="gnd-4085148-5">
+            <placeName type="main">Caprarola</placeName>
+            <note/>
+            <idno type="GND">4085148-5</idno>
+          </place>
+          <place xml:id="gnd-4010401-1">
+            <placeName type="main">Colmar</placeName>
+            <note/>
+            <idno type="GND">4010401-1</idno>
+          </place>
+          <place xml:id="gnd-4092153-0">
+            <placeName type="main">Ferrara</placeName>
+            <note/>
+            <idno type="GND">4092153-0</idno>
+          </place>
+          <place xml:id="gnd-4086530-7">
+            <placeName type="main">Frascati</placeName>
+            <note/>
+            <idno type="GND">4086530-7</idno>
+          </place>
+          <place xml:id="gnd-4115856-8">
+            <placeName type="main">Parma</placeName>
+            <note/>
+            <idno type="GND">4115856-8</idno>
+          </place>
+          <place xml:id="gnd-4046001-0">
+            <placeName type="main">Piacenza</placeName>
+            <note/>
+            <idno type="GND">4046001-0</idno>
+          </place>
+          <place xml:id="gnd-4468581-6">
+            <placeName type="main">Gianicolo (Rom)</placeName>
+            <note>Stadthügel in Rom</note>
+            <idno type="GND">4468581-6</idno>
+          </place>
+          <place xml:id="gnd-4262371-6">
+            <placeName type="main">Palatin (Rom)</placeName>
+            <note>Stadthügel in Rom</note>
+            <idno type="GND">4262371-6</idno>
+          </place>
+          <place xml:id="gnd-4386225-1">
+            <placeName type="main">Caelius Mons (Rom)</placeName>
+            <note>Stadthügel in Rom</note>
+            <idno type="GND">4386225-1</idno>
+          </place>
+          <place xml:id="gnd-4246244-7">
+            <placeName type="main">Sansepolcro</placeName>
+            <placeName type="alternative">Borgo San Sepolcro</placeName>
+            <note/>
+            <idno type="GND">4246244-7</idno>
+          </place>
+          <place xml:id="gnd-4119454-8">
+            <placeName type="main">Viterbo</placeName>
+            <note/>
+            <idno type="GND">4119454-8</idno>
+          </place>
+          <place xml:id="gnd-4046843-4">
+            <placeName type="main">Portugal</placeName>
+            <note/>
+            <idno type="GND">4046843-4</idno>
+          </place>
+          <place xml:id="gnd-4041478-4">
+            <placeName type="main">Königreich Neapel</placeName>
+            <note/>
+            <idno type="GND">4041478-4</idno>
+          </place>
+          <place xml:id="gnd-4612707-0">
+            <placeName type="main">Quirinal (Rom)</placeName>
+            <note>Stadthügel in Rom</note>
+            <idno type="GND">4612707-0</idno>
+          </place>
+          <place xml:id="gnd-4011077-1">
+            <placeName type="main">Darmstadt</placeName>
+            <note>Verwaltungs-Sitz des Landkreises Darmstadt-Dieburg u. des Reg.-Bezirks Darmstadt, im 11. Jh. als Dorf Darmundestat erwähnt, 1330 Stadt</note>
+            <idno type="GND">4011077-1</idno>
+          </place>
+          <place xml:id="gnd-4377562-7">
+            <placeName type="main">Montorio Romano</placeName>
+            <note/>
+            <idno type="GND">4377562-7</idno>
+          </place>
+          <place xml:id="gnd-4085170-9">
+            <placeName type="main">Castellammare di Stabia</placeName>
+            <note>Hafenstadt am Golf von Neapel, Kampanien; befindet sich an der Stelle des durch den Vesuvausbruch 79 n. Chr. verschütteten Stabiae</note>
+            <idno type="GND">4085170-9</idno>
+          </place>
+          <place xml:id="gnd-4364928-2">
+            <placeName type="main">Monte Sant'Angelo</placeName>
+            <note>Wallfahrtsort mit d. Grottenheiligtum d. Erzengels Michael</note>
+            <idno type="GND">4364928-2</idno>
+          </place>
+          <place xml:id="gnd-7508205-6">
+            <placeName type="main">Amalfiküste</placeName>
+            <note/>
+            <idno type="GND">7508205-6</idno>
+          </place>
+          <place xml:id="gnd-4258895-9">
+            <placeName type="main">Kolosseum (Rom)</placeName>
+            <note>Amphitheater 70/81 n.Chr. erbaut</note>
+            <idno type="GND">4258895-9</idno>
+          </place>
+          <place xml:id="gnd-4652334-0">
+            <placeName type="main">Ludwigstraße (München)</placeName>
+            <note/>
+            <idno type="GND">4652334-0</idno>
+          </place>
+          <place xml:id="gnd-7832782-9">
+            <placeName type="main">Galeriestraße München</placeName>
+            <note/>
+            <idno type="GND">7832782-9</idno>
+          </place>
+          <place xml:id="gnd-4015012-4">
+            <placeName type="main">Ephesus</placeName>
+            <note>Antike Stadt ursprüngl. an der Mündung des Kaystros (heute: Küçük Menderes), ursprüngl. Siedlung der vorhellenischen Karer (um 5000 v.Chr.), unter osman. Herrschaft seit 14./15. Jh. Dorf</note>
+            <idno type="GND">4015012-4</idno>
+          </place>
+          <place xml:id="gnd-4040975-2">
+            <placeName type="main">Mykene</placeName>
+            <note/>
+            <idno type="GND">4040975-2</idno>
+          </place>
+          <place xml:id="gnd-4043508-8">
+            <placeName type="main">Olympia</placeName>
+            <note>Antike Kulststätte des Zeus u. der Hera in Elis, NW-Peloponnes; UNESCO-Weltkulturerbe seit 1989</note>
+            <idno type="GND">4043508-8</idno>
+          </place>
+          <place xml:id="gnd-4005762-8">
+            <placeName type="main">Bern</placeName>
+            <note>Stadt im Schweizer Mittelland, Hauptstadt der Schweiz (seit 1848) u. des gleichnamigen Kantons (seit 1803), 1191 gegründet</note>
+            <idno type="GND">4005762-8</idno>
+          </place>
+          <place xml:id="gnd-5007835-5">
+            <placeName type="main">Tegel</placeName>
+            <note>Dorf im Landkreis Niederbarnim (1558-1872: Amt Spandau), Provinz Brandenburg, bald nach 1237 gegründet, 1322 urkundl. erwähnt</note>
+            <idno type="GND">5007835-5</idno>
+          </place>
+          <place xml:id="gnd-4061581-9">
+            <placeName type="main">Umbrien</placeName>
+            <note>Historische Landschaft und Region in Mittelitalien, umfasst die Provinzen Perugia und Terni, Hauptstadt ist Perugia</note>
+            <idno type="GND">4061581-9</idno>
+          </place>
+          <place xml:id="gnd-4090063-0">
+            <placeName type="main">Brennerpass</placeName>
+            <note/>
+            <idno type="GND">4090063-0</idno>
+          </place>
+          <place xml:id="gnd-4078405-8">
+            <placeName type="main">Trient</placeName>
+            <note>Stadt an der Etsch, Hauptstadt der Region Trentino-Südtirol, von Rätern oder Kelten gegründet</note>
+            <idno type="GND">4078405-8</idno>
+          </place>
+          <place xml:id="gnd-4063110-2">
+            <placeName type="main">Verona</placeName>
+            <note>Hauptstadt der gleichnamigen Provinz, Venetien</note>
+            <idno type="GND">4063110-2</idno>
+          </place>
+          <place xml:id="gnd-4068771-5">
+            <placeName type="main">Apennin</placeName>
+            <note/>
+            <idno type="GND">4068771-5</idno>
+          </place>
+          <place xml:id="gnd-4461742-2">
+            <placeName type="main">Provinz Pistoia</placeName>
+            <note/>
+            <idno type="GND">4461742-2</idno>
+          </place>
+          <place xml:id="gnd-4086480-7">
+            <placeName type="main">Fiesole</placeName>
+            <note>Stadt in der Metropolitanstadt Florenz, Toskana, als Vipsul von Etruskern gegründet, antik Faesulae</note>
+            <idno type="GND">4086480-7</idno>
+          </place>
+          <place xml:id="gnd-4036294-2">
+            <placeName type="main">Lombardei</placeName>
+            <note/>
+            <idno type="GND">4036294-2</idno>
+          </place>
+          <place xml:id="gnd-4131293-4">
+            <placeName type="main">Englischer Garten (München)</placeName>
+            <note/>
+            <idno type="GND">4131293-4</idno>
+          </place>
+          <place xml:id="gnd-4110350-6">
+            <placeName type="main">Bad Kohlgrub</placeName>
+            <note>Gemeinde im Landkreis Garmisch-Partenkirchen</note>
+            <idno type="GND">4110350-6</idno>
+          </place>
+          <place xml:id="gnd-4067037-5">
+            <placeName type="main">Würzburg</placeName>
+            <note/>
+            <idno type="GND">4067037-5</idno>
+          </place>
+          <place xml:id="gnd-4076310-9">
+            <placeName type="main">Prag</placeName>
+            <note>Hauptstadt der Tschechischen Republik und Mittelböhmens, gleichzeitig auch selbständige Verwaltungseinheit; Altstadt seit 1230 Stadtrechte, bis 17. Oktober 1918 und 15. März 1939 bis Mai 1945 offiz. Prag, 28. Oktober 1918 bis 14. März 1939 und ab Mai 1945 offiz. Praha</note>
+            <idno type="GND">4076310-9</idno>
+          </place>
+          <place xml:id="gnd-4021477-1">
+            <placeName type="main">Göttingen</placeName>
+            <note>Kreisstadt des gleichnamigen Landkreises, 953 urkundl. erwähnt, um 1200 Stadtrechte, seit 1737 Universitätsstadt, seit 1964 nach ersten Eingemeindungen Großstadt in Südniedersachsen, seit 2016 Kreisstadt des um den ehemaligen Landkreis Osterode erweiterten Kreises Göttingen</note>
+            <idno type="GND">4021477-1</idno>
+          </place>
+          <place xml:id="gnd-4009351-7">
+            <placeName type="main">Cambridge</placeName>
+            <note>Hauptstadt der Grafschaft Cambridgeshire, Universitätsstadt, seit später Bronzezeit (1000 v.Chr.) besiedelt, 875 urkundl. erwähnt</note>
+            <idno type="GND">4009351-7</idno>
+          </place>
+          <place xml:id="gnd-4051594-1">
+            <placeName type="main">Sankt Gallen</placeName>
+            <note>Hauptstadt des gleichnamigen Kantons, Siedlung neben 719 gegründetem Kloster 954 durch Mauerbau zur Stadt geworden, 1457 freie Reichsstadt</note>
+            <idno type="GND">4051594-1</idno>
+          </place>
+          <place xml:id="gnd-4002364-3">
+            <placeName type="main">Antwerpen</placeName>
+            <note>Hauptstadt der gleichnamigen Provinz, 726 urkundl. erwähnt, 1291 Stadtrecht</note>
+            <idno type="GND">4002364-3</idno>
+          </place>
+          <place xml:id="gnd-4106993-6">
+            <placeName type="main">Sankt Anna (Augsburg) / Fuggerkapelle</placeName>
+            <note/>
+            <idno type="GND">4106993-6</idno>
+          </place>
+          <place xml:id="gnd-4564986-8">
+            <placeName type="main">Florenz-Castello</placeName>
+            <note>Stadtteil von Florenz</note>
+            <idno type="GND">4564986-8</idno>
+          </place>
+          <place xml:id="gnd-4050057-3">
+            <placeName type="main">Rimini</placeName>
+            <note>Hauptstadt der gleichnamigen Provinz, Emilia-Romagna, von Umbrern gegründet, 268 v.Chr. röm. Kolonie Ariminum</note>
+            <idno type="GND">4050057-3</idno>
+          </place>
+          <place xml:id="gnd-4488469-2">
+            <placeName type="main">Piazza Maggiore (Bologna)</placeName>
+            <note/>
+            <idno type="GND">4488469-2</idno>
+          </place>
+          <place xml:id="gnd-7726168-9">
+            <placeName type="main">Römisches Theater Fiesole (Fiesole)</placeName>
+            <note>Theater im 1. Jh. v.Chr. in etruskischen Tempelbezirk hineingebaut, im 1. u. 2. Jh. n.Chr. erneuert, 1809 entdeckt u. wiederhergestellt</note>
+            <idno type="GND">7726168-9</idno>
+          </place>
+          <place xml:id="gnd-4075873-4">
+            <placeName type="main">Louvre (Paris)</placeName>
+            <note>Ehemaliges Königsschloß. 1793 als Museum eröffnet.</note>
+            <idno type="GND">4075873-4</idno>
+          </place>
+          <place xml:id="gnd-7690907-4">
+            <placeName type="main">Piazza Campitelli (Rom)</placeName>
+            <note/>
+            <idno type="GND">7690907-4</idno>
+          </place>
+          <place xml:id="gnd-4001409-5">
+            <placeName type="main">Altenburg (Thüringen)</placeName>
+            <note>Kreisstadt des Landkreises Altenburger Land (1952-1990 Bezirk Leipzig), 976 urkundl. erwähnt, 1256 Stadtrecht bestätigt</note>
+            <idno type="GND">4001409-5</idno>
+          </place>
+          <place xml:id="gnd-4003191-3">
+            <placeName type="main">Aschaffenburg</placeName>
+            <note/>
+            <idno type="GND">4003191-3</idno>
+          </place>
+          <place xml:id="gnd-4086007-3">
+            <placeName type="main">Schloss Johannisburg (Aschaffenburg)</placeName>
+            <note/>
+            <idno type="GND">4086007-3</idno>
+          </place>
+          <place xml:id="gnd-4003614-5">
+            <placeName type="main">Augsburg</placeName>
+            <note>Hauptstadt des Regierungsbezirks Schwaben, Sitz des Landkreises Augsburg, aus 15 v.Chr. gegründetem röm. Legionslager hervorgegangen, 1156 Stadtrecht, 1316-1805/06 Reichsfreiheit</note>
+            <idno type="GND">4003614-5</idno>
+          </place>
+          <place xml:id="gnd-4222311-8">
+            <placeName type="main">Dom Augsburg (Augsburg)</placeName>
+            <note/>
+            <idno type="GND">4222311-8</idno>
+          </place>
+          <place xml:id="gnd-4056831-3">
+            <placeName type="main">Bad Staffelstein</placeName>
+            <note>Stadt im Landkreis Lichtenfels, Bad seit dem 15.11.2001</note>
+            <idno type="GND">4056831-3</idno>
+          </place>
+          <place xml:id="gnd-4086875-8">
+            <placeName type="main">Rathaus (Basel)</placeName>
+            <note>Rathaus 1504/14 spätgot. neu erbaut, im 16., 17. u. 19. Jh. erweitert u. umgebaut</note>
+            <idno type="GND">4086875-8</idno>
+          </place>
+          <place xml:id="gnd-4008109-6">
+            <placeName type="main">Breisach am Rhein</placeName>
+            <note>Stadt am Oberrhein, Landkreis Breisgau-Hochschwarzwald, seit Antike (Kelten, Römer) besiedelt, 396 urkundl. erwähnt, Stadt wohl seit 1185</note>
+            <idno type="GND">4008109-6</idno>
+          </place>
+          <place xml:id="gnd-7786747-6">
+            <placeName type="main">Sankt Stephanus (Münster (Westf))</placeName>
+            <note>Erbaut 1963-1965, Architekt Hans Schilling</note>
+            <idno type="GND">7786747-6</idno>
+          </place>
+          <place xml:id="gnd-4008460-7">
+            <placeName type="main">Brüssel</placeName>
+            <note>Haupt- u. Residenzstadt von Belgien; 966 urkundl. erwähnt</note>
+            <idno type="GND">4008460-7</idno>
+          </place>
+          <place xml:id="gnd-4014564-5">
+            <placeName type="main">Emden</placeName>
+            <note/>
+            <idno type="GND">4014564-5</idno>
+          </place>
+          <place xml:id="gnd-4014832-4">
+            <placeName type="main">Ensisheim</placeName>
+            <note>Stadt im Oberelsass (Dép. Haut-Rhin), Ostfrankreich</note>
+            <idno type="GND">4014832-4</idno>
+          </place>
+          <place xml:id="gnd-4020176-4">
+            <placeName type="main">Gent</placeName>
+            <note>Hauptstadt der Provinz Ostflandern, im 8. Jh. urkundl. erwähnt, Kaufmannssiedlung im 10. Jh. gegründet</note>
+            <idno type="GND">4020176-4</idno>
+          </place>
+          <place xml:id="gnd-4023996-2">
+            <placeName type="main">Heidelberg</placeName>
+            <note>Stadt am Neckar, Regierungsbezirk Karlsruhe, 1196 urkundl. erwähnt</note>
+            <idno type="GND">4023996-2</idno>
+          </place>
+          <place xml:id="gnd-4027096-8">
+            <placeName type="main">Innsbruck</placeName>
+            <note>Hauptstadt von Tirol, am Inn, Markt um 1133 gegründet, 1167 als Inspruk urkundl. erwähnt, Stadterhebung zwischen 1187 u. 1204, 1239 bestätigt</note>
+            <idno type="GND">4027096-8</idno>
+          </place>
+          <place xml:id="gnd-4029713-5">
+            <placeName type="main">Karlsruhe</placeName>
+            <note>Stadt in der Oberrheinebene, 1715 gegründet</note>
+            <idno type="GND">4029713-5</idno>
+          </place>
+          <place xml:id="gnd-4036934-1">
+            <placeName type="main">Magdeburg</placeName>
+            <note>Hauptstadt von Sachsen-Anhalt, 805 als Magadoburg urkundlich erwähnt, 965 Marktrecht</note>
+            <idno type="GND">4036934-1</idno>
+          </place>
+          <place xml:id="gnd-4037512-2">
+            <placeName type="main">Maria Laach</placeName>
+            <note>Ortsteil (Wohnplatz u. Kloster) von Glees</note>
+            <idno type="GND">4037512-2</idno>
+          </place>
+          <place xml:id="gnd-4038474-3">
+            <placeName type="main">Meißen</placeName>
+            <note>(Große) Kreisstadt des gleichnamigen Landkreises (1.1.1996-28.2.1997: Landkreis Meißen-Radebeul), unterhalb der 929 gegründeten Burg entwickelte Marktsiedlung, Ende 12. Jh. Stadtrecht (1332 urkundl.)</note>
+            <idno type="GND">4038474-3</idno>
+          </place>
+          <place xml:id="gnd-4115170-7">
+            <placeName type="main">Modena</placeName>
+            <note>Hauptstadt der gleichnamigen Provinz, Emilia-Romagna, ligur. u. kelt. besiedelt, 183 v.Chr. röm. Kolonie Mutina gegründet</note>
+            <idno type="GND">4115170-7</idno>
+          </place>
+          <place xml:id="gnd-4040209-5">
+            <placeName type="main">Moosburg a.d. Isar</placeName>
+            <note>Stadt im Landkreis Freising, Oberbayern</note>
+            <idno type="GND">4040209-5</idno>
+          </place>
+          <place xml:id="gnd-4042011-5">
+            <placeName type="main">New York, NY</placeName>
+            <note>Stadt im gleichnamigen Bundesstaat, 1626 als Fort Neu-Amsterdam gegründet, aktueller Name seit 1664</note>
+            <idno type="GND">4042011-5</idno>
+          </place>
+          <place xml:id="gnd-4042742-0">
+            <placeName type="main">Nürnberg</placeName>
+            <note>Stadt (seit 1200) an der Pegnitz, Mittelfranken, Siedlung entstanden bei um 1000 angelegter, 1050 urkundl. erwähnter Burg</note>
+            <idno type="GND">4042742-0</idno>
+          </place>
+          <place xml:id="gnd-4045314-5">
+            <placeName type="main">Perugia</placeName>
+            <note>Hauptstadt der gleichnamigen Metropolitanstadt, Umbrien</note>
+            <idno type="GND">4045314-5</idno>
+          </place>
+          <place xml:id="gnd-4115912-3">
+            <placeName type="main">Pesaro</placeName>
+            <note>Hauptstadt der Provinz Pesaro e Urbino, in den Marken, Italien</note>
+            <idno type="GND">4115912-3</idno>
+          </place>
+          <place xml:id="gnd-4115980-9">
+            <placeName type="main">Pistoia</placeName>
+            <note>Hauptstadt der gleichnamigen Provinz, Toskana, als Pistoria im 2. Jh. v.Chr. gegründet</note>
+            <idno type="GND">4115980-9</idno>
+          </place>
+          <place xml:id="gnd-4048989-9">
+            <placeName type="main">Regensburg</placeName>
+            <note>Hauptstadt des Regierungsbezirks Oberpfalz u. Verwaltungssitz des gleichnamigen Landkreises</note>
+            <idno type="GND">4048989-9</idno>
+          </place>
+          <place xml:id="gnd-7684207-1">
+            <placeName type="main">Bad Staffelstein- Vierzehnheiligen</placeName>
+            <note/>
+            <idno type="GND">7684207-1</idno>
+          </place>
+          <place xml:id="gnd-4066640-2">
+            <placeName type="main">Wittenberg</placeName>
+            <note>Kreisstadt an der Elbe, 1180 urkundl. erwähnt, 1293 Magdeburger Stadtrecht, Beiname seit 18.3.1938</note>
+            <idno type="GND">4066640-2</idno>
+          </place>
+          <place xml:id="gnd-4050698-8">
+            <placeName type="main">Rothenburg ob der Tauber</placeName>
+            <note>Große Kreisstadt im Landkreis Ansbach (1862-1972: kreisfrei u. Sitz des Landkreises (Bezirksamts) Rothenburg ob der Tauber), Mittelfranken, 1108 urkundl. erwähnt, 1172 Stadtrechte, 1241 Civitas, 1274 Reichsstadt</note>
+            <idno type="GND">4050698-8</idno>
+          </place>
+          <place xml:id="gnd-4053863-1">
+            <placeName type="main">Schweinfurt</placeName>
+            <note/>
+            <idno type="GND">4053863-1</idno>
+          </place>
+          <place xml:id="gnd-4055458-2">
+            <placeName type="main">Solothurn</placeName>
+            <note>Hauptstadt des gleichnamigen Kantons, keltisch-röm. Gründung</note>
+            <idno type="GND">4055458-2</idno>
+          </place>
+          <place xml:id="gnd-4119637-5">
+            <placeName type="main">Todi</placeName>
+            <note>Stadt in der Provinz Perugia, Umbrien, 8./7. Jh. v.Chr. gegründet</note>
+            <idno type="GND">4119637-5</idno>
+          </place>
+          <place xml:id="gnd-4061529-7">
+            <placeName type="main">Ulm</placeName>
+            <note>Kreisfreie Stadt an der Donau, Regierungsbezirk Tübingen, Sitz des Alb-Donau-Kreises, 854 urkundl. erwähnt, 1181 Stadt</note>
+            <idno type="GND">4061529-7</idno>
+          </place>
+          <place xml:id="gnd-4196659-4">
+            <placeName type="main">Klosterkirche Banz (Bad Staffelstein)</placeName>
+            <note/>
+            <idno type="GND">4196659-4</idno>
+          </place>
+          <place xml:id="gnd-1044618892">
+            <placeName type="main">Klosteranlage des Klosters Banz (Bad Staffelstein)</placeName>
+            <note/>
+            <idno type="GND">1044618892</idno>
+          </place>
+          <place xml:id="gnd-7605581-4">
+            <placeName type="main">Casino Caprarola</placeName>
+            <note>Im oberen Teil des Gartens des Palazzo Farnese gelegen</note>
+            <idno type="GND">7605581-4</idno>
+          </place>
+          <place xml:id="gnd-4267117-6">
+            <placeName type="main">Frauenkirche Dresden (Dresden)</placeName>
+            <note/>
+            <idno type="GND">4267117-6</idno>
+          </place>
+          <place xml:id="gnd-4475040-7">
+            <placeName type="main">Rathaus Emden (Emden)</placeName>
+            <note/>
+            <idno type="GND">4475040-7</idno>
+          </place>
+          <place xml:id="gnd-4652182-3">
+            <placeName type="main">Regimentshaus Ensisheim</placeName>
+            <note>1532-1547 errichtetes Gebäude</note>
+            <idno type="GND">4652182-3</idno>
+          </place>
+          <place xml:id="gnd-4448085-4">
+            <placeName type="main">Chiostro dello Scalzo (Florenz)</placeName>
+            <note>Durch die Bruderschaft der Disciplinati di S. Giovanni Battista 1487 ff. erbaut. Fresken von A. del Sarto 1514-1526</note>
+            <idno type="GND">4448085-4</idno>
+          </place>
+          <place xml:id="gnd-4417694-6">
+            <placeName type="main">Loggia della Signoria (Florenz)</placeName>
+            <note>1376-82 erbaute Skulpturenhalle</note>
+            <idno type="GND">4417694-6</idno>
+          </place>
+          <place xml:id="gnd-1069355720">
+            <placeName type="main">Bargello (Florenz)</placeName>
+            <note>Stadtpalast 1255/61 erbaut, 1280-1346 erweitert, 1574-1859 Gerichtsbehörde Bargello, seit 1865 Sitz des Nationalmuseums</note>
+            <idno type="GND">1069355720</idno>
+          </place>
+          <place xml:id="gnd-4232545-6">
+            <placeName type="main">Palazzo Rucellai (Florenz)</placeName>
+            <note/>
+            <idno type="GND">4232545-6</idno>
+          </place>
+          <place xml:id="gnd-4223252-1">
+            <placeName type="main">Santa Maria del Carmine (Florenz)</placeName>
+            <note/>
+            <idno type="GND">4223252-1</idno>
+          </place>
+          <place xml:id="gnd-4685772-2">
+            <placeName type="main">Santa Maria Novella (Florenz) / Cappella Maggiore</placeName>
+            <note/>
+            <idno type="GND">4685772-2</idno>
+          </place>
+          <place xml:id="gnd-4236652-5">
+            <placeName type="main">Santissima Annunziata (Florenz)</placeName>
+            <note>Klosterkirche, ab 1444 neugestaltet</note>
+            <idno type="GND">4236652-5</idno>
+          </place>
+          <place xml:id="gnd-4682423-6">
+            <placeName type="main">Santissima Annunziata (Florenz) / Vorhof</placeName>
+            <note>zwischen 1447 und 1452 errichteter Kreuzgang</note>
+            <idno type="GND">4682423-6</idno>
+          </place>
+          <place xml:id="gnd-4472657-0">
+            <placeName type="main">Gerichtslaube Freiburg im Breisgau</placeName>
+            <note>Ältestes Rathaus Freiburgs, Anfang 14. Jh.</note>
+            <idno type="GND">4472657-0</idno>
+          </place>
+          <place xml:id="gnd-4132384-1">
+            <placeName type="main">Münster Freiburg (Freiburg im Breisgau)</placeName>
+            <note>Basilika ab ca. 1200 spätroman. neu erbaut, got. vollendet, Chorweihe 1513, seit 1827 Kathedrale des Erzbistums Freiburg</note>
+            <idno type="GND">4132384-1</idno>
+          </place>
+          <place xml:id="gnd-7794619-4">
+            <placeName type="main">Freiburg, Breisgau / Münster / Chorraum</placeName>
+            <note/>
+            <idno type="GND">7794619-4</idno>
+          </place>
+          <place xml:id="gnd-4452489-4">
+            <placeName type="main">Münster Freiburg (Freiburg im Breisgau) / Lochererkapelle</placeName>
+            <note>Chor-Kapelle im 14./15. Jh. erbaut</note>
+            <idno type="GND">4452489-4</idno>
+          </place>
+          <place xml:id="gnd-4575901-7">
+            <placeName type="main">Kathedrale Gent (Gent)</placeName>
+            <note>Bis 1540 Johannes-Patrozinium (Sint-Janskerk)</note>
+            <idno type="GND">4575901-7</idno>
+          </place>
+          <place xml:id="gnd-4418011-1">
+            <placeName type="main">Marktkirche (Halle (Saale))</placeName>
+            <note/>
+            <idno type="GND">4418011-1</idno>
+          </place>
+          <place xml:id="gnd-4274920-7">
+            <placeName type="main">Schloss Heidelberg (Heidelberg) / Ottheinrichsbau</placeName>
+            <note/>
+            <idno type="GND">4274920-7</idno>
+          </place>
+          <place xml:id="gnd-4252094-0">
+            <placeName type="main">Knochenhaueramtshaus (Hildesheim)</placeName>
+            <note/>
+            <idno type="GND">4252094-0</idno>
+          </place>
+          <place xml:id="gnd-4227471-0">
+            <placeName type="main">Hofkirche Innsbruck (Innsbruck)</placeName>
+            <note/>
+            <idno type="GND">4227471-0</idno>
+          </place>
+          <place xml:id="gnd-4129551-1">
+            <placeName type="main">Dom Sankt Mauritius und Sankt Katharina (Magdeburg)</placeName>
+            <note/>
+            <idno type="GND">4129551-1</idno>
+          </place>
+          <place xml:id="gnd-4122000-6">
+            <placeName type="main">Dom Mainz (Mainz)</placeName>
+            <note>Dreischiffige romanische Pfeilerbasilika; 975-1009 von Erzbischof Willigis erbaut; unmittelbar vor oder nach der Weihe durch Brand zerstört; unter Erzbischof Bardo erneut vollendet u. 1036 eingeweiht. Westchor mit dem Hauptaltar ist St. Martin, der Ostchor St. Stephan geweiht</note>
+            <idno type="GND">4122000-6</idno>
+          </place>
+          <place xml:id="gnd-1083294644">
+            <placeName type="main">Klosteranlage der Benediktinerabtei Maria Laach (Glees)</placeName>
+            <note>Gegründet 1093</note>
+            <idno type="GND">1083294644</idno>
+          </place>
+          <place xml:id="gnd-4138108-7">
+            <placeName type="main">Albrechtsburg Meißen</placeName>
+            <note/>
+            <idno type="GND">4138108-7</idno>
+          </place>
+          <place xml:id="gnd-4251533-6">
+            <placeName type="main">Dom Modena (Modena)</placeName>
+            <note/>
+            <idno type="GND">4251533-6</idno>
+          </place>
+          <place xml:id="gnd-4437129-9">
+            <placeName type="main">Sankt Kastulus (Moosburg, Isar)</placeName>
+            <note/>
+            <idno type="GND">4437129-9</idno>
+          </place>
+          <place xml:id="gnd-4104564-6">
+            <placeName type="main">Frauenkirche (München)</placeName>
+            <note>Kath. Metropolitan- u. Stadtpfarrkirche Zu Unserer Lieben Frau, 1468/88 erbaut, 1524/25 endgültig fertiggestellt; spätgot. Pfeilerbasilika</note>
+            <idno type="GND">4104564-6</idno>
+          </place>
+          <place xml:id="gnd-4437664-9">
+            <placeName type="main">Alte Münze München (München)</placeName>
+            <note/>
+            <idno type="GND">4437664-9</idno>
+          </place>
+          <place xml:id="gnd-4075050-4">
+            <placeName type="main">Sankt Michael (München)</placeName>
+            <note/>
+            <idno type="GND">4075050-4</idno>
+          </place>
+          <place xml:id="gnd-4104570-1">
+            <placeName type="main">Theatinerkirche München (München)</placeName>
+            <note/>
+            <idno type="GND">4104570-1</idno>
+          </place>
+          <place xml:id="gnd-4219479-9">
+            <placeName type="main">Albrecht-Dürer-Haus (Nürnberg)</placeName>
+            <note>Von 1509 bis 1528 Wohnhaus von Albrecht Dürer. Seit 1826 im Besitz der Stadt Nürnberg.</note>
+            <idno type="GND">4219479-9</idno>
+          </place>
+          <place xml:id="gnd-4771143-7">
+            <placeName type="main">Rathaus Nürnberg (Nürnberg)</placeName>
+            <note/>
+            <idno type="GND">4771143-7</idno>
+          </place>
+          <place xml:id="gnd-4224096-7">
+            <placeName type="main">Frauenkirche Nürnberg</placeName>
+            <note/>
+            <idno type="GND">4224096-7</idno>
+          </place>
+          <place xml:id="gnd-4224099-2">
+            <placeName type="main">Sankt Lorenz (Nürnberg)</placeName>
+            <note/>
+            <idno type="GND">4224099-2</idno>
+          </place>
+          <place xml:id="gnd-1336154071">
+            <placeName type="main">Sakramentshäuschen Sankt Lorenz (Nürnberg)</placeName>
+            <note/>
+            <idno type="GND">1336154071</idno>
+          </place>
+          <place xml:id="gnd-4204453-4">
+            <placeName type="main">Sankt Sebald (Nürnberg)</placeName>
+            <note/>
+            <idno type="GND">4204453-4</idno>
+          </place>
+          <place xml:id="gnd-7707051-3">
+            <placeName type="main">Loggia del Consiglio (Padua)</placeName>
+            <note>seit 1496 Sitz des Stadtrates</note>
+            <idno type="GND">7707051-3</idno>
+          </place>
+          <place xml:id="gnd-4075798-5">
+            <placeName type="main">Il Santo (Padua) / Cappella dell'Arca del Santo</placeName>
+            <note/>
+            <idno type="GND">4075798-5</idno>
+          </place>
+          <place xml:id="gnd-4776354-1">
+            <placeName type="main">Il Bo (Padua)</placeName>
+            <note/>
+            <idno type="GND">4776354-1</idno>
+          </place>
+          <place xml:id="gnd-4505823-4">
+            <placeName type="main">Palazzo Ducale (Pesaro)</placeName>
+            <note/>
+            <idno type="GND">4505823-4</idno>
+          </place>
+          <place xml:id="gnd-4505965-2">
+            <placeName type="main">Piazza del Duomo (Pisa)</placeName>
+            <note/>
+            <idno type="GND">4505965-2</idno>
+          </place>
+          <place xml:id="gnd-4206436-3">
+            <placeName type="main">Dom Pisa (Pisa)</placeName>
+            <note/>
+            <idno type="GND">4206436-3</idno>
+          </place>
+          <place xml:id="gnd-4229769-2">
+            <placeName type="main">Camposanto Pisa (Pisa)</placeName>
+            <note/>
+            <idno type="GND">4229769-2</idno>
+          </place>
+          <place xml:id="gnd-4447513-5">
+            <placeName type="main">Maxentiusbasilika (Rom)</placeName>
+            <note>Hallenbau für Gerichts- u. Geschäftsverkehr an der Via Sacra des Forum Romanum, 310/313 erbaut; 1349 Gewölbe des Hauptschiffs bei Erdbeben eingestürzt, heute nur noch rechtes Seitenschiff erhalten</note>
+            <idno type="GND">4447513-5</idno>
+          </place>
+          <place xml:id="gnd-4104967-6">
+            <placeName type="main">Engelsburg Rom (Rom)</placeName>
+            <note>Rundbau, 135/139 als Grabmal für Kaiser Hadrian erbaut, bis 211 als Mausoleum benutzt, dann zu Bastion ausgebaut, heutiger Name seit 590 von Papst Gregor d. Gr., im päpstl. Besitz Fluchtburg, heute Museum</note>
+            <idno type="GND">4104967-6</idno>
+          </place>
+          <place xml:id="gnd-4285318-7">
+            <placeName type="main">Farnesische Gärten (Rom)</placeName>
+            <note/>
+            <idno type="GND">4285318-7</idno>
+          </place>
+          <place xml:id="gnd-4310297-9">
+            <placeName type="main">Santa Maria del Popolo (Rom)</placeName>
+            <note/>
+            <idno type="GND">4310297-9</idno>
+          </place>
+          <place xml:id="gnd-7521591-3">
+            <placeName type="main">Rom / Via Appia Antica</placeName>
+            <note>Name der antiken Konsularstraße von Rom nach Brindisi im Stadtbereich des heutigen Rom (im Gegensatz zur stadtrömischen Via Appia Nuova). Verläuft zwischen der Porta San Sebastiano und der Via Ardeatina</note>
+            <idno type="GND">7521591-3</idno>
+          </place>
+          <place xml:id="gnd-1082012424">
+            <placeName type="main">Rathaus Rothenburg ob der Tauber (Rothenburg ob der Tauber)</placeName>
+            <note>Gotischer Doppelbau, im Kern 13. Jh., der vordere Teil 1752 nach Brand im Renaissancestil wieder aufgebaut</note>
+            <idno type="GND">1082012424</idno>
+          </place>
+          <place xml:id="gnd-4336926-1">
+            <placeName type="main">Jakobskirche (Rothenburg ob der Tauber)</placeName>
+            <note>evangelisch-lutherische (urspr. katholische) Kirche; zwischen 1311 und 1484 erbaut</note>
+            <idno type="GND">4336926-1</idno>
+          </place>
+          <place xml:id="gnd-4474381-6">
+            <placeName type="main">Rathaus Schweinfurt (Schweinfurt)</placeName>
+            <note/>
+            <idno type="GND">4474381-6</idno>
+          </place>
+          <place xml:id="gnd-4759192-4">
+            <placeName type="main">Piazza del Campo (Siena)</placeName>
+            <note>Zentraler Platz</note>
+            <idno type="GND">4759192-4</idno>
+          </place>
+          <place xml:id="gnd-4126920-2">
+            <placeName type="main">Altes Schloss (Stuttgart)</placeName>
+            <note>Ehem. Residenzschloß 1553/63 von A. Tretsch u. Blasius Berwart im Stil der Renaissance erbaut aus um 1325 erweiterten Wasserburg des 10. Jh., 1931 u. 1944 schwer beschädigt; seit Ende 19. Jh. für Museumszwecke genutzt, 1948/69 für Württembergisches Landesmuseum wiederaufgebaut</note>
+            <idno type="GND">4126920-2</idno>
+          </place>
+          <place xml:id="gnd-4216058-3">
+            <placeName type="main">Neues Lusthaus (Stuttgart)</placeName>
+            <note>1844/45 Umbau zum Hoftheater. 1902 durch einen Brand zerstört.</note>
+            <idno type="GND">4216058-3</idno>
+          </place>
+          <place xml:id="gnd-4388898-7">
+            <placeName type="main">Santa Maria della Consolazione (Todi)</placeName>
+            <note>1508 ff erbaute Wallfahrtskirche</note>
+            <idno type="GND">4388898-7</idno>
+          </place>
+          <place xml:id="gnd-4460741-6">
+            <placeName type="main">Palazzo Dolfin-Manin (Venedig)</placeName>
+            <note/>
+            <idno type="GND">4460741-6</idno>
+          </place>
+          <place xml:id="gnd-4416013-6">
+            <placeName type="main">San Giovanni in Bragora (Venedig)</placeName>
+            <note/>
+            <idno type="GND">4416013-6</idno>
+          </place>
+          <place xml:id="gnd-4487167-3">
+            <placeName type="main">Scuola di San Giorgio degli Schiavoni (Venedig)</placeName>
+            <note>Bruderschaftsgebäude aus dem 16. Jahrhundert</note>
+            <idno type="GND">4487167-3</idno>
+          </place>
+          <place xml:id="gnd-4374264-6">
+            <placeName type="main">San Giorgio in Braida (Verona)</placeName>
+            <note/>
+            <idno type="GND">4374264-6</idno>
+          </place>
+          <place xml:id="gnd-4078844-1">
+            <placeName type="main">San Zeno Maggiore (Verona)</placeName>
+            <note/>
+            <idno type="GND">4078844-1</idno>
+          </place>
+          <place xml:id="gnd-4218596-8">
+            <placeName type="main">Palazzo Pubblico (Vicenza)</placeName>
+            <note/>
+            <idno type="GND">4218596-8</idno>
+          </place>
+          <place xml:id="gnd-4716403-7">
+            <placeName type="main">Palazzo Thiene (Vicenza)</placeName>
+            <note/>
+            <idno type="GND">4716403-7</idno>
+          </place>
+          <place xml:id="gnd-4359066-4">
+            <placeName type="main">Santa Corona (Vicenza)</placeName>
+            <note/>
+            <idno type="GND">4359066-4</idno>
+          </place>
+          <place xml:id="gnd-4063512-0">
+            <placeName type="main">Wallfahrtskirche Vierzehnheiligen (Staffelstein)</placeName>
+            <note/>
+            <idno type="GND">4063512-0</idno>
+          </place>
+          <place xml:id="gnd-4306871-6">
+            <placeName type="main">Goethehaus Weimar</placeName>
+            <note/>
+            <idno type="GND">4306871-6</idno>
+          </place>
+          <place xml:id="gnd-4389935-3">
+            <placeName type="main">Schlosskirche Wittenberg (Wittenberg)</placeName>
+            <note/>
+            <idno type="GND">4389935-3</idno>
+          </place>
+          <place xml:id="gnd-4414327-8">
+            <placeName type="main">Santi Giovanni e Paolo (Venedig)</placeName>
+            <note/>
+            <idno type="GND">4414327-8</idno>
+          </place>
+          <place xml:id="gnd-4392453-0">
+            <placeName type="main">Lichtensteig</placeName>
+            <note/>
+            <idno type="GND">4392453-0</idno>
+          </place>
+          <place xml:id="gnd-1049474244">
+            <placeName type="main">Talacker (Zürich)</placeName>
+            <note>Strasse 1661 erstellt, Bezeichnung leitet sich vom Flurnamen (1259) ab: ein in der Niederung liegender Acker</note>
+            <idno type="GND">1049474244</idno>
+          </place>
+          <place xml:id="gnd-1208032607">
+            <placeName type="main">Haus zum Sihlgarten (Zürich)</placeName>
+            <note>Haus und Garten vom Bauherr Daniel Bodmer-Escher am Talacker 39, abgetragen 1947</note>
+            <idno type="GND">1208032607</idno>
+          </place>
+          <place xml:id="gnd-4036733-2">
+            <placeName type="main">Luzern</placeName>
+            <note>Hauptstadt des gleichnamigen Kantons, vermutl. in röm. Zeit besiedelt, 840 urkundl. erwähnt, 1178 Stadtrecht</note>
+            <idno type="GND">4036733-2</idno>
+          </place>
+          <place xml:id="gnd-4001328-5">
+            <placeName type="main">Alpen</placeName>
+            <note/>
+            <idno type="GND">4001328-5</idno>
+          </place>
+          <place xml:id="gnd-4295365-0">
+            <placeName type="main">Oberdeutschland</placeName>
+            <note>Nur in historischen Zusammenhängen verwenden</note>
+            <idno type="GND">4295365-0</idno>
+          </place>
+          <place xml:id="gnd-4076899-5">
+            <placeName type="main">Russland</placeName>
+            <note/>
+            <idno type="GND">4076899-5</idno>
+          </place>
+          <place xml:id="gnd-4028495-5">
+            <placeName type="main">Japan</placeName>
+            <note>1947 erhielt Japan eine demokratische Verfassung</note>
+            <idno type="GND">4028495-5</idno>
+          </place>
+          <place xml:id="gnd-4229651-1">
+            <placeName type="main">Hangzhou</placeName>
+            <note>Hauptstadt der Provinz Zhejiang, unter dem Namen Lin'an Blütezeit als Hauptstadt der Südl. Song-Dynastie (1127-1279)</note>
+            <idno type="GND">4229651-1</idno>
+          </place>
+          <place xml:id="gnd-4078208-6">
+            <placeName type="main">Tessin</placeName>
+            <note/>
+            <idno type="GND">4078208-6</idno>
+          </place>
+          <place xml:id="gnd-4106354-5">
+            <placeName type="main">Weißenhofsiedlung (Stuttgart)</placeName>
+            <note>( Praxisregel zu §209,4??)</note>
+            <idno type="GND">4106354-5</idno>
+          </place>
+          <place xml:id="gnd-4205500-3">
+            <placeName type="main">Williamstown, Mass.</placeName>
+            <note>Stadt im Berkshire County im US-Bundesstaat Massachusetts</note>
+            <idno type="GND">4205500-3</idno>
+          </place>
+          <place xml:id="gnd-4037446-4">
+            <placeName type="main">Marburg</placeName>
+            <note>Kreisstadt des Landkreises Marburg-Biedenkopf, Universitätsstadt, um 1140 gegründet, 1222 Stadt; bis 31.12.1976 traditionell Marburg (Lahn)</note>
+            <idno type="GND">4037446-4</idno>
+          </place>
+          <place xml:id="gnd-4054671-8">
+            <placeName type="main">Sevilla</placeName>
+            <note>Hauptstadt der gleichnamigen Provinz, Andalusien, phönizische Gründung Sephala</note>
+            <idno type="GND">4054671-8</idno>
+          </place>
+          <place xml:id="gnd-4131001-9">
+            <placeName type="main">Pergamonaltar</placeName>
+            <note/>
+            <idno type="GND">4131001-9</idno>
+          </place>
+          <place xml:id="gnd-4108142-0">
+            <placeName type="main">Wiener Ringstraße (Wien)</placeName>
+            <note>Nicht offizielle Bezeichnung des Pracht-Boulevards um das historische Zentrum Wiens (1. Bezirk), bestehend aus Stubenring, Parkring, Schubertring, Kärtner Ring, Opernring, Burgring, Dr.-Karl-Renner-Ring, Universitätsring (bis 4.6.2012: Dr.-Karl-Lueger-Ring) u. Schottenring, nach Abbruch der Befestigung (seit 1858) 29.2.1864 begonnen, 1.5.1865 offiziell eröffnet</note>
+            <idno type="GND">4108142-0</idno>
+          </place>
+          <place xml:id="gnd-1215281161">
+            <placeName type="main">Königreich Italien (1805-1814)</placeName>
+            <note>1805 wandelte Napoleon Bonaparte die Italienische Republik (1802) in eine konstitutionelle Monarchie um, die bis zu seinem Sturz 1814 bestand und von seinem Stiefsohn Eugène de Beauharnais als Vizekönig regiert wurde</note>
+            <idno type="GND">1215281161</idno>
+          </place>
+          <place xml:id="gnd-4594031-9">
+            <placeName type="main">Via Nazionale (Rom)</placeName>
+            <note/>
+            <idno type="GND">4594031-9</idno>
+          </place>
+          <place xml:id="gnd-7710847-4">
+            <placeName type="main">Palazzo delle Belle Arti (Rom)</placeName>
+            <note/>
+            <idno type="GND">7710847-4</idno>
+          </place>
+          <place xml:id="gnd-1336150238">
+            <placeName type="main">Opéra Garnier (Paris)</placeName>
+            <note/>
+            <idno type="GND">1336150238</idno>
+          </place>
+          <place xml:id="gnd-4353461-2">
+            <placeName type="main">Justizpalast Paris (Paris)</placeName>
+            <note/>
+            <idno type="GND">4353461-2</idno>
+          </place>
+          <place xml:id="gnd-4055964-6">
+            <placeName type="main">Spanien</placeName>
+            <note/>
+            <idno type="GND">4055964-6</idno>
+          </place>
+          <place xml:id="gnd-4004380-0">
+            <placeName type="main">Baltimore, Md.</placeName>
+            <note>Stadt (seit 1796) an der Chesapeake Bay, 1729 gegründet</note>
+            <idno type="GND">4004380-0</idno>
+          </place>
+          <place xml:id="gnd-4086984-2">
+            <placeName type="main">Bayonne</placeName>
+            <note/>
+            <idno type="GND">4086984-2</idno>
+          </place>
+          <place xml:id="gnd-4005611-9">
+            <placeName type="main">Bergamo</placeName>
+            <note>Hauptstadt der gleichnamigen Provinz, Lombardei, wohl gallischen Ursprungs, römisch Bergomum</note>
+            <idno type="GND">4005611-9</idno>
+          </place>
+          <place xml:id="gnd-4005972-8">
+            <placeName type="main">Besançon</placeName>
+            <note>Hauptstadt des Dep. Doubs u. der Region Franche-Comté, als Vesontio Hauptort der Sequaner</note>
+            <idno type="GND">4005972-8</idno>
+          </place>
+          <place xml:id="gnd-4008135-7">
+            <placeName type="main">Bremen</placeName>
+            <note/>
+            <idno type="GND">4008135-7</idno>
+          </place>
+          <place xml:id="gnd-4008684-7">
+            <placeName type="main">Budapest</placeName>
+            <note>Hauptstadt Ungarns; am 1.1.1873 durch Zusammenschluß von Buda (Ofen), Pest und Obuda (Alt-Ofen) gegründet</note>
+            <idno type="GND">4008684-7</idno>
+          </place>
+          <place xml:id="gnd-4085214-3">
+            <placeName type="main">Chantilly</placeName>
+            <note>Stadt im Ar. Senlis, Dep. Oise, Picardie</note>
+            <idno type="GND">4085214-3</idno>
+          </place>
+          <place xml:id="gnd-4009352-9">
+            <placeName type="main">Cambridge, Mass.</placeName>
+            <note/>
+            <idno type="GND">4009352-9</idno>
+          </place>
+          <place xml:id="gnd-4013255-9">
+            <placeName type="main">Düsseldorf</placeName>
+            <note>Hauptstadt von Nordrhein-Westfalen und des gleichnamigen Regierungsbezirks, um 1150 urkundlich erwähnt, 1288 Stadt</note>
+            <idno type="GND">4013255-9</idno>
+          </place>
+          <place xml:id="gnd-4015299-6">
+            <placeName type="main">Erlangen</placeName>
+            <note>Kreisstadt des Landkreises Erlangen-Höchstadt, 1002 urkundl. erwähnt, 1398 Stadtrecht</note>
+            <idno type="GND">4015299-6</idno>
+          </place>
+          <place xml:id="gnd-4020137-5">
+            <placeName type="main">Genf</placeName>
+            <note>Hauptstadt des gleichnamigen Kantons (seit 1814), keltische Gründung</note>
+            <idno type="GND">4020137-5</idno>
+          </place>
+          <place xml:id="gnd-4095554-0">
+            <placeName type="main">Holkham</placeName>
+            <note>Ort in Norfolk, England</note>
+            <idno type="GND">4095554-0</idno>
+          </place>
+          <place xml:id="gnd-4029869-3">
+            <placeName type="main">Kassel</placeName>
+            <note/>
+            <idno type="GND">4029869-3</idno>
+          </place>
+          <place xml:id="gnd-4030978-2">
+            <placeName type="main">Klausen (Südtirol)</placeName>
+            <note>Stadt im mittleren Eisacktal, Provinz Bozen, 1027 urkundl. erwähnt, 1308 als Stadt bezeichnet, 1485 Stadtrecht</note>
+            <idno type="GND">4030978-2</idno>
+          </place>
+          <place xml:id="gnd-4033265-2">
+            <placeName type="main">Kronberg im Taunus</placeName>
+            <note>Stadt im Hochtaunuskreis</note>
+            <idno type="GND">4033265-2</idno>
+          </place>
+          <place xml:id="gnd-4035919-0">
+            <placeName type="main">Lissabon</placeName>
+            <note>Hauptstadt von Portugal, seit 205 v.Chr. röm. Olisipo, Olisippo, Olissipo, später Felicitas Iulia, 585 westgot. Ulixippona, 1147 portug. zunächst Lixboa</note>
+            <idno type="GND">4035919-0</idno>
+          </place>
+          <place xml:id="gnd-4036483-5">
+            <placeName type="main">Lübeck</placeName>
+            <note>Universitätsstadt an der Trave im Lübecker Becken an der Lübecker Bucht, 1143 Kaufmannssiedlung neugegründet, 1160 Soester Stadtrecht, 1226 reichsunmittelbare Stadt</note>
+            <idno type="GND">4036483-5</idno>
+          </place>
+          <place xml:id="gnd-4101784-5">
+            <placeName type="main">Murano</placeName>
+            <note>Insel in der Lagune von Venedig und bis 1922 selbständiger Ort; seit 1292 Hauptinsel der venezianischen Glasindustrie</note>
+            <idno type="GND">4101784-5</idno>
+          </place>
+          <place xml:id="gnd-4117854-3">
+            <placeName type="main">New Haven, Conn.</placeName>
+            <note>Hafenstadt am Long Island Sound im gleichnamigen County, 1638 gegründet</note>
+            <idno type="GND">4117854-3</idno>
+          </place>
+          <place xml:id="gnd-4116795-8">
+            <placeName type="main">Orvieto</placeName>
+            <note>Stadt in d. Provinz Terni, Umbrien, prähistor. besiedelt, ca. 7. Jh. v.Chr. Volsinii von Etruskern gegründet, Ende 6. Jh. als Urbs vetus bezeugt</note>
+            <idno type="GND">4116795-8</idno>
+          </place>
+          <place xml:id="gnd-4050739-7">
+            <placeName type="main">Rotterdam</placeName>
+            <note/>
+            <idno type="GND">4050739-7</idno>
+          </place>
+          <place xml:id="gnd-4056179-3">
+            <placeName type="main">Speyer</placeName>
+            <note>Stadt am Rhein, seit 1. Jh. kelt. Siedlung Noviomagus, röm. Nemetum, im 6. Jh. Spira</note>
+            <idno type="GND">4056179-3</idno>
+          </place>
+          <place xml:id="gnd-4060530-9">
+            <placeName type="main">Tours</placeName>
+            <note>Hauptstadt des Dep. Indre-et-Loire, Centre, histor. Region Touraine, galloröm. Caesarodunum</note>
+            <idno type="GND">4060530-9</idno>
+          </place>
+          <place xml:id="gnd-7710615-5">
+            <placeName type="main">Campo Santi Giovanni e Paolo (Venedig)</placeName>
+            <note/>
+            <idno type="GND">7710615-5</idno>
+          </place>
+          <place xml:id="gnd-4331275-5">
+            <placeName type="main">Kathedrale Breslau (Breslau)</placeName>
+            <note/>
+            <idno type="GND">4331275-5</idno>
+          </place>
+          <place xml:id="gnd-4201886-9">
+            <placeName type="main">Chatsworth House</placeName>
+            <note>Chatsworth House ist ein englisches Landschloss und liegt etwa fünf Kilometer nordöstlich von Bakewell in Derbyshire. Es ist der Sitz der Familie Cavendish, der Dukes of Devonshire, mit großer Gartenanlage</note>
+            <idno type="GND">4201886-9</idno>
+          </place>
+          <place xml:id="gnd-7786898-5">
+            <placeName type="main">Dom Köln (Köln) / Marienkapelle</placeName>
+            <note/>
+            <idno type="GND">7786898-5</idno>
+          </place>
+          <place xml:id="gnd-4122597-1">
+            <placeName type="main">Dom Köln (Köln)</placeName>
+            <note>Kathedrale des Erzbistums Köln, ab 1248 mit langen Pausen erbaut, 1880 vollendet</note>
+            <idno type="GND">4122597-1</idno>
+          </place>
+          <place xml:id="gnd-4104516-6">
+            <placeName type="main">Sankt Marien (Lübeck)</placeName>
+            <note/>
+            <idno type="GND">4104516-6</idno>
+          </place>
+          <place xml:id="gnd-7723865-5">
+            <placeName type="main">San Pietro Martire (Venedig)</placeName>
+            <note>Pfarrkirche in Murano auf der gleichnamigen Insel, 1348/1417 als Dominikanerklosterkirche San Giovanni Battista erbaut, 1474 durch Brand zerstört, bis 1511 mit geändertem Patrozinium wiederaufgebaut; Säulenbasilika, Campanile 1498/1502 erbaut</note>
+            <idno type="GND">7723865-5</idno>
+          </place>
+          <place xml:id="gnd-4440120-6">
+            <placeName type="main">Sankt Jakob (Nürnberg)</placeName>
+            <note>Ev.-luth. Kirche</note>
+            <idno type="GND">4440120-6</idno>
+          </place>
+          <place xml:id="gnd-4439938-8">
+            <placeName type="main">Sankt Egidien (Nürnberg)</placeName>
+            <note/>
+            <idno type="GND">4439938-8</idno>
+          </place>
+          <place xml:id="gnd-4501077-8">
+            <placeName type="main">Friedenskirche Nürnberg</placeName>
+            <note>Evang. Kirche</note>
+            <idno type="GND">4501077-8</idno>
+          </place>
+          <place xml:id="gnd-4429317-3">
+            <placeName type="main">Dom Orvieto (Orvieto) / Cappella di San Brizio</placeName>
+            <note/>
+            <idno type="GND">4429317-3</idno>
+          </place>
+          <place xml:id="gnd-4241268-7">
+            <placeName type="main">Chiesa degli Eremitani (Padua)</placeName>
+            <note/>
+            <idno type="GND">4241268-7</idno>
+          </place>
+          <place xml:id="gnd-4382425-0">
+            <placeName type="main">Chiesa degli Eremitani (Padua) / Cappella Ovetari</placeName>
+            <note/>
+            <idno type="GND">4382425-0</idno>
+          </place>
+          <place xml:id="gnd-7654237-3">
+            <placeName type="main">Piazza del Santo (Padua)</placeName>
+            <note/>
+            <idno type="GND">7654237-3</idno>
+          </place>
+          <place xml:id="gnd-4406599-1">
+            <placeName type="main">Dom Pistoia (Pistoia)</placeName>
+            <note/>
+            <idno type="GND">4406599-1</idno>
+          </place>
+          <place xml:id="gnd-7564639-0">
+            <placeName type="main">Santa Maria della Concezione (Rom)</placeName>
+            <note/>
+            <idno type="GND">7564639-0</idno>
+          </place>
+          <place xml:id="gnd-4212398-7">
+            <placeName type="main">Münster Ulm (Ulm)</placeName>
+            <note/>
+            <idno type="GND">4212398-7</idno>
+          </place>
+          <place xml:id="gnd-4651986-5">
+            <placeName type="main">San Bartolomeo (Venedig)</placeName>
+            <note/>
+            <idno type="GND">4651986-5</idno>
+          </place>
+          <place xml:id="gnd-4416010-0">
+            <placeName type="main">San Zaccaria (Venedig)</placeName>
+            <note/>
+            <idno type="GND">4416010-0</idno>
+          </place>
+          <place xml:id="gnd-4222332-5">
+            <placeName type="main">Sankt Anna (Augsburg)</placeName>
+            <note/>
+            <idno type="GND">4222332-5</idno>
+          </place>
+        </listPlace>
+      </div>
+    </back>
+  </text>
+</TEI>
