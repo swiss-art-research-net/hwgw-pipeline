@@ -189,6 +189,7 @@ tasks:
 
   
   prepare-dts-catalog-data:
+    desc: Prepares the data for the DTS catalog. This includes creating the collection XML and preparing the TEI files.
     vars:
       INPUTFOLDER:
         sh: echo "/data/source"
