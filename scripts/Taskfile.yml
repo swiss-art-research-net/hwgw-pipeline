@@ -6,7 +6,7 @@ vars:
   GENERATOR_POLICY: /mapping/generator-policy.xml
   NAMESPACE: http://hwgw.uzh.ch/
   REGISTERS: bibliography,objects,organizations,persons,places
-  SCHRIFTEN: 01,02,03,04,06,08
+  SCHRIFTEN: 01,03,04,08 # 01,02,03,04,06,08
   SOURCE_FOLDER: /data/source
 
 dotenv: 
@@ -20,6 +20,7 @@ tasks:
     interactive: true
     cmds:
       - task: download-all-data
+      - task: prepare-dts-catalog-data
       # - task: prepare-and-perform-mapping-for-items
       # - task: ingest-items
       # - task: ingest-ontologies
@@ -185,6 +186,20 @@ tasks:
       - mkdir -p {{.OUTPUTFOLDER}}
       - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
       - python prepareDataForMapping.py --module {{.MODULE}} --inputFolder {{.INPUTFOLDER}} --outputFolder {{.OUTPUTFOLDER}} {{.CLI_ARGS}}
+
+  
+  prepare-dts-catalog-data:
+    vars:
+      INPUTFOLDER:
+        sh: echo "/data/source"
+      OUTPUTFOLDER:
+        sh: echo "/data/dts/tei"
+      CATALOGFOLDER:
+        sh: echo "/data/dts/catalog"
+    cmds:
+      - mkdir -p {{.OUTPUTFOLDER}}
+      - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
+      - python prepareDtsData.py --catalog {{.CATALOGFOLDER}} --inputFolder {{.INPUTFOLDER}} --outputFolder {{.OUTPUTFOLDER}} {{.CLI_ARGS}}
 
 
   _perform-mapping-for-module-items:
