@@ -7,3 +7,4 @@ uritemplate
 tqdm
 dotenv_flow
 waitress
+flask-cors
