@@ -56,9 +56,9 @@ RUN sh -c "$(curl -sSL https://taskfile.dev/install.sh)" -- -d
 # Copy x3ml service
 COPY x3ml/java/bin/ /java/bin/
 
-VOLUME /data
-VOLUME /mapping
-VOLUME /logs
+# VOLUME /data
+# VOLUME /mapping
+# VOLUME /logs
 WORKDIR /scripts
 
 ENTRYPOINT sh -c 'java -cp /libs/x3ml-engine-exejar.jar:/java/bin X3MLEngineService > /logs/mapping-log.log 2>&1'
