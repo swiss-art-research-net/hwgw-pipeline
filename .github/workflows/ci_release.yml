@@ -50,7 +50,7 @@ jobs:
       - name: Build and push the Docker images, :<version> and :latest
         uses: docker/build-push-action@v6
         with:
-          context: ./services/jobs
+          context: .
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
