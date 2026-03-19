@@ -54,11 +54,16 @@ RUN wget https://github.com/isl/x3ml/releases/download/2.2.0/x3ml-engine-2.2.0-e
 RUN sh -c "$(curl -sSL https://taskfile.dev/install.sh)" -- -d
 
 # Copy x3ml service
-COPY x3ml/java/bin/ /java/bin/
+COPY services/jobs/x3ml/java/bin/ /java/bin/
+# Copy scripts
+COPY scripts/ /scripts/
 
-VOLUME /data
-VOLUME /mapping
-VOLUME /logs
+# no mappings yet
+# COPY mapping/ /mapping/
+
+# VOLUME /data
+# VOLUME /mapping
+# VOLUME /logs
 WORKDIR /scripts
 
 ENTRYPOINT sh -c 'java -cp /libs/x3ml-engine-exejar.jar:/java/bin X3MLEngineService > /logs/mapping-log.log 2>&1'
