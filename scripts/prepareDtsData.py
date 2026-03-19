@@ -63,6 +63,44 @@ def extract_volume_titles(tei_file):
 
     return titles
 
+def extract_authors(tei_file):
+    tree = parse_xml(tei_file)
+    # authors = tree.xpath("/tei:TEI/tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:author", namespaces=NS)
+    authors = tree.xpath('/tei:TEI/tei:teiHeader/tei:fileDesc/tei:sourceDesc/tei:bibl[@type="printed_edition"]/tei:author', namespaces=NS)
+    return [a.text.strip() for a in authors if a.text]
+
+def extract_editors(tei_file):
+    tree = parse_xml(tei_file)
+    # editors = tree.xpath("/tei:TEI/tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:editor", namespaces=NS)
+    editors = tree.xpath("/tei:TEI/tei:teiHeader/tei:fileDesc/tei:sourceDesc/tei:bibl/tei:editor/tei:name", namespaces=NS)
+    return [e.text.strip() for e in editors if e.text]
+
+def extract_publishers(tei_file):
+    tree = parse_xml(tei_file)
+    publishers = tree.xpath("/tei:TEI/tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:publisher", namespaces=NS)
+    return [p.text.strip() for p in publishers if p.text]
+
+def extract_dates(tei_file):
+    tree = parse_xml(tei_file)
+    dates = tree.xpath("/tei:TEI/tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:date", namespaces=NS)
+    result = []
+    for d in dates:
+        if d.text:
+            result.append(d.text.strip())
+        elif "when" in d.attrib:
+            result.append(d.attrib["when"])
+    return result
+
+def extract_languages(tei_file):
+    tree = parse_xml(tei_file)
+    langs = tree.xpath("/tei:TEI/tei:teiHeader/tei:profileDesc/tei:langUsage/tei:language", namespaces=NS)
+    result = []
+    for l in langs:
+        if l.text:
+            result.append(l.text.strip())
+        elif "ident" in l.attrib:
+            result.append(l.attrib["ident"])
+    return result
 
 def inject_refsdecl(tree):
     tei_encDesc = tree.xpath("/tei:TEI/tei:teiHeader/tei:encodingDesc", namespaces=NS)
@@ -169,7 +207,6 @@ def create_subcollection(catalog_root, source_folder, output_root, base_identifi
         short = name.split("-")[-1]
 
         resource_identifier = f"{identifier}/{short}"
-
         target_file = tei_target_dir / tei_file.name
 
         tree = parse_xml(tei_file)
@@ -189,8 +226,36 @@ def create_subcollection(catalog_root, source_folder, output_root, base_identifi
             filepath=f"../tei/{volume_id}/{tei_file.name}"
         )
 
-        title = etree.SubElement(resource, "title")
-        title.text = f"{volume_id.upper()} {short}"
+        # Extract <title level="m"> for resource title
+        titles = tree.xpath("/tei:TEI/tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[@level='m']", namespaces=NS)
+        for t in titles:
+            title = etree.SubElement(resource, "title")
+            if t.text:
+                title.text = t.text.strip()
+
+        # Add dublinCore metadata
+        dublin = etree.SubElement(resource, "dublinCore")
+
+        for author in extract_authors(tei_file):
+            # creator_el = etree.SubElement(dublin, "creator")
+            creator_el = etree.SubElement(dublin, "creator", xmlns="http://purl.org/dc/terms/")
+            creator_el.text = author
+
+        for editor in extract_editors(tei_file):
+            editor_el = etree.SubElement(dublin, "editor", xmlns="http://purl.org/dc/terms/")
+            editor_el.text = editor
+
+        for publisher in extract_publishers(tei_file):
+            publisher_el = etree.SubElement(dublin, "publisher", xmlns="http://purl.org/dc/terms/")
+            publisher_el.text = publisher
+
+        for date in extract_dates(tei_file):
+            date_el = etree.SubElement(dublin, "date", xmlns="http://purl.org/dc/terms/")
+            date_el.text = date
+
+        for lang in extract_languages(tei_file):
+            lang_el = etree.SubElement(dublin, "language", xmlns="http://purl.org/dc/terms/")
+            lang_el.text = lang
 
     tree = etree.ElementTree(subcollection)
 

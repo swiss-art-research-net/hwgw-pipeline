@@ -6,7 +6,7 @@ vars:
   GENERATOR_POLICY: /mapping/generator-policy.xml
   NAMESPACE: http://hwgw.uzh.ch/
   REGISTERS: bibliography,objects,organizations,persons,places
-  SCHRIFTEN: 01,03,04,08 # 01,02,03,04,06,08
+  SCHRIFTEN: 01,03,04 # 01,02,03,04,06,08
   SOURCE_FOLDER: /data/source
 
 dotenv: 
