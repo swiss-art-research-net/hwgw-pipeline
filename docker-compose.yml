@@ -37,14 +37,14 @@ services:
         max-file: "10"
 
   jobs:
-    build: ./services/jobs
+    build: .
     container_name: ${PROJECT_NAME}_jobs
     restart: unless-stopped
     volumes:
-      - ./mapping:/mapping
+      # - ./mapping:/mapping
       - ./data:/data
       - ./logs:/logs
-      - ./scripts:/scripts
+      # - ./scripts:/scripts
     environment:
       - JAVA_OPTS=-Xms512m -Xmx1024m
       - COMPOSE_PROJECT_NAME=${PROJECT_NAME}
