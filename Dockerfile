@@ -8,10 +8,7 @@ RUN apt-get update && apt-get -y upgrade && \
         locales \
         parallel \
         time \
-        default-jre \
-        default-jdk \
         python3-distutils \
-        openjdk-17-jre \
         openjdk-17-jdk && \
     locale-gen en_US.UTF-8 && \
     rm -rf /var/lib/apt/lists/*
