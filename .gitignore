@@ -43,7 +43,9 @@ blazegraph-backup
 /mapping/output/
 
 # Folder structure
-data/source/**/*.*
+# data/source/**/*.*
+dts_source/
+dts_data/
 # data/dts/tei/**/*.*
 !data/temp/.gitkeep
 !data/rdf/.gitkeep

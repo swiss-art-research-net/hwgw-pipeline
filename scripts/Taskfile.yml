@@ -7,7 +7,8 @@ vars:
   NAMESPACE: http://hwgw.uzh.ch/
   REGISTERS: bibliography,objects,organizations,persons,places
   SCHRIFTEN: 01,03,04 # 01,02,03,04,06,08
-  SOURCE_FOLDER: /data/source
+  SOURCE_FOLDER: /dts_source
+  DTS_FOLDER: /dts_data
 
 dotenv: 
   - /.env
@@ -58,8 +59,8 @@ tasks:
       vars: [FILE_TYPE]
     vars:
       FILEPATH: "hw-anno/data/registers/{{.FILE_TYPE}}.xml" # ex. hw-anno/data/registers/bibliography.xml
-      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers" # ex. /data/source/registers
-      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. /data/source/bibliography.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers" # ex. /dts_source/registers
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. /dts_source/bibliography.xml
     cmds:
       - mkdir -p {{.LOCAL_FOLDER}}
       - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
@@ -85,8 +86,8 @@ tasks:
       vars: [FILE_TYPE, PART]
     vars:
       FILEPATH: "hw-anno/data/s{{.FILE_TYPE}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. hw-anno/data/s01/s01-app.xml
-      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/s{{.FILE_TYPE}}" # ex. /data/source/s01
-      LOCAL_PATH: "{{.LOCAL_FOLDER}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. /data/source/s01/s01-app.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/s{{.FILE_TYPE}}" # ex. /dts_source/s01
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. /dts_source/s01/s01-app.xml
     cmds:
       - mkdir -p {{.LOCAL_FOLDER}}
       - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
@@ -191,12 +192,9 @@ tasks:
   prepare-dts-catalog-data:
     desc: Prepares the data for the DTS catalog. This includes creating the collection XML and preparing the TEI files.
     vars:
-      INPUTFOLDER:
-        sh: echo "/data/source"
-      OUTPUTFOLDER:
-        sh: echo "/data/dts/tei"
-      CATALOGFOLDER:
-        sh: echo "/data/dts/catalog"
+      INPUTFOLDER: "{{.SOURCE_FOLDER}}"
+      OUTPUTFOLDER: "{{.DTS_FOLDER}}/tei/hwgw-edition"
+      CATALOGFOLDER: "{{.DTS_FOLDER}}/catalog/hwgw-edition"
     cmds:
       - mkdir -p {{.OUTPUTFOLDER}}
       - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
