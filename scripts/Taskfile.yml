@@ -55,6 +55,7 @@ tasks:
 
   _download_individual_register_file_from_github:
     internal: true
+    silent: true
     requires:
       vars: [FILE_TYPE]
     vars:
@@ -82,6 +83,7 @@ tasks:
 
   _download_individual_schrift_part_file_from_github:
     internal: true
+    silent: true
     requires:
       vars: [FILE_TYPE, PART]
     vars:
