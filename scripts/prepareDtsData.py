@@ -223,7 +223,7 @@ def create_subcollection(catalog_root, source_folder, output_root, base_identifi
             members,
             "resource",
             identifier=resource_identifier,
-            filepath=f"../tei/{volume_id}/{tei_file.name}"
+            filepath=f"../../tei/hwgw-edition/{volume_id}/{tei_file.name}" # e.g. ../../tei/hwgw-edition/s01/s01-ed.xml
         )
 
         # Extract <title level="m"> for resource title
