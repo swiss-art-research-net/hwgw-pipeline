@@ -42,7 +42,8 @@ services:
     restart: unless-stopped
     volumes:
       # - ./mapping:/mapping
-      - ./data:/data
+      - ./dts_data:/dts_data
+      - ./dts_source:/dts_source
       - ./logs:/logs
       # - ./scripts:/scripts
     environment:
@@ -68,7 +69,7 @@ services:
       - SERVER_HOST=${SERVER_HOST}
       - SERVER_PORT=${SERVER_PORT}
     volumes:
-      - ./data:/data
+      - ./dts_data:/dts_data
       - ./scripts:/scripts
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
