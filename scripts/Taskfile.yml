@@ -200,6 +200,7 @@ tasks:
     cmds:
       - mkdir -p {{.OUTPUTFOLDER}}
       - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
+      - find {{.CATALOGFOLDER}} -maxdepth 1 -name "*.xml" -delete
       - python prepareDtsData.py --catalog {{.CATALOGFOLDER}} --inputFolder {{.INPUTFOLDER}} --outputFolder {{.OUTPUTFOLDER}} {{.CLI_ARGS}}
 
 
