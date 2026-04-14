@@ -102,39 +102,97 @@ def extract_languages(tei_file):
             result.append(l.attrib["ident"])
     return result
 
-def inject_refsdecl(tree):
+
+# --- Dynamic refsDecl/citeStructure generation ---
+def analyze_body_structure_and_build_citestructure(tree):
+    """
+    Analyze the TEI body structure and build a refsDecl/citeStructure tree.
+    Handles arbitrary div nesting and direct paragraphs at any level.
+    """
+    body = tree.find('.//tei:body', namespaces=NS)
+    if body is None:
+        return None
+
+    def deepest_div_path(parent, is_top_level=False):
+        # Prefer div[@type='chapter'] if present
+        divs = [el for el in parent if el.tag.endswith('div')]
+        chapter_div = None
+        for d in divs:
+            if d.attrib.get('type') == 'chapter':
+                chapter_div = d
+                break
+        if chapter_div is not None:
+            typ = 'chapter'
+            if is_top_level:
+                match = f"//body/div[@type='chapter']"
+                cs = etree.Element('citeStructure', unit=typ, match=match, use='@xml:id')
+            else:
+                match = f"div[@type='chapter']"
+                cs = etree.Element('citeStructure', unit=typ, match=match, use='@xml:id', delim=":")
+            child = deepest_div_path(chapter_div, is_top_level=False)
+            if child is not None:
+                cs.append(child)
+            return cs
+        # Otherwise, pick the first div
+        if divs:
+            d = divs[0]
+            typ = d.attrib.get('type', 'div')
+            if is_top_level:
+                match = f"//body/div[@type='{typ}']"
+                cs = etree.Element('citeStructure', unit=typ, match=match, use='@xml:id')
+            else:
+                match = f"div[@type='{typ}']"
+                cs = etree.Element('citeStructure', unit=typ, match=match, use='@xml:id', delim=":")
+            child = deepest_div_path(d, is_top_level=False)
+            if child is not None:
+                cs.append(child)
+            return cs
+        # If no divs, look for paragraphs
+        ps = [el for el in parent if el.tag.endswith('p')]
+        if ps:
+            if is_top_level:
+                cs = etree.Element('citeStructure', unit='paragraph', match='p', use='@xml:id')
+            else:
+                cs = etree.Element('citeStructure', unit='paragraph', match='p', use='@xml:id', delim=":")
+            return cs
+        return None
+
+    # Build refsDecl for logical_structure
+    refsDecl = etree.Element('refsDecl', nsmap={None: 'http://www.tei-c.org/ns/1.0'})
+    refsDecl.attrib['default'] = 'true'
+    refsDecl.attrib['n'] = 'logical_structure'
+    cs = deepest_div_path(body, is_top_level=True)
+    if cs is not None:
+        refsDecl.append(cs)
+    return refsDecl
+
+def inject_dynamic_refsdecl(tree):
     tei_encDesc = tree.xpath("/tei:TEI/tei:teiHeader/tei:encodingDesc", namespaces=NS)
     if not tei_encDesc:
         return tree
-
     tei_encDesc = tei_encDesc[0]
-
-    existing = tree.xpath("//tei:refsDecl", namespaces=NS)
-    if existing:
-        return tree
-
-    refs_logical = etree.XML("""
-        <refsDecl xmlns="http://www.tei-c.org/ns/1.0"
-                  default="true"
-                  n="logical_structure">
-            <citeStructure unit="chapter" match="//body/div" use="@xml:id">
-                <citeStructure unit="subchapter" match="div" use="@xml:id" delim=":">
-                    <citeStructure unit="paragraph" match="p" use="@xml:id" delim=":"/>
-                </citeStructure>
-            </citeStructure>
+    # Remove existing refsDecls
+    for el in tei_encDesc.findall(".//tei:refsDecl", namespaces=NS):
+        tei_encDesc.remove(el)
+    # Add dynamic refsDecl
+    refs_logical = analyze_body_structure_and_build_citestructure(tree)
+    if refs_logical is not None:
+        tei_encDesc.append(refs_logical)
+    # Add all_paragraphs refsDecl
+    refs_all_pars = etree.XML('''
+        <refsDecl xmlns="http://www.tei-c.org/ns/1.0" n="all_paragraphs">
+            <citeStructure unit="paragraph" match="//p" use="@xml:id"/>
         </refsDecl>
-    """)
-
-    refs_pages = etree.XML("""
+    ''')
+    tei_encDesc.append(refs_all_pars)
+    # Always add published_page refsDecl
+    refs_pages = etree.XML('''
         <refsDecl xmlns="http://www.tei-c.org/ns/1.0"
-                  n="published_page">
+                    n="published_page">
             <citeStructure unit="page" match="//pb" use="@xml:id"/>
         </refsDecl>
-    """)
-
-    tei_encDesc.append(refs_logical)
+    ''')
     tei_encDesc.append(refs_pages)
-
     return tree
 
 
@@ -210,7 +268,7 @@ def create_subcollection(catalog_root, source_folder, output_root, base_identifi
         target_file = tei_target_dir / tei_file.name
 
         tree = parse_xml(tei_file)
-        tree = inject_refsdecl(tree)
+        tree = inject_dynamic_refsdecl(tree)
 
         tree.write(
             target_file,
