@@ -201,7 +201,8 @@ def get_templates(
 ):
     collection_template = uritemplate.URITemplate(base_uri+"collection/{?id}{&nav}")
     document_template = uritemplate.URITemplate(base_uri+"document/{?resource}{&ref,start,end,tree}")
-    navigation_template = uritemplate.URITemplate(base_uri+"navigation/{?resource}{&ref,start,end,tree,down}")
+    navigation_template = uritemplate.URITemplate(base_uri+"navigation{?resource,ref,start,end,tree,down}")
+    # navigation_template = uritemplate.URITemplate(base_uri+"navigation/{?resource}{&ref,start,end,tree,down}")
 
     return collection_template, document_template, navigation_template
 
