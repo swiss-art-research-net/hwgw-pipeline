@@ -104,11 +104,10 @@ def extract_languages(tei_file):
 
 def extract_license(tei_file):
     tree = parse_xml(tei_file)
-    # Try to get the text content of <availability>
     availability = tree.xpath("/tei:TEI/tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:availability", namespaces=NS)
     if availability and availability[0].text:
         return [availability[0].text.strip()]
-    # If availability has a <p> child, get its text
+    # If availability has p child, get its text
     p = tree.xpath("/tei:TEI/tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:availability/p", namespaces=NS)
     if p and p[0].text:
         return [p[0].text.strip()]
@@ -120,18 +119,6 @@ def extract_series(tei_file):
     series_titles = tree.xpath("/tei:TEI/tei:teiHeader/tei:fileDesc/tei:seriesStmt/tei:title", namespaces=NS)
     return [s.text.strip() for s in series_titles if s.text]
 
-# def extract_chapter_titles(tei_file):
-#     tree = parse_xml(tei_file)
-#     # Find all <div type="chapter">
-#     chapters = tree.xpath('//tei:body/tei:div[@type="chapter"]', namespaces=NS)
-#     titles = []
-#     for ch in chapters:
-#         head = ch.find('tei:head', namespaces=NS)
-#         if head is not None and 'n' in head.attrib:
-#             n_val = head.attrib['n'].strip()
-#             if n_val:
-#                 titles.append(n_val)
-#     return titles
 
 # --- Dynamic refsDecl/citeStructure generation ---
 def analyze_body_structure_and_build_citestructure(tree):
