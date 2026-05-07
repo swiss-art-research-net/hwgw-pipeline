@@ -216,6 +216,13 @@ def inject_dynamic_refsdecl(tree):
         </refsDecl>
     ''')
     tei_encDesc.append(refs_pages)
+    # Add all_notes refsDecl
+    refs_all_notes = etree.XML('''
+        <refsDecl xmlns="http://www.tei-c.org/ns/1.0" n="all_notes">
+            <citeStructure unit="note" match="//note" use="@xml:id"/>
+        </refsDecl>
+    ''')
+    tei_encDesc.append(refs_all_notes)
     return tree
 
 
