@@ -120,6 +120,42 @@ def extract_series(tei_file):
     return [s.text.strip() for s in series_titles if s.text]
 
 
+def build_webview_url(xml_id: str, tei_filename: str) -> str:
+    """
+    Build viewer URL.
+    """
+
+    volume = tei_filename.split("-")[0]
+
+    return (
+        f"https://hwgw.humanitiesconnect.pub/{volume}/"
+        f"{tei_filename}"
+        f"?view=div&pers=0&org=0&place=0&obj=0&bibl=0&pb=0"
+        f"#{xml_id}"
+    )
+    
+def inject_webview_urls(tree, tei_filename):
+    """
+    Add data-webview attribute to every element carrying xml:id.
+    """
+
+    xml_ns = "{http://www.w3.org/XML/1998/namespace}"
+
+    for elem in tree.xpath(
+        """
+          //tei:div[@xml:id]
+        | //tei:p[@xml:id]
+        | //tei:pb[@xml:id]
+        """, 
+        namespaces=NS):
+        xml_id = elem.get(f"{xml_ns}id")
+
+        if xml_id:
+            elem.set("data-webview", build_webview_url(xml_id, tei_filename))
+
+    return tree
+
+
 # --- Dynamic refsDecl/citeStructure generation ---
 def analyze_body_structure_and_build_citestructure(tree):
     """
@@ -149,6 +185,10 @@ def analyze_body_structure_and_build_citestructure(tree):
             # Inject <citeData property="http://purl.org/dc/terms/title" use="head/@n"/> for chapters
             cite_data = etree.Element('citeData', property="http://purl.org/dc/terms/title", use="head/@n")
             cs.append(cite_data)
+            
+            webview_data = etree.Element('citeData', property="https://schema.org/url", use="@data-webview")
+            cs.append(webview_data)
+            
             child = deepest_div_path(chapter_div, is_top_level=False)
             if child is not None:
                 cs.append(child)
@@ -166,6 +206,10 @@ def analyze_body_structure_and_build_citestructure(tree):
             # Inject <citeData property="http://purl.org/dc/terms/title" use="head/@n"/> for all divs
             cite_data = etree.Element('citeData', property="http://purl.org/dc/terms/title", use="head/@n")
             cs.append(cite_data)
+            
+            webview_data = etree.Element('citeData', property="https://schema.org/url", use="@data-webview")
+            cs.append(webview_data)
+
             child = deepest_div_path(d, is_top_level=False)
             if child is not None:
                 cs.append(child)
@@ -175,8 +219,14 @@ def analyze_body_structure_and_build_citestructure(tree):
         if ps:
             if is_top_level:
                 cs = etree.Element('citeStructure', unit='paragraph', match='p', use='@xml:id')
+                
+                webview_data = etree.Element('citeData', property="https://schema.org/url", use="@data-webview")
+                cs.append(webview_data)
             else:
                 cs = etree.Element('citeStructure', unit='paragraph', match='p', use='@xml:id', delim=":")
+                
+                webview_data = etree.Element('citeData', property="https://schema.org/url", use="@data-webview")
+                cs.append(webview_data)
             return cs
         return None
 
@@ -204,7 +254,9 @@ def inject_dynamic_refsdecl(tree):
     # Add all_paragraphs refsDecl
     refs_all_pars = etree.XML('''
         <refsDecl xmlns="http://www.tei-c.org/ns/1.0" n="all_paragraphs">
-            <citeStructure unit="paragraph" match="//p" use="@xml:id"/>
+            <citeStructure unit="paragraph" match="//p" use="@xml:id">
+                <citeData property="https://schema.org/url" use="@data-webview"/>
+            </citeStructure>
         </refsDecl>
     ''')
     tei_encDesc.append(refs_all_pars)
@@ -212,14 +264,18 @@ def inject_dynamic_refsdecl(tree):
     refs_pages = etree.XML('''
         <refsDecl xmlns="http://www.tei-c.org/ns/1.0"
                     n="published_page">
-            <citeStructure unit="page" match="//pb" use="@xml:id"/>
+            <citeStructure unit="page" match="//pb" use="@xml:id">
+                <citeData property="https://schema.org/url" use="@data-webview"/>
+            </citeStructure>
         </refsDecl>
     ''')
     tei_encDesc.append(refs_pages)
     # Add all_notes refsDecl
     refs_all_notes = etree.XML('''
         <refsDecl xmlns="http://www.tei-c.org/ns/1.0" n="all_notes">
-            <citeStructure unit="note" match="//note" use="@xml:id"/>
+            <citeStructure unit="note" match="//note" use="@xml:id">
+                <citeData property="https://schema.org/url" use="@data-webview"/>
+            </citeStructure>
         </refsDecl>
     ''')
     tei_encDesc.append(refs_all_notes)
@@ -298,6 +354,8 @@ def create_subcollection(catalog_root, source_folder, output_root, base_identifi
         target_file = tei_target_dir / tei_file.name
 
         tree = parse_xml(tei_file)
+
+        tree = inject_webview_urls(tree, tei_file.name)
         tree = inject_dynamic_refsdecl(tree)
 
         tree.write(
