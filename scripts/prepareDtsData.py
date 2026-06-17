@@ -144,7 +144,7 @@ def inject_webview_urls(tree, tei_filename):
     for elem in tree.xpath(
         """
           //tei:div[@xml:id]
-        | //tei:p[@xml:id]
+        | //tei:div/tei:p[@xml:id]
         | //tei:pb[@xml:id]
         """, 
         namespaces=NS):
@@ -254,7 +254,7 @@ def inject_dynamic_refsdecl(tree):
     # Add all_paragraphs refsDecl
     refs_all_pars = etree.XML('''
         <refsDecl xmlns="http://www.tei-c.org/ns/1.0" n="all_paragraphs">
-            <citeStructure unit="paragraph" match="//p" use="@xml:id">
+            <citeStructure unit="paragraph" match="//div/p" use="@xml:id">
                 <citeData property="https://schema.org/url" use="@data-webview"/>
             </citeStructure>
         </refsDecl>
