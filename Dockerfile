@@ -55,8 +55,7 @@ COPY services/jobs/x3ml/java/bin/ /java/bin/
 # Copy scripts
 COPY scripts/ /scripts/
 
-# no mappings yet
-# COPY mapping/ /mapping/
+COPY mapping/ /mapping/
 
 # VOLUME /data
 # VOLUME /mapping
