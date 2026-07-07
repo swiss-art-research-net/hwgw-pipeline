@@ -59,7 +59,10 @@ services:
 
   
   dapytains:
-    build: ./services/dapytains
+    build: 
+      context: ./services/dapytains
+      args:
+        DAPYTAINS_VERSION: ${DAPYTAINS_VERSION}
     container_name: ${PROJECT_NAME}_dapytains
     restart: unless-stopped
     environment:
