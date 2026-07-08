@@ -120,6 +120,25 @@ def extract_series(tei_file):
     return [s.text.strip() for s in series_titles if s.text]
 
 
+def format_resource_title(title_text, short):
+    if not title_text:
+        return title_text
+
+    suffixes = {
+        "app": "(Apparat)",
+        "in": "(Einleitung)",
+        "ed": "(Text)",
+    }
+
+    title = title_text.strip()
+    suffix = suffixes.get(short)
+
+    if not suffix or suffix in title:
+        return title
+
+    return f"{title} {suffix}"
+
+
 def build_webview_url(xml_id: str, tei_filename: str) -> str:
     """
     Build viewer URL.
@@ -377,7 +396,7 @@ def create_subcollection(catalog_root, source_folder, output_root, base_identifi
         for t in titles:
             title = etree.SubElement(resource, "title")
             if t.text:
-                title.text = t.text.strip()
+                title.text = format_resource_title(t.text.strip(), short)
 
         # Add dublinCore metadata
         dublin = etree.SubElement(resource, "dublinCore")
