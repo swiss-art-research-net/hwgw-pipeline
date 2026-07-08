@@ -43,7 +43,10 @@ blazegraph-backup
 /mapping/output/
 
 # Folder structure
-data/**/*.*
+# data/source/**/*.*
+dts_source/
+dts_data/
+# data/dts/tei/**/*.*
 !data/temp/.gitkeep
 !data/rdf/.gitkeep
 !data/ttl/additional/classifications/.gitkeep
@@ -52,3 +55,13 @@ data/**/*.*
 # Local configuration files
 docker-compose.override.yml
 services/platform/apps/static/assets/no_auth/*.jpg
+
+# Ignore Dapytains service files
+services/dapytains/compose.yaml
+services/dapytains/MANIFEST.in
+services/dapytains/pytest.ini
+services/dapytains/README.md
+services/dapytains/setup.py
+services/dapytains/teststuff.py
+services/dapytains/tests
+services/dapytains/requirements-dev.txt

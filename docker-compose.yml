@@ -37,20 +37,45 @@ services:
         max-file: "10"
 
   jobs:
-    build: ./services/jobs
+    build: .
     container_name: ${PROJECT_NAME}_jobs
     restart: unless-stopped
     volumes:
-      - ./mapping:/mapping
-      - ./data:/data
-      - ./hwgw-data:/hwgw-data
+      # - ./mapping:/mapping
+      - ./dts_data:/dts_data
+      - ./dts_source:/dts_source
       - ./logs:/logs
-      - ./scripts:/scripts
+      # - ./scripts:/scripts
     environment:
       - JAVA_OPTS=-Xms512m -Xmx1024m
       - COMPOSE_PROJECT_NAME=${PROJECT_NAME}
       - GITHUB_USERNAME=${GITHUB_USERNAME}
       - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  
+  dapytains:
+    build: 
+      context: ./services/dapytains
+      args:
+        DAPYTAINS_VERSION: ${DAPYTAINS_VERSION}
+    container_name: ${PROJECT_NAME}_dapytains
+    restart: unless-stopped
+    environment:
+      - DATABASE_URI=${DATABASE_URI}
+      - DTSCATALOG=${DTSCATALOG}
+      - SERVER_ENV=${SERVER_ENV}
+      - SERVER_HOST=${SERVER_HOST}
+      - SERVER_PORT=${SERVER_PORT}
+    volumes:
+      - ./dts_data:/dts_data
+      - ./scripts:/scripts
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
     logging:
       driver: json-file
       options:

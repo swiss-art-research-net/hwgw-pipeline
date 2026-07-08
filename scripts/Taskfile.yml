@@ -6,8 +6,9 @@ vars:
   GENERATOR_POLICY: /mapping/generator-policy.xml
   NAMESPACE: http://hwgw.uzh.ch/
   REGISTERS: bibliography,objects,organizations,persons,places
-  SCHRIFTEN: 01,02,03,04,06,08
-  SOURCE_FOLDER: /hwgw-data/data/source
+  SCHRIFTEN: 01,03,04 # 01,02,03,04,06,08
+  SOURCE_FOLDER: /dts_source
+  DTS_FOLDER: /dts_data
 
 dotenv: 
   - /.env
@@ -20,6 +21,7 @@ tasks:
     interactive: true
     cmds:
       - task: download-all-data
+      - task: prepare-dts-catalog-data
       # - task: prepare-and-perform-mapping-for-items
       # - task: ingest-items
       # - task: ingest-ontologies
@@ -53,12 +55,13 @@ tasks:
 
   _download_individual_register_file_from_github:
     internal: true
+    silent: true
     requires:
       vars: [FILE_TYPE]
     vars:
       FILEPATH: "hw-anno/data/registers/{{.FILE_TYPE}}.xml" # ex. hw-anno/data/registers/bibliography.xml
-      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers" # ex. hwgw-data/data/source/registers
-      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. hwgw-data/data/source/bibliography.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers" # ex. /dts_source/registers
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. /dts_source/bibliography.xml
     cmds:
       - mkdir -p {{.LOCAL_FOLDER}}
       - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
@@ -80,12 +83,13 @@ tasks:
 
   _download_individual_schrift_part_file_from_github:
     internal: true
+    silent: true
     requires:
       vars: [FILE_TYPE, PART]
     vars:
       FILEPATH: "hw-anno/data/s{{.FILE_TYPE}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. hw-anno/data/s01/s01-app.xml
-      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/s{{.FILE_TYPE}}" # ex. hwgw-data/data/source/s01
-      LOCAL_PATH: "{{.LOCAL_FOLDER}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. hwgw-data/data/source/s01/s01-app.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/s{{.FILE_TYPE}}" # ex. /dts_source/s01
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/s{{.FILE_TYPE}}-{{.PART}}.xml" # ex. /dts_source/s01/s01-app.xml
     cmds:
       - mkdir -p {{.LOCAL_FOLDER}}
       - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
@@ -185,6 +189,19 @@ tasks:
       - mkdir -p {{.OUTPUTFOLDER}}
       - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
       - python prepareDataForMapping.py --module {{.MODULE}} --inputFolder {{.INPUTFOLDER}} --outputFolder {{.OUTPUTFOLDER}} {{.CLI_ARGS}}
+
+  
+  prepare-dts-catalog-data:
+    desc: Prepares the data for the DTS catalog. This includes creating the collection XML and preparing the TEI files.
+    vars:
+      INPUTFOLDER: "{{.SOURCE_FOLDER}}"
+      OUTPUTFOLDER: "{{.DTS_FOLDER}}/tei/hwgw-edition"
+      CATALOGFOLDER: "{{.DTS_FOLDER}}/catalog/hwgw-edition"
+    cmds:
+      - mkdir -p {{.OUTPUTFOLDER}}
+      - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
+      - find {{.CATALOGFOLDER}} -maxdepth 1 -name "*.xml" -delete
+      - python prepareDtsData.py --catalog {{.CATALOGFOLDER}} --inputFolder {{.INPUTFOLDER}} --outputFolder {{.OUTPUTFOLDER}} {{.CLI_ARGS}}
 
 
   _perform-mapping-for-module-items:
@@ -432,13 +449,6 @@ tasks:
           FILE: /mapping/schemas/rs-ontology.ttl
           TYPE: application/x-turtle
           GRAPH: http://www.researchspace.org/ontology
-      - task: _ingest-data-from-file
-        vars:
-          NAME: Monteiato Ontology
-          FILE: /mapping/schemas/monteiato-ontology.ttl
-          TYPE: application/x-turtle
-          GRAPH: https://ontology.monteiato.uzh.ch
-
 
 # RESET FUNCTIONS
   reset:
@@ -447,12 +457,7 @@ tasks:
     cmds:
       - rm -f /scripts/.task/checksum/*
       - for:
-        - bilder
-        - fund
-        - zeichnung
-        - muenze
-        - aussenaufnahme
-        - fundorttopographie
+        - xxx
         task: reset-module
         vars:
           MODULE: "{{.ITEM}}"
