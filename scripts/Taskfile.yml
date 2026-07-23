@@ -122,13 +122,17 @@ tasks:
 # MAPPING
   prepare-and-perform-mapping-for-items:
     desc: Prepares and performs the mapping for all modules
-    # MAPPING_INPUTFOLDER:
-    #   sh: echo "/mapping/input"
+    MAPPING_INPUTFOLDER:
+      sh: echo "/mapping/input"
     cmds:
-      # - echo "Preparing mapping..."
-      # - task: _prepare-mapping-for-module-items
-      #   vars:
-      #     MODULE: "all"
+      - echo "Preparing mapping..."
+      - for:
+          var: MODULES
+          split: ','
+          as: MODULE
+        task: _prepare-mapping-for-module-items
+        vars:
+          MODULE: "{{.MODULE}}"
       - echo "Mapping..."
       - echo "" > /logs/mapping-log.log
       - for:
@@ -138,26 +142,26 @@ tasks:
         task: _perform-mapping-for-module-items
         vars:
           MODULE: "{{.MODULE}}"
-      # - find {{.MAPPING_INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
+      - find {{.MAPPING_INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
 
 
-  # prepare-mapping-for-module-items:
-  #   desc: Prepares the mapping for a specific module. The module name should be passed as an argument or via the MODULE variable.
-  #   interactive: True
-  #   vars:
-  #     MODULE:
-  #       sh: |
-  #         if [ -z "{{.MODULE}}" ]; then
-  #           echo "{{.CLI_ARGS}}"
-  #         else
-  #           echo "{{.MODULE}}"
-  #         fi
-  #     MODULE_UCFIRST:
-  #       sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) substr($0,2)}')"
-  #   cmds:
-  #     - task: _prepare-mapping-for-module-items
-  #       vars:
-  #         MODULE: "{{.MODULE_UCFIRST}}"
+  prepare-mapping-for-module-items:
+    desc: Prepares the mapping for a specific module. The module name should be passed as an argument or via the MODULE variable.
+    interactive: True
+    vars:
+      MODULE:
+        sh: |
+          if [ -z "{{.MODULE}}" ]; then
+            echo "{{.CLI_ARGS}}"
+          else
+            echo "{{.MODULE}}"
+          fi
+      MODULE_UCFIRST:
+        sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) substr($0,2)}')"
+    cmds:
+      - task: _prepare-mapping-for-module-items
+        vars:
+          MODULE: "{{.MODULE_UCFIRST}}"
           
   perform-mapping-for-module-items:
     desc: Performs the mapping for a specific module. The module name should be passed as an argument or via the MODULE variable.
@@ -177,19 +181,19 @@ tasks:
         vars:
           MODULE: "{{.MODULE_UCFIRST}}"
 
-  # _prepare-mapping-for-module-items:
-  #   requires:
-  #     vars: [MODULE]
-  #   vars:
-  #     MODULE: "{{.MODULE}}"
-  #     INPUTFOLDER:
-  #       sh: echo "/data/source/xml"
-  #     OUTPUTFOLDER:
-  #       sh: echo "/mapping/input"
-  #   cmds:
-  #     - mkdir -p {{.OUTPUTFOLDER}}
-  #     - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
-  #     - python prepareDataForMapping.py --module {{.MODULE}} --inputFolder {{.INPUTFOLDER}} --outputFolder {{.OUTPUTFOLDER}} {{.CLI_ARGS}}
+  _prepare-mapping-for-module-items:
+    requires:
+      vars: [MODULE]
+    vars:
+      MODULE: "{{.MODULE}}"
+      INPUTFOLDER:
+        sh: echo "/dts_source/registers/$(echo "{{.MODULE}}")"
+      OUTPUTFOLDER:
+        sh: echo "/mapping/input/$(echo "{{.MODULE}}")"
+    cmds:
+      - mkdir -p {{.OUTPUTFOLDER}}
+      - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
+      - python prepareDataForMapping.py --module {{.MODULE}} --inputFolder {{.INPUTFOLDER}} --outputFolder {{.OUTPUTFOLDER}} {{.CLI_ARGS}}
 
   
   prepare-dts-catalog-data:
@@ -211,7 +215,7 @@ tasks:
         vars: [MODULE]
       vars:
         INPUTFOLDER:
-          sh: echo "/dts_source/registers/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
+          sh: echo "/mapping/input/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
         OUTPUTFOLDER:
           sh: echo "/mapping/output/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
         DESTINATIONFOLDER:
@@ -223,7 +227,6 @@ tasks:
         - echo "Performing mapping for {{.MODULE}}..."
         - mkdir -p /mapping/output
         - mkdir -p {{.OUTPUTFOLDER}}
-        - ls /mapping
         - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.ttl" -delete
         - mkdir -p /logs
         - "[ -f /logs/mapping-log.log ] || touch /logs/mapping-log.log"
