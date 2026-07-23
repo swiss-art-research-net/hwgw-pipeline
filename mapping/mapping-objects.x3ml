@@ -6,8 +6,9 @@
       editor="3MEditor v3.3">
 
   <namespaces>
-    <namespace prefix="sari" uri="https://hwgw.uzh.ch/"/>
+    <namespace prefix="resource" uri="https://hwgw.uzh.ch/"/>
     <namespace prefix="crm" uri="http://www.cidoc-crm.org/cidoc-crm/"/>
+    <namespace prefix="crmdig" uri="http://www.ics.forth.gr/isl/CRMdig/"/>
     <namespace prefix="tei" uri="http://www.tei-c.org/ns/1.0"/>
     <namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
     <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema#"/>
@@ -20,7 +21,7 @@
     <!-- drawing, fresco, painting, print, relief, sculpture  -->
     <mapping>
       <domain>
-        <source_node>//tei:listObject//tei:object[
+        <source_node>//listObject//object[
           @type='drawing' or
           @type='fresco' or
           @type='painting' or
@@ -31,12 +32,14 @@
         <target_node>
           <entity>
             <type>crm:E22_Human-Made_Object</type>
-            <instance_generator name="ArtworkURI">
-              <arg name="artwork_id" type="xpath">@xml:id</arg>
+            <instance_generator name="URIwithTypeAndId">
+              <arg name="type" type="constant">artwork</arg>
+              <arg name="id" type="xpath">@xml:id</arg>
             </instance_generator>
-            <label_generator name="SimpleLabel">
-              <arg name="label" type="xpath">normalize-space(string(tei:head[@type='main'][1]))</arg>
-            </label_generator>
+            <label_generator name="Literal">
+                <arg name="text" type="xpath">normalize-space(string(head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
           </entity>
         </target_node>
       </domain>
@@ -45,24 +48,22 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:head[@type='main']</relation>
+            <relation>head[@type='main']</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P1_is_identified_by</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:head[@type='main']</source_node>
+          <source_node>head[@type='main']</source_node>
           <target_node>
             <entity>
               <type>crm:E33_E41_Linguistic_Appellation</type>
-              <instance_generator name="ArtworkAppellationShortURI">
-                <arg name="artwork_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">normalize-space(.)</arg>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../@xml:id</arg>
+                <arg name="level1" type="constant">name</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
-              </label_generator>
               <additional>
                 <relationship>crm:P190_has_symbolic_content</relationship>
                 <entity>
@@ -101,24 +102,23 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:head[@type='alternative']</relation>
+            <relation>head[@type='alternative']</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P1_is_identified_by</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:head[@type='alternative']</source_node>
+          <source_node>head[@type='alternative']</source_node>
           <target_node>
             <entity>
               <type>crm:E33_E41_Linguistic_Appellation</type>
-              <instance_generator name="ArtworkAppellationShortURI">
-                <arg name="artwork_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">concat('alternative-', normalize-space(.))</arg>
+              <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../@xml:id</arg>
+                <arg name="level1" type="constant">alternative-appellation</arg>
+                <arg name="level2_HASHED_CONTENTS" type="xpath">concat('alternative-', normalize-space(.))</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
-              </label_generator>
               <additional>
                 <relationship>crm:P190_has_symbolic_content</relationship>
                 <entity>
@@ -153,24 +153,23 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:head[@type='hw']</relation>
+            <relation>head[@type='hw']</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P1_is_identified_by</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:head[@type='hw']</source_node>
+          <source_node>head[@type='hw']</source_node>
           <target_node>
             <entity>
               <type>crm:E33_E41_Linguistic_Appellation</type>
-              <instance_generator name="ArtworkAppellationShortURI">
-                <arg name="artwork_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">concat('hw-', normalize-space(.))</arg>
+              <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../@xml:id</arg>
+                <arg name="level1" type="constant">hw-appellation</arg>
+                <arg name="level2_HASHED_CONTENTS" type="xpath">concat('hw-', normalize-space(.))</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
-              </label_generator>
               <additional>
                 <relationship>crm:P190_has_symbolic_content</relationship>
                 <entity>
@@ -201,52 +200,6 @@
         </range>
       </link>
 
-      <!-- xml:id as unique identifier -->
-      <link>
-        <path>
-          <source_relation>
-            <relation>@xml:id</relation>
-          </source_relation>
-          <target_relation>
-            <relationship>crm:P1_is_identified_by</relationship>
-          </target_relation>
-        </path>
-        <range>
-          <source_node>@xml:id</source_node>
-          <target_node>
-            <entity>
-              <type>crm:E42_Identifier</type>
-              <instance_generator name="ArtworkAppellationShortURI">
-                <arg name="artwork_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">.</arg>
-              </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">.</arg>
-              </label_generator>
-              <additional>
-                <relationship>crm:P2_has_type</relationship>
-                <entity>
-                  <type>crm:E55_Type</type>
-                  <instance_info>
-                    <constant>unique identifier</constant>
-                  </instance_info>
-                  <instance_generator name="URIorUUID">
-                    <arg name="text" type="constant">http://vocab.getty.edu/aat/300404012</arg>
-                  </instance_generator>
-                  <label_generator name="Literal">
-                    <arg name="text" type="constant">unique identifiers</arg>
-                    <arg name="language" type="constant">en</arg>
-                  </label_generator>
-                  <label_generator name="Literal">
-                    <arg name="text" type="constant">eindeutige Kennung</arg>
-                    <arg name="language" type="constant">de</arg>
-                  </label_generator>
-                </entity>
-              </additional>
-            </entity>
-          </target_node>
-        </range>
-      </link>
       <!-- Object type from @type -->
       <link>
         <path>
@@ -269,54 +222,46 @@
                 <arg name="text" type="xpath">.</arg>
                 <arg name="language" type="constant">en</arg>
               </label_generator>
+              <additional>
+                <relationship>crm:P127_has_broader_term</relationship>
+                <entity>
+                  <type>crm:E55_Type</type>
+                  <instance_generator name="URIorUUID">
+                    <arg name="text" type="constant">https://hwgw.uzh.ch/type/object/artwork</arg>
+                  </instance_generator>
+                  <label_generator name="Literal">
+                    <arg name="text" type="constant">artwork</arg>
+                    <arg name="language" type="constant">en</arg>
+                  </label_generator>
+                </entity>
+              </additional>
             </entity>
           </target_node>
         </range>
       </link>
 
-      <!-- GND identifier(s) from note/idno -->
+      <!-- GND identifier(s) from note/idno as same-as links -->
       <link>
         <path>
           <source_relation>
-            <relation>tei:note/tei:idno[@type='GND']</relation>
+            <relation>note/idno[@type='GND']</relation>
           </source_relation>
           <target_relation>
-            <relationship>crm:P1_is_identified_by</relationship>
+            <relationship>crmdig:L54_is_same-as</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:note/tei:idno[@type='GND']</source_node>
+          <source_node>note/idno[@type='GND']</source_node>
           <target_node>
             <entity>
-              <type>crm:E42_Identifier</type>
-              <instance_generator name="URIorUUID">
-                <arg name="text" type="xpath">concat('https://hwgw.uzh.ch/artwork/', ../../@xml:id, '/identifier/gnd/', normalize-space(.))</arg>
+              <type>crm:E22_Human-Made_Object</type>
+              <instance_generator name="URIwithGndId">
+                <arg name="id" type="xpath">normalize-space(.)</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat(normalize-space(../../head[@type='main'][1]), ' in GND')</arg>
+                <arg name="language" type="constant"/>
               </label_generator>
-              <additional>
-                <relationship>crm:P190_has_symbolic_content</relationship>
-                <entity>
-                  <type>rdfs:Literal</type>
-                  <instance_generator name="Literal">
-                    <arg name="text" type="xpath">normalize-space(.)</arg>
-                  </instance_generator>
-                </entity>
-              </additional>
-              <additional>
-                <relationship>crm:P2_has_type</relationship>
-                <entity>
-                  <type>crm:E55_Type</type>
-                  <instance_generator name="URIorUUID">
-                    <arg name="text" type="constant">https://hwgw.uzh.ch/type/identifier/gnd</arg>
-                  </instance_generator>
-                  <label_generator name="Literal">
-                    <arg name="text" type="constant">GND identifier</arg>
-                    <arg name="language" type="constant">en</arg>
-                  </label_generator>
-                </entity>
-              </additional>
             </entity>
           </target_node>
         </range>
@@ -327,56 +272,198 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:note/tei:persName[@role='creator'][@ref]</relation>
+            <relation>note/persName[@role='creator'][@ref]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P108i_was_produced_by</relationship>
             <entity>
               <type>crm:E12_Production</type>
-              <instance_generator name="ArtworkUniqueEventURI">
-                <arg name="artwork_id" type="xpath">../../@xml:id</arg>
-                <arg name="event_type" type="constant">production</arg>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
               </instance_generator>
             </entity>
             <relationship>crm:P14_carried_out_by</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:note/tei:persName[@role='creator'][@ref]</source_node>
+          <source_node>note/persName[@role='creator'][@ref]</source_node>
           <target_node>
             <entity>
               <type>crm:E21_Person</type>
-              <instance_generator name="PersonURI">
-                <arg name="person_id" type="xpath">@ref</arg>
+              <instance_generator name="URIwithTypeAndId">
+                <arg name="type" type="constant">person</arg>
+                <arg name="id" type="xpath">@ref</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">normalize-space(.)</arg>
+                <arg name="language" type="constant"/>
               </label_generator>
             </entity>
           </target_node>
         </range>
       </link>
 
-      <!-- Production date as note on production event -->
+      <!-- Production date lower bound -->
       <link>
         <path>
           <source_relation>
-            <relation>tei:note/tei:date</relation>
+            <relation>note/preprocessed_date[@preprocessed_dateLower]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P108i_was_produced_by</relationship>
             <entity>
               <type>crm:E12_Production</type>
-              <instance_generator name="ArtworkUniqueEventURI">
-                <arg name="artwork_id" type="xpath">../../@xml:id</arg>
-                <arg name="event_type" type="constant">production</arg>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
               </instance_generator>
             </entity>
-            <relationship>crm:P3_has_note</relationship>
+            <relationship>crm:P4_has_time-span</relationship>
+            <entity>
+              <type>crm:E52_Time-Span</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">creation</arg>
+                <arg name="level2" type="constant">date</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P82a_begin_of_the_begin</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:note/tei:date</source_node>
+          <source_node>note/preprocessed_date[@preprocessed_dateLower]</source_node>
+          <target_node>
+            <entity>
+              <type>rdfs:Literal</type>
+              <instance_generator name="Literal">
+                <arg name="text" type="xpath">@preprocessed_dateLower</arg>
+              </instance_generator>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+      <!-- Production date upper bound -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/preprocessed_date[@preprocessed_dateUpper]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P108i_was_produced_by</relationship>
+            <entity>
+              <type>crm:E12_Production</type>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P4_has_time-span</relationship>
+            <entity>
+              <type>crm:E52_Time-Span</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">creation</arg>
+                <arg name="level2" type="constant">date</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P82b_end_of_the_end</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/preprocessed_date[@preprocessed_dateUpper]</source_node>
+          <target_node>
+            <entity>
+              <type>rdfs:Literal</type>
+              <instance_generator name="Literal">
+                <arg name="text" type="xpath">@preprocessed_dateUpper</arg>
+              </instance_generator>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+      <!-- Production date qualifier type -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/preprocessed_date[@preprocessed_dateQualifier]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P108i_was_produced_by</relationship>
+            <entity>
+              <type>crm:E12_Production</type>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P4_has_time-span</relationship>
+            <entity>
+              <type>crm:E52_Time-Span</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">creation</arg>
+                <arg name="level2" type="constant">date</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P2_has_type</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/preprocessed_date[@preprocessed_dateQualifier]</source_node>
+          <target_node>
+            <entity>
+              <type>crm:E55_Type</type>
+              <instance_generator name="URIwithTypeAndId">
+                <arg name="type" type="constant">dateQualifier</arg>
+                <arg name="id" type="xpath">translate(normalize-space(@preprocessed_dateQualifier), '| ', '--')</arg>
+              </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">@preprocessed_dateQualifier</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+      <!-- Production date source phrase label -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/preprocessed_date[text()[normalize-space()]]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P108i_was_produced_by</relationship>
+            <entity>
+              <type>crm:E12_Production</type>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P4_has_time-span</relationship>
+            <entity>
+              <type>crm:E52_Time-Span</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">creation</arg>
+                <arg name="level2" type="constant">date</arg>
+              </instance_generator>
+            </entity>
+            <relationship>rdfs:label</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/preprocessed_date[text()[normalize-space()]]</source_node>
           <target_node>
             <entity>
               <type>rdfs:Literal</type>
@@ -392,14 +479,14 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:note</relation>
+            <relation>note[normalize-space(.)]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P3_has_note</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:note</source_node>
+          <source_node>note[normalize-space(.)]</source_node>
           <target_node>
             <entity>
               <type>rdfs:Literal</type>
@@ -415,14 +502,14 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:note/tei:p</relation>
+            <relation>note/p[normalize-space(.)]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P3_has_note</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:note/tei:p</source_node>
+          <source_node>note/p[normalize-space(.)]</source_node>
           <target_node>
             <entity>
               <type>rdfs:Literal</type>
@@ -438,22 +525,24 @@
       <link>
         <path>
           <source_relation>
-            <relation>ancestor::tei:listObject[@type='organisation'][@corresp]</relation>
+            <relation>ancestor::listObject[@type='organisation'][@corresp]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P50_has_current_keeper</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>ancestor::tei:listObject[@type='organisation'][@corresp]</source_node>
+          <source_node>ancestor::listObject[@type='organisation'][@corresp]</source_node>
           <target_node>
             <entity>
               <type>crm:E74_Group</type>
-              <instance_generator name="GroupURI">
-                <arg name="group_id" type="xpath">@corresp</arg>
+              <instance_generator name="URIwithTypeAndId">
+                <arg name="type" type="constant">group</arg>
+                <arg name="id" type="xpath">@corresp</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">@n</arg>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">@n</arg>
+                <arg name="language" type="constant"/>
               </label_generator>
             </entity>
           </target_node>
@@ -464,22 +553,24 @@
       <link>
         <path>
           <source_relation>
-            <relation>ancestor::tei:listObject[@type='place'][@corresp]</relation>
+            <relation>ancestor::listObject[@type='place'][@corresp]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P55_has_current_location</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>ancestor::tei:listObject[@type='place'][@corresp]</source_node>
+          <source_node>ancestor::listObject[@type='place'][@corresp]</source_node>
           <target_node>
             <entity>
               <type>crm:E53_Place</type>
-              <instance_generator name="PlaceURI">
-                <arg name="place_id" type="xpath">@corresp</arg>
+              <instance_generator name="URIwithTypeAndId">
+                <arg name="type" type="constant">place</arg>
+                <arg name="id" type="xpath">@corresp</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">@n</arg>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">@n</arg>
+                <arg name="language" type="constant"/>
               </label_generator>
             </entity>
           </target_node>
@@ -493,7 +584,7 @@
     <!-- altarpiece, built_work, fountain, furniture,open_space -->
     <mapping>
       <domain>
-        <source_node>//tei:listObject//tei:object[
+        <source_node>//listObject//object[
           @type='altarpiece' or
           @type='built_work' or
           @type='fountain' or
@@ -503,12 +594,14 @@
         <target_node>
           <entity>
             <type>crm:E22_Human-Made_Object</type>
-            <instance_generator name="BuiltworkURI">
-              <arg name="builtwork_id" type="xpath">@xml:id</arg>
+            <instance_generator name="URIwithTypeAndId">
+              <arg name="type" type="constant">built_work</arg>
+              <arg name="id" type="xpath">@xml:id</arg>
             </instance_generator>
-            <label_generator name="SimpleLabel">
-              <arg name="label" type="xpath">normalize-space(string(tei:head[@type='main'][1]))</arg>
-            </label_generator>
+            <label_generator name="Literal">
+                <arg name="text" type="xpath">normalize-space(string(head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
           </entity>
         </target_node>
       </domain>
@@ -517,24 +610,22 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:head[@type='main']</relation>
+            <relation>head[@type='main']</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P1_is_identified_by</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:head[@type='main']</source_node>
+          <source_node>head[@type='main']</source_node>
           <target_node>
             <entity>
               <type>crm:E33_E41_Linguistic_Appellation</type>
-              <instance_generator name="BuiltworkAppellationShortURI">
-                <arg name="builtwork_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">normalize-space(.)</arg>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../@xml:id</arg>
+                <arg name="level1" type="constant">name</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
-              </label_generator>
               <additional>
                 <relationship>crm:P190_has_symbolic_content</relationship>
                 <entity>
@@ -573,24 +664,23 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:head[@type='alternative']</relation>
+            <relation>head[@type='alternative']</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P1_is_identified_by</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:head[@type='alternative']</source_node>
+          <source_node>head[@type='alternative']</source_node>
           <target_node>
             <entity>
               <type>crm:E33_E41_Linguistic_Appellation</type>
-              <instance_generator name="BuiltworkAppellationShortURI">
-                <arg name="builtwork_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">concat('alternative-', normalize-space(.))</arg>
+              <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../@xml:id</arg>
+                <arg name="level1" type="constant">alternative-appellation</arg>
+                <arg name="level2_HASHED_CONTENTS" type="xpath">concat('alternative-', normalize-space(.))</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
-              </label_generator>
               <additional>
                 <relationship>crm:P190_has_symbolic_content</relationship>
                 <entity>
@@ -629,24 +719,23 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:head[@type='hw']</relation>
+            <relation>head[@type='hw']</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P1_is_identified_by</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:head[@type='hw']</source_node>
+          <source_node>head[@type='hw']</source_node>
           <target_node>
             <entity>
               <type>crm:E33_E41_Linguistic_Appellation</type>
-              <instance_generator name="BuiltworkAppellationShortURI">
-                <arg name="builtwork_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">concat('hw-', normalize-space(.))</arg>
+              <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../@xml:id</arg>
+                <arg name="level1" type="constant">hw-appellation</arg>
+                <arg name="level2_HASHED_CONTENTS" type="xpath">concat('hw-', normalize-space(.))</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
-              </label_generator>
               <additional>
                 <relationship>crm:P190_has_symbolic_content</relationship>
                 <entity>
@@ -677,53 +766,6 @@
         </range>
       </link>
 
-      <!-- xml:id as identifier -->
-      <link>
-        <path>
-          <source_relation>
-            <relation>@xml:id</relation>
-          </source_relation>
-          <target_relation>
-            <relationship>crm:P1_is_identified_by</relationship>
-          </target_relation>
-        </path>
-        <range>
-          <source_node>@xml:id</source_node>
-          <target_node>
-            <entity>
-              <type>crm:E42_Identifier</type>
-              <instance_generator name="BuiltworkAppellationShortURI">
-                <arg name="builtwork_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">.</arg>
-              </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">.</arg>
-              </label_generator>
-              <additional>
-                <relationship>crm:P2_has_type</relationship>
-                <entity>
-                  <type>crm:E55_Type</type>
-                  <instance_info>
-                    <constant>unique identifier</constant>
-                  </instance_info>
-                  <instance_generator name="URIorUUID">
-                    <arg name="text" type="constant">http://vocab.getty.edu/aat/300404012</arg>
-                  </instance_generator>
-                  <label_generator name="Literal">
-                    <arg name="text" type="constant">unique identifiers</arg>
-                    <arg name="language" type="constant">en</arg>
-                  </label_generator>
-                  <label_generator name="Literal">
-                    <arg name="text" type="constant">eindeutige Kennung</arg>
-                    <arg name="language" type="constant">de</arg>
-                  </label_generator>
-                </entity>
-              </additional>
-            </entity>
-          </target_node>
-        </range>
-      </link>
-
       <!-- Object type from @type -->
       <link>
         <path>
@@ -746,54 +788,46 @@
                 <arg name="text" type="xpath">.</arg>
                 <arg name="language" type="constant">en</arg>
               </label_generator>
+              <additional>
+                <relationship>crm:P127_has_broader_term</relationship>
+                <entity>
+                  <type>crm:E55_Type</type>
+                  <instance_generator name="URIorUUID">
+                    <arg name="text" type="constant">https://hwgw.uzh.ch/type/object/built_work</arg>
+                  </instance_generator>
+                  <label_generator name="Literal">
+                    <arg name="text" type="constant">built work</arg>
+                    <arg name="language" type="constant">en</arg>
+                  </label_generator>
+                </entity>
+              </additional>
             </entity>
           </target_node>
         </range>
       </link>
 
-      <!-- GND identifier(s) from note/idno -->
+      <!-- GND identifier(s) from note/idno as same-as links -->
       <link>
         <path>
           <source_relation>
-            <relation>tei:note/tei:idno[@type='GND']</relation>
+            <relation>note/idno[@type='GND']</relation>
           </source_relation>
           <target_relation>
-            <relationship>crm:P1_is_identified_by</relationship>
+            <relationship>crmdig:L54_is_same-as</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:note/tei:idno[@type='GND']</source_node>
+          <source_node>note/idno[@type='GND']</source_node>
           <target_node>
             <entity>
-              <type>crm:E42_Identifier</type>
-              <instance_generator name="URIorUUID">
-                <arg name="text" type="xpath">concat('https://hwgw.uzh.ch/builtwork/', ../../@xml:id, '/identifier/gnd/', normalize-space(.))</arg>
+              <type>crm:E22_Human-Made_Object</type>
+              <instance_generator name="URIwithGndId">
+                <arg name="id" type="xpath">normalize-space(.)</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat(normalize-space(../../head[@type='main'][1]), ' in GND')</arg>
+                <arg name="language" type="constant"/>
               </label_generator>
-              <additional>
-                <relationship>crm:P190_has_symbolic_content</relationship>
-                <entity>
-                  <type>rdfs:Literal</type>
-                  <instance_generator name="Literal">
-                    <arg name="text" type="xpath">normalize-space(.)</arg>
-                  </instance_generator>
-                </entity>
-              </additional>
-              <additional>
-                <relationship>crm:P2_has_type</relationship>
-                <entity>
-                  <type>crm:E55_Type</type>
-                  <instance_generator name="URIorUUID">
-                    <arg name="text" type="constant">https://hwgw.uzh.ch/type/identifier/gnd</arg>
-                  </instance_generator>
-                  <label_generator name="Literal">
-                    <arg name="text" type="constant">GND identifier</arg>
-                    <arg name="language" type="constant">en</arg>
-                  </label_generator>
-                </entity>
-              </additional>
             </entity>
           </target_node>
         </range>
@@ -804,56 +838,198 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:note/tei:persName[@role='creator'][@ref]</relation>
+            <relation>note/persName[@role='creator'][@ref]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P108i_was_produced_by</relationship>
             <entity>
               <type>crm:E12_Production</type>
-              <instance_generator name="BuiltworkUniqueEventURI">
-                <arg name="builtwork_id" type="xpath">../../@xml:id</arg>
-                <arg name="event_type" type="constant">production</arg>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
               </instance_generator>
             </entity>
             <relationship>crm:P14_carried_out_by</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:note/tei:persName[@role='creator'][@ref]</source_node>
+          <source_node>note/persName[@role='creator'][@ref]</source_node>
           <target_node>
             <entity>
               <type>crm:E21_Person</type>
-              <instance_generator name="PersonURI">
-                <arg name="person_id" type="xpath">@ref</arg>
+              <instance_generator name="URIwithTypeAndId">
+                <arg name="type" type="constant">person</arg>
+                <arg name="id" type="xpath">@ref</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">normalize-space(.)</arg>
+                <arg name="language" type="constant"/>
               </label_generator>
             </entity>
           </target_node>
         </range>
       </link>
 
-      <!-- Production date as note on production event -->
+      <!-- Production date lower bound -->
       <link>
         <path>
           <source_relation>
-            <relation>tei:note/tei:date</relation>
+            <relation>note/preprocessed_date[@preprocessed_dateLower]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P108i_was_produced_by</relationship>
             <entity>
               <type>crm:E12_Production</type>
-              <instance_generator name="BuiltworkUniqueEventURI">
-                <arg name="builtwork_id" type="xpath">../../@xml:id</arg>
-                <arg name="event_type" type="constant">production</arg>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
               </instance_generator>
             </entity>
-            <relationship>crm:P3_has_note</relationship>
+            <relationship>crm:P4_has_time-span</relationship>
+            <entity>
+              <type>crm:E52_Time-Span</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">creation</arg>
+                <arg name="level2" type="constant">date</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P82a_begin_of_the_begin</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:note/tei:date</source_node>
+          <source_node>note/preprocessed_date[@preprocessed_dateLower]</source_node>
+          <target_node>
+            <entity>
+              <type>rdfs:Literal</type>
+              <instance_generator name="Literal">
+                <arg name="text" type="xpath">@preprocessed_dateLower</arg>
+              </instance_generator>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+      <!-- Production date upper bound -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/preprocessed_date[@preprocessed_dateUpper]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P108i_was_produced_by</relationship>
+            <entity>
+              <type>crm:E12_Production</type>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P4_has_time-span</relationship>
+            <entity>
+              <type>crm:E52_Time-Span</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">creation</arg>
+                <arg name="level2" type="constant">date</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P82b_end_of_the_end</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/preprocessed_date[@preprocessed_dateUpper]</source_node>
+          <target_node>
+            <entity>
+              <type>rdfs:Literal</type>
+              <instance_generator name="Literal">
+                <arg name="text" type="xpath">@preprocessed_dateUpper</arg>
+              </instance_generator>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+      <!-- Production date qualifier type -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/preprocessed_date[@preprocessed_dateQualifier]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P108i_was_produced_by</relationship>
+            <entity>
+              <type>crm:E12_Production</type>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P4_has_time-span</relationship>
+            <entity>
+              <type>crm:E52_Time-Span</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">creation</arg>
+                <arg name="level2" type="constant">date</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P2_has_type</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/preprocessed_date[@preprocessed_dateQualifier]</source_node>
+          <target_node>
+            <entity>
+              <type>crm:E55_Type</type>
+              <instance_generator name="URIwithTypeAndId">
+                <arg name="type" type="constant">dateQualifier</arg>
+                <arg name="id" type="xpath">translate(normalize-space(@preprocessed_dateQualifier), '| ', '--')</arg>
+              </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">@preprocessed_dateQualifier</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+      <!-- Production date source phrase label -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/preprocessed_date[text()[normalize-space()]]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P108i_was_produced_by</relationship>
+            <entity>
+              <type>crm:E12_Production</type>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P4_has_time-span</relationship>
+            <entity>
+              <type>crm:E52_Time-Span</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">creation</arg>
+                <arg name="level2" type="constant">date</arg>
+              </instance_generator>
+            </entity>
+            <relationship>rdfs:label</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/preprocessed_date[text()[normalize-space()]]</source_node>
           <target_node>
             <entity>
               <type>rdfs:Literal</type>
@@ -869,14 +1045,14 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:note</relation>
+            <relation>note[normalize-space(.)]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P3_has_note</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:note</source_node>
+          <source_node>note[normalize-space(.)]</source_node>
           <target_node>
             <entity>
               <type>rdfs:Literal</type>
@@ -892,14 +1068,14 @@
       <link>
         <path>
           <source_relation>
-            <relation>tei:note/tei:p</relation>
+            <relation>note/p[normalize-space(.)]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P3_has_note</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>tei:note/tei:p</source_node>
+          <source_node>note/p[normalize-space(.)]</source_node>
           <target_node>
             <entity>
               <type>rdfs:Literal</type>
@@ -915,22 +1091,24 @@
       <link>
         <path>
           <source_relation>
-            <relation>ancestor::tei:listObject[@type='organisation'][@corresp]</relation>
+            <relation>ancestor::listObject[@type='organisation'][@corresp]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P50_has_current_keeper</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>ancestor::tei:listObject[@type='organisation'][@corresp]</source_node>
+          <source_node>ancestor::listObject[@type='organisation'][@corresp]</source_node>
           <target_node>
             <entity>
               <type>crm:E74_Group</type>
-              <instance_generator name="GroupURI">
-                <arg name="group_id" type="xpath">@corresp</arg>
+              <instance_generator name="URIwithTypeAndId">
+                <arg name="type" type="constant">group</arg>
+                <arg name="id" type="xpath">@corresp</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">@n</arg>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">@n</arg>
+                <arg name="language" type="constant"/>
               </label_generator>
             </entity>
           </target_node>
@@ -941,22 +1119,24 @@
       <link>
         <path>
           <source_relation>
-            <relation>ancestor::tei:listObject[@type='place'][@corresp]</relation>
+            <relation>ancestor::listObject[@type='place'][@corresp]</relation>
           </source_relation>
           <target_relation>
             <relationship>crm:P55_has_current_location</relationship>
           </target_relation>
         </path>
         <range>
-          <source_node>ancestor::tei:listObject[@type='place'][@corresp]</source_node>
+          <source_node>ancestor::listObject[@type='place'][@corresp]</source_node>
           <target_node>
             <entity>
               <type>crm:E53_Place</type>
-              <instance_generator name="PlaceURI">
-                <arg name="place_id" type="xpath">@corresp</arg>
+              <instance_generator name="URIwithTypeAndId">
+                <arg name="type" type="constant">place</arg>
+                <arg name="id" type="xpath">@corresp</arg>
               </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">@n</arg>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">@n</arg>
+                <arg name="language" type="constant"/>
               </label_generator>
             </entity>
           </target_node>
