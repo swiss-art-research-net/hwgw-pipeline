@@ -1,307 +1,243 @@
-<x3ml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      source_type="xpath"
-      version="1.0"
-      xsi:noNamespaceSchemaLocation="x3ml_v1.5.xsd"
-      editor="3MEditor v3.3">
-
-  <namespaces>
-    <namespace prefix="sari" uri="https://hwgw.uzh.ch/"/>
-    <namespace prefix="crm" uri="http://www.cidoc-crm.org/cidoc-crm/"/>
-    <namespace prefix="crmdig" uri="http://www.ics.forth.gr/isl/CRMdig/"/>
-    <namespace prefix="tei" uri="http://www.tei-c.org/ns/1.0"/>
-    <namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
-    <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema#"/>
-    <namespace prefix="xsd" uri="http://www.w3.org/2001/XMLSchema#"/>
-  </namespaces>
-
-  <mappings>
-
-    <!-- ========================================================= -->
-    <!-- PLACE -->
-    <!-- ========================================================= -->
-    <mapping>
-      <domain>
-        <source_node>//tei:listPlace/tei:place</source_node>
-        <target_node>
-          <entity>
-            <type>crm:E53_Place</type>
-
-            <instance_generator name="PlaceURI">
-              <arg name="place_id" type="xpath">@xml:id</arg>
-            </instance_generator>
-
-            <label_generator name="SimpleLabel">
-              <arg name="label" type="xpath">tei:placeName[@type='main'][1]/text()</arg>
-            </label_generator>
-          </entity>
-        </target_node>
-      </domain>
-
-      <!-- ===================================================== -->
-      <!-- Preferred main place name -->
-      <!-- ===================================================== -->
-      <link>
-        <path>
-          <source_relation>
-            <relation>tei:placeName[@type='main']</relation>
-          </source_relation>
-          <target_relation>
-            <relationship>crm:P1_is_identified_by</relationship>
-          </target_relation>
-        </path>
-        <range>
-          <source_node>tei:placeName[@type='main']</source_node>
-          <target_node>
-            <entity>
-              <type>crm:E33_E41_Linguistic_Appellation</type>
-              <instance_generator name="PlaceAppellationShortURI">
-                <arg name="place_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">normalize-space(.)</arg>
-              </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
-              </label_generator>
-              <additional>
-                <relationship>crm:P190_has_symbolic_content</relationship>
-                <entity>
-                  <type>rdfs:Literal</type>
-                  <instance_generator name="Literal">
-                    <arg name="text" type="xpath">normalize-space(.)</arg>
-                  </instance_generator>
-                </entity>
-              </additional>
-              <additional>
-                <relationship>crm:P2_has_type</relationship>
-                <entity>
-                    <type>crm:E55_Type</type>
-                    <instance_info>
-                        <constant>preferred place name</constant>
-                    </instance_info>
-                    <instance_generator name="URIorUUID">
-                        <arg name="text" type="constant">https://vocab.getty.edu/aat/300264273</arg>
-                    </instance_generator>
-                    <label_generator name="Literal">
-                        <arg name="text" type="constant">preferred terms</arg>
-                        <arg name="language" type="constant">en</arg>
-                    </label_generator>
-                    <!-- <label_generator name="Literal">
-                        <arg name="text" type="constant">Alternativer Name</arg>
-                        <arg name="language" type="constant">de</arg>
-                    </label_generator> -->
-                </entity>
-            </additional>
-            </entity>
-          </target_node>
-        </range>
-      </link>
-
-      <!-- ===================================================== -->
-      <!-- Alternative place names -->
-      <!-- ===================================================== -->
-      <link>
-        <path>
-          <source_relation>
-            <relation>tei:placeName[@type='alternative']</relation>
-          </source_relation>
-          <target_relation>
-            <relationship>crm:P1_is_identified_by</relationship>
-          </target_relation>
-        </path>
-        <range>
-          <source_node>tei:placeName[@type='alternative']</source_node>
-          <target_node>
-            <entity>
-              <type>crm:E33_E41_Linguistic_Appellation</type>
-              <instance_generator name="PlaceAppellationShortURI">
-                <arg name="place_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">concat('alternative-', normalize-space(.))</arg>
-              </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
-              </label_generator>
-              <additional>
-                <relationship>crm:P190_has_symbolic_content</relationship>
-                <entity>
-                  <type>rdfs:Literal</type>
-                  <instance_generator name="Literal">
-                    <arg name="text" type="xpath">normalize-space(.)</arg>
-                  </instance_generator>
-                </entity>
-              </additional>
-              <additional>
-                <relationship>crm:P2_has_type</relationship>
-                <entity>
-                    <type>crm:E55_Type</type>
-                    <instance_info>
-                        <constant>alternative name</constant>
-                    </instance_info>
-                    <instance_generator name="URIorUUID">
-                        <arg name="text" type="constant">https://vocab.getty.edu/aat/300264273</arg>
-                    </instance_generator>
-                    <label_generator name="Literal">
-                        <arg name="text" type="constant">alternative name</arg>
-                        <arg name="language" type="constant">en</arg>
-                    </label_generator>
-                    <!-- <label_generator name="Literal">
-                        <arg name="text" type="constant">Alternativer Name</arg>
-                        <arg name="language" type="constant">de</arg>
-                    </label_generator> -->
-                </entity>
-            </additional>
-            </entity>
-          </target_node>
-        </range>
-      </link>
-      <!-- ===================================================== -->
-      <!-- xml:id as internal identifier -->
-      <!-- ===================================================== -->
-      <link>
-        <path>
-          <source_relation>
-            <relation>@xml:id</relation>
-          </source_relation>
-          <target_relation>
-            <relationship>crm:P1_is_identified_by</relationship>
-          </target_relation>
-        </path>
-        <range>
-          <source_node>@xml:id</source_node>
-          <target_node>
-            <entity>
-              <type>crm:E42_Identifier</type>
-              <instance_generator name="PlaceAppellationShortURI">
-                <arg name="place_id" type="xpath">../@xml:id</arg>
-                <arg name="appellation_id" type="xpath">.</arg>
-              </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">.</arg>
-              </label_generator>
-              <additional>
-                <relationship>crm:P2_has_type</relationship>
-                <entity>
-                  <type>crm:E55_Type</type>
-                  <instance_info>
-                    <constant>unique identifier</constant>
-                  </instance_info>
-                  <instance_generator name="URIorUUID">
-                    <arg name="text" type="constant">http://vocab.getty.edu/aat/300404012</arg>
-                  </instance_generator>
-                  <label_generator name="Literal">
-                    <arg name="text" type="constant">unique identifiers</arg>
-                    <arg name="language" type="constant">en</arg>
-                  </label_generator>
-                  <label_generator name="Literal">
-                    <arg name="text" type="constant">eindeutige Kennung</arg>
-                    <arg name="language" type="constant">de</arg>
-                  </label_generator>
-                </entity>
-              </additional>
-            </entity>
-          </target_node>
-        </range>
-      </link>
-
-      <!-- ===================================================== -->
-      <!-- GND identifier -->
-      <!-- ===================================================== -->
-      <link>
-        <path>
-          <source_relation>
-            <relation>tei:idno[@type='GND']</relation>
-          </source_relation>
-          <target_relation>
-            <relationship>crm:P1_is_identified_by</relationship>
-          </target_relation>
-        </path>
-
-        <range>
-          <source_node>tei:idno[@type='GND']</source_node>
-          <target_node>
-            <entity>
-              <type>crm:E42_Identifier</type>
-              <instance_generator name="URIorUUID">
-                <arg name="text" type="xpath">concat('https://hwgw.uzh.ch/place/', ../../@xml:id, '/identifier/gnd/', normalize-space(.))</arg>
-              </instance_generator>
-              <label_generator name="SimpleLabel">
-                <arg name="label" type="xpath">normalize-space(.)</arg>
-              </label_generator>
-              <additional>
-                <relationship>crm:P190_has_symbolic_content</relationship>
-                <entity>
-                  <type>rdfs:Literal</type>
-                  <instance_generator name="Literal">
-                    <arg name="text" type="xpath">normalize-space(.)</arg>
-                  </instance_generator>
-                </entity>
-              </additional>
-              <additional>
-                <relationship>crm:P2_has_type</relationship>
-                <entity>
-                  <type>crm:E55_Type</type>
-                  <instance_generator name="URIorUUID">
-                    <arg name="text" type="constant">https://hwgw.uzh.ch/type/identifier/gnd</arg>
-                  </instance_generator>
-                  <label_generator name="Literal">
-                    <arg name="text" type="constant">GND identifier</arg>
-                    <arg name="language" type="constant">en</arg>
-                  </label_generator>
-                </entity>
-              </additional>
-            </entity>
-          </target_node>
-        </range>
-      </link>
-
-      <!-- ===================================================== -->
-      <!-- same-as link to external GND URI -->
-      <!-- ===================================================== -->
-      <link>
-        <path>
-          <source_relation>
-            <relation>tei:idno[@type='GND']</relation>
-          </source_relation>
-          <target_relation>
-            <relationship>crmdig:L54_is_same-as</relationship>
-          </target_relation>
-        </path>
-
-        <range>
-          <source_node>tei:idno[@type='GND']</source_node>
-          <target_node>
-            <entity>
-              <type>crm:E53_Place</type>
-              <instance_generator name="URIorUUID">
-                <arg name="text" type="xpath">concat('https://d-nb.info/gnd/', text())</arg>
-              </instance_generator>
-            </entity>
-          </target_node>
-        </range>
-      </link>
-
-      <!-- ===================================================== -->
-      <!-- Note -->
-      <!-- ===================================================== -->
-      <link>
-        <path>
-          <source_relation>
-            <relation>tei:note</relation>
-          </source_relation>
-          <target_relation>
-            <relationship>crm:P3_has_note</relationship>
-          </target_relation>
-        </path>
-        <range>
-          <source_node>tei:note</source_node>
-          <target_node>
-            <entity>
-              <type>rdfs:Literal</type>
-              <instance_generator name="Literal">
-                <arg name="text" type="xpath">normalize-space(.)</arg>
-              </instance_generator>
-            </entity>
-          </target_node>
-        </range>
-      </link>
-    </mapping>
-  </mappings>
+<?xml version="1.0" encoding="UTF-8"?><!--x3ml file generated by 3M version 3.0 (http://www.ics.forth.gr/isl/3M)--><x3ml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" editor="3MEditor v3.3" source_type="xpath" version="1.0" xsi:noNamespaceSchemaLocation="x3ml_v1.4.xsd">
+    <info>
+        <title>HWGW Places</title>
+        <general_description/>
+        <source>
+            <source_info>
+                <source_schema type="" version=""/>
+                <namespaces>
+                    <namespace prefix="crm" uri="http://www.cidoc-crm.org/cidoc-crm/"/>
+                </namespaces>
+            </source_info>
+            <source_collection/>
+        </source>
+        <target>
+            <target_info>
+                <target_schema schema_file="CIDOC_CRM_7.1.1_RDFS_Impl_v1.1___23-06-2026082138___3466___02-07-2026110605___6198.rdfs" type="rdfs" version="7.1.1">CIDOC-CRM</target_schema>
+                <namespaces>
+                    <namespace prefix="crm" uri="http://www.cidoc-crm.org/cidoc-crm/"/>
+                </namespaces>
+            </target_info>
+            <target_info>
+                <target_schema schema_file="CRMdig_v3.2.1___23-06-2026122027___1474___02-07-2026110605___3370.rdfs" type="rdfs" version="3.2.1">crmDig</target_schema>
+                <namespaces>
+                    <namespace prefix="crmdig" uri="http://www.ics.forth.gr/isl/CRMdig/"/>
+                </namespaces>
+            </target_info>
+            <target_collection/>
+        </target>
+        <mapping_info>
+            <mapping_created_by_org/>
+            <mapping_created_by_person/>
+            <in_collaboration_with/>
+        </mapping_info>
+        <example_data_info>
+            <example_data_from/>
+            <example_data_contact_person/>
+            <example_data_source_record xml_link="places___16-07-2026120524___811.xml"/>
+            <generator_policy_info generator_link="generator-policy___23-06-2026082120___12490___02-07-2026110545___9261.xml"/>
+            <example_data_target_record/>
+            <thesaurus_info/>
+        </example_data_info>
+    </info>
+    <namespaces>
+        <namespace prefix="aat" uri="http://vocab.getty.edu/aat/"/>
+        <namespace prefix="dc" uri="http://purl.org/dc/elements/1.1/"/>
+        <namespace prefix="dcterms" uri="http://purl.org/dc/terms/"/>
+        <namespace prefix="frbroo" uri="http://iflastandards.info/ns/fr/frbr/frbroo/"/>
+        <namespace prefix="gnd" uri="https://d-nb.info/gnd/"/>
+        <namespace prefix="la" uri="https://linked.art/ns/terms/"/>
+        <namespace prefix="loc" uri="http://id.loc.gov/vocabulary/relators/"/>
+        <namespace prefix="mets" uri="http://www.loc.gov/METS/"/>
+        <namespace prefix="mods" uri="http://www.loc.gov/mods/v3"/>
+        <namespace prefix="oai" uri="http://www.openarchives.org/OAI/2.0/"/>
+        <namespace prefix="rso" uri="http://www.researchspace.org/ontology/"/>
+        <namespace prefix="skos" uri="http://www.w3.org/2004/02/skos/core#"/>
+        <namespace prefix="sikart" uri="https://recherche.sik-isea.ch/en/sik:"/>
+        <namespace prefix="ulan" uri="http://vocab.getty.edu/page/ulan/"/>
+        <namespace prefix="wd" uri="http://www.wikidata.org/entity/"/>
+        <namespace prefix="viaf" uri="https://viaf.org/viaf/"/>
+        <namespace prefix="wikidata" uri="https://www.wikidata.org/wiki/"/>
+        <namespace prefix="resource" uri="https://hwgw.uzh.ch/"/>
+        <namespace prefix="crm" uri="http://www.cidoc-crm.org/cidoc-crm/"/>
+        <namespace prefix="tei" uri="http://www.tei-c.org/ns/1.0"/>
+        <namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+        <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema#"/>
+        <namespace prefix="xsd" uri="http://www.w3.org/2001/XMLSchema#"/>
+    </namespaces>
+    <mappings>
+        <mapping>
+            <domain>
+                <source_node>//place</source_node>
+                <target_node>
+                    <entity>
+                        <type>crm:E53_Place</type>
+                        <instance_generator name="URIwithTypeAndId">
+                            <arg name="type" type="constant">place</arg>
+                            <arg name="id" type="xpath">@xml:id</arg>
+                        </instance_generator>
+                        <label_generator name="Literal">
+                            <arg name="text" type="xpath">placeName[@type='main']/text()</arg>
+                            <arg name="language" type="constant">de</arg>
+                        </label_generator>
+                    </entity>
+                </target_node>
+            </domain>
+            <link>
+                <path>
+                    <source_relation>
+                        <relation>placeName</relation>
+                    </source_relation>
+                    <target_relation>
+                        <if>
+                            <equals value="main">@type</equals>
+                        </if>
+                        <relationship>crm:P1_is_identified_by</relationship>
+                        <entity>
+                            <type>crm:E41_E33_Linguistic_Appellation</type>
+                            <instance_generator name="URIwithTypeIdAnd1Level">
+                                <arg name="type" type="constant">place</arg>
+                                <arg name="id" type="xpath">../@xml:id</arg>
+                                <arg name="level1" type="constant">name</arg>
+                            </instance_generator>
+                            <additional>
+                                <relationship>crm:P2_has_type</relationship>
+                                <entity>
+                                    <type>crm:E55_Type</type>
+                                    <instance_info>
+                                        <constant/>
+                                    </instance_info>
+                                    <instance_generator name="URIwithAatId">
+                                        <arg name="id" type="constant">300404670</arg>
+                                    </instance_generator>
+                                    <label_generator name="Literal">
+                                        <arg name="text" type="constant">preferred terms</arg>
+                                        <arg name="language" type="constant"/>
+                                    </label_generator>
+                                </entity>
+                            </additional>
+                        </entity>
+                        <relationship>crm:P190_has_symbolic_content</relationship>
+                    </target_relation>
+                </path>
+                <range>
+                    <source_node>placeName</source_node>
+                    <target_node>
+                        <entity>
+                            <type>rdfs:Literal</type>
+                            <instance_generator name="Literal">
+                                <arg name="text" type="xpath">text()</arg>
+                                <arg name="language" type="constant"/>
+                            </instance_generator>
+                        </entity>
+                    </target_node>
+                </range>
+            </link>
+            <link>
+                <path>
+                    <source_relation>
+                        <relation>placeName</relation>
+                    </source_relation>
+                    <target_relation>
+                        <if>
+                            <equals value="alternative">@type</equals>
+                        </if>
+                        <relationship>crm:P1_is_identified_by</relationship>
+                        <entity>
+                            <type>crm:E41_E33_Linguistic_Appellation</type>
+                            <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                                <arg name="type" type="constant">person</arg>
+                                <arg name="id" type="xpath">../@xml:id</arg>
+                                <arg name="level1" type="constant">alternativeName</arg>
+                                <arg name="level2_HASHED_CONTENTS" type="xpath">text()</arg>
+                            </instance_generator>
+                            <additional>
+                                <relationship>crm:P2_has_type</relationship>
+                                <entity>
+                                    <type>crm:E55_Type</type>
+                                    <instance_info>
+                                        <constant/>
+                                    </instance_info>
+                                    <instance_generator name="URIwithAatId">
+                                        <arg name="id" type="constant">300264273</arg>
+                                    </instance_generator>
+                                    <label_generator name="Literal">
+                                        <arg name="text" type="constant">nonpreferred term</arg>
+                                        <arg name="language" type="constant"/>
+                                    </label_generator>
+                                </entity>
+                            </additional>
+                        </entity>
+                        <relationship>crm:P190_has_symbolic_content</relationship>
+                    </target_relation>
+                </path>
+                <range>
+                    <source_node>placeName</source_node>
+                    <target_node>
+                        <entity>
+                            <type>rdfs:Literal</type>
+                            <instance_generator name="Literal">
+                                <arg name="text" type="xpath">text()</arg>
+                                <arg name="language" type="constant"/>
+                            </instance_generator>
+                        </entity>
+                    </target_node>
+                </range>
+            </link>
+            <link>
+                <path>
+                    <source_relation>
+                        <relation>idno</relation>
+                    </source_relation>
+                    <target_relation>
+                        <if>
+                            <equals value="GND">@type</equals>
+                        </if>
+                        <relationship>crmdig:L54_is_same-as</relationship>
+                    </target_relation>
+                </path>
+                <range>
+                    <source_node>idno</source_node>
+                    <target_node>
+                        <entity>
+                            <type>crm:E53_Place</type>
+                            <instance_generator name="URIwithGndId">
+                                <arg name="id" type="xpath">text()</arg>
+                            </instance_generator>
+                            <label_generator name="Constant">
+                                <arg name="text" type="xpath">concat(../placeName[@type='main']/text(), ' in GND')</arg>
+                                <arg name="language" type="constant"/>
+                            </label_generator>
+                        </entity>
+                    </target_node>
+                </range>
+            </link>
+            <link>
+                <path>
+                    <source_relation>
+                        <relation>note</relation>
+                    </source_relation>
+                    <target_relation>
+                        <if>
+                            <exists>text()</exists>
+                        </if>
+                        <relationship>crm:P3_has_note</relationship>
+                    </target_relation>
+                </path>
+                <range>
+                    <source_node>note</source_node>
+                    <target_node>
+                        <entity>
+                            <type>rdfs:Literal</type>
+                            <instance_generator name="Literal">
+                                <arg name="text" type="xpath">text()</arg>
+                                <arg name="language" type="constant">de</arg>
+                            </instance_generator>
+                        </entity>
+                    </target_node>
+                </range>
+            </link>
+        </mapping>
+    </mappings>
+    
 </x3ml>
