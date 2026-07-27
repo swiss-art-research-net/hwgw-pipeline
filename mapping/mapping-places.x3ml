@@ -94,7 +94,7 @@
                         </if>
                         <relationship>crm:P1_is_identified_by</relationship>
                         <entity>
-                            <type>crm:E41_E33_Linguistic_Appellation</type>
+                            <type>crm:E33_E41_Linguistic_Appellation</type>
                             <instance_generator name="URIwithTypeIdAnd1Level">
                                 <arg name="type" type="constant">place</arg>
                                 <arg name="id" type="xpath">../@xml:id</arg>
@@ -144,9 +144,9 @@
                         </if>
                         <relationship>crm:P1_is_identified_by</relationship>
                         <entity>
-                            <type>crm:E41_E33_Linguistic_Appellation</type>
+                            <type>crm:E33_E41_Linguistic_Appellation</type>
                             <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
-                                <arg name="type" type="constant">person</arg>
+                                <arg name="type" type="constant">place</arg>
                                 <arg name="id" type="xpath">../@xml:id</arg>
                                 <arg name="level1" type="constant">alternativeName</arg>
                                 <arg name="level2_HASHED_CONTENTS" type="xpath">text()</arg>
@@ -163,7 +163,7 @@
                                     </instance_generator>
                                     <label_generator name="Literal">
                                         <arg name="text" type="constant">nonpreferred term</arg>
-                                        <arg name="language" type="constant"/>
+                                        <arg name="language" type="constant">en</arg>
                                     </label_generator>
                                 </entity>
                             </additional>
