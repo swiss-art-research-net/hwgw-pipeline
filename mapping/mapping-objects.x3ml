@@ -80,8 +80,8 @@
                     <instance_info>
                         <constant>preferred title</constant>
                     </instance_info>
-                    <instance_generator name="URIorUUID">
-                        <arg name="text" type="constant">http://vocab.getty.edu/aat/300404670</arg>
+                    <instance_generator name="URIwithAatId">
+                        <arg name="id" type="constant">300404670</arg>
                     </instance_generator>
                     <label_generator name="Literal">
                         <arg name="text" type="constant">preferred title</arg>
@@ -135,8 +135,8 @@
                     <instance_info>
                         <constant>alternative title</constant>
                     </instance_info>
-                    <instance_generator name="URIorUUID">
-                        <arg name="text" type="constant">https://vocab.getty.edu/aat/300264273</arg>
+                    <instance_generator name="URIwithAatId">
+                        <arg name="id" type="constant">300264273</arg>
                     </instance_generator>
                     <label_generator name="Literal">
                         <arg name="text" type="constant">nonpreferred terms</arg>
@@ -216,7 +216,7 @@
             <entity>
               <type>crm:E55_Type</type>
               <instance_generator name="URIorUUID">
-                <arg name="text" type="xpath">concat('https://hwgw.uzh.ch/type/object/', .)</arg>
+                <arg name="text" type="xpath">concat('https://hwgw.uzh.ch/type/object/', normalize-space(.))</arg>
               </instance_generator>
               <label_generator name="Literal">
                 <arg name="text" type="xpath">.</arg>
@@ -338,8 +338,8 @@
           <source_node>note/preprocessed_date[@preprocessed_dateLower]</source_node>
           <target_node>
             <entity>
-              <type>rdfs:Literal</type>
-              <instance_generator name="Literal">
+              <type>xsd:gYear</type>
+              <instance_generator name="typedLiteralGen">
                 <arg name="text" type="xpath">@preprocessed_dateLower</arg>
               </instance_generator>
             </entity>
@@ -379,8 +379,8 @@
           <source_node>note/preprocessed_date[@preprocessed_dateUpper]</source_node>
           <target_node>
             <entity>
-              <type>rdfs:Literal</type>
-              <instance_generator name="Literal">
+              <type>xsd:gYear</type>
+              <instance_generator name="typedLiteralGen">
                 <arg name="text" type="xpath">@preprocessed_dateUpper</arg>
               </instance_generator>
             </entity>
@@ -642,8 +642,8 @@
                     <instance_info>
                         <constant>preferred title</constant>
                     </instance_info>
-                    <instance_generator name="URIorUUID">
-                        <arg name="text" type="constant">http://vocab.getty.edu/aat/300404670</arg>
+                    <instance_generator name="URIwithAatId">
+                        <arg name="id" type="constant">300404670</arg>
                     </instance_generator>
                     <label_generator name="Literal">
                         <arg name="text" type="constant">preferred title</arg>
@@ -697,8 +697,8 @@
                     <instance_info>
                         <constant>alternative title</constant>
                     </instance_info>
-                    <instance_generator name="URIorUUID">
-                        <arg name="text" type="constant">https://vocab.getty.edu/aat/300264273</arg>
+                    <instance_generator name="URIwithAatId">
+                        <arg name="id" type="constant">300264273</arg>
                     </instance_generator>
                     <label_generator name="Literal">
                         <arg name="text" type="constant">alternative title</arg>
@@ -782,7 +782,7 @@
             <entity>
               <type>crm:E55_Type</type>
               <instance_generator name="URIorUUID">
-                <arg name="text" type="xpath">concat('https://hwgw.uzh.ch/type/object/', .)</arg>
+                <arg name="text" type="xpath">concat('https://hwgw.uzh.ch/type/object/', normalize-space(.))</arg>
               </instance_generator>
               <label_generator name="Literal">
                 <arg name="text" type="xpath">.</arg>
