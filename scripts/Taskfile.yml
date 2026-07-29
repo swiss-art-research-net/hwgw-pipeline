@@ -61,8 +61,8 @@ tasks:
       vars: [FILE_TYPE]
     vars:
       FILEPATH: "hw-anno/data/registers/{{.FILE_TYPE}}.xml" # ex. hw-anno/data/registers/bibliography.xml
-      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers" # ex. /dts_source/registers
-      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. /dts_source/bibliography.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers/{{.FILE_TYPE}}" # ex. /dts_source/registers/bibliography
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. /dts_source/registers/bibliography/bibliography.xml
     cmds:
       - mkdir -p {{.LOCAL_FOLDER}}
       - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
