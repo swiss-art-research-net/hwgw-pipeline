@@ -24,10 +24,13 @@
         <source_node>//listObject//object[
           @type='drawing' or
           @type='fresco' or
+          @type='medal' or
           @type='painting' or
           @type='print' or
           @type='relief' or
-          @type='sculpture'
+          @type='sculpture' or
+          @type='tapestry' or
+          @type='tomb'
         ]</source_node>
         <target_node>
           <entity>
