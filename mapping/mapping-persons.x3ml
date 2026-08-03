@@ -319,8 +319,8 @@
                                 <source_node>preprocessed_birth[@preprocessed_dateLower]</source_node>
                                 <target_node>
                                     <entity>
-                                        <type>rdfs:Literal</type>
-                                        <instance_generator name="Literal">
+                                        <type>xsd:gYear</type>
+                                        <instance_generator name="typedLiteralGen">
                                             <arg name="text" type="xpath">@preprocessed_dateLower</arg>
                                         </instance_generator>
                                     </entity>
@@ -363,8 +363,8 @@
                                 <source_node>preprocessed_birth[@preprocessed_dateUpper]</source_node>
                                 <target_node>
                                     <entity>
-                                        <type>rdfs:Literal</type>
-                                        <instance_generator name="Literal">
+                                        <type>xsd:gYear</type>
+                                        <instance_generator name="typedLiteralGen">
                                             <arg name="text" type="xpath">@preprocessed_dateUpper</arg>
                                         </instance_generator>
                                     </entity>
@@ -515,8 +515,8 @@
                                 <source_node>preprocessed_death[@preprocessed_dateLower]</source_node>
                                 <target_node>
                                     <entity>
-                                        <type>rdfs:Literal</type>
-                                        <instance_generator name="Literal">
+                                        <type>xsd:gYear</type>
+                                        <instance_generator name="typedLiteralGen">
                                             <arg name="text" type="xpath">@preprocessed_dateLower</arg>
                                         </instance_generator>
                                     </entity>
@@ -559,8 +559,8 @@
                                 <source_node>preprocessed_death[@preprocessed_dateUpper]</source_node>
                                 <target_node>
                                     <entity>
-                                        <type>rdfs:Literal</type>
-                                        <instance_generator name="Literal">
+                                        <type>xsd:gYear</type>
+                                        <instance_generator name="typedLiteralGen">
                                             <arg name="text" type="xpath">@preprocessed_dateUpper</arg>
                                         </instance_generator>
                                     </entity>
