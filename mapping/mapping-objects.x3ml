@@ -13,6 +13,7 @@
     <namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
     <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema#"/>
     <namespace prefix="xsd" uri="http://www.w3.org/2001/XMLSchema#"/>
+    <namespace prefix="aat" uri="http://vocab.getty.edu/aat/"/>
   </namespaces>
 
   <mappings>
@@ -286,6 +287,10 @@
                 <arg name="id" type="xpath">../../@xml:id</arg>
                 <arg name="level1" type="constant">production</arg>
               </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
             </entity>
             <relationship>crm:P14_carried_out_by</relationship>
           </target_relation>
@@ -323,6 +328,10 @@
                 <arg name="id" type="xpath">../../@xml:id</arg>
                 <arg name="level1" type="constant">production</arg>
               </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
             </entity>
             <relationship>crm:P4_has_time-span</relationship>
             <entity>
@@ -364,6 +373,10 @@
                 <arg name="id" type="xpath">../../@xml:id</arg>
                 <arg name="level1" type="constant">production</arg>
               </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
             </entity>
             <relationship>crm:P4_has_time-span</relationship>
             <entity>
@@ -405,6 +418,10 @@
                 <arg name="id" type="xpath">../../@xml:id</arg>
                 <arg name="level1" type="constant">production</arg>
               </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
             </entity>
             <relationship>crm:P4_has_time-span</relationship>
             <entity>
@@ -451,6 +468,10 @@
                 <arg name="id" type="xpath">../../@xml:id</arg>
                 <arg name="level1" type="constant">production</arg>
               </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
             </entity>
             <relationship>crm:P4_has_time-span</relationship>
             <entity>
@@ -478,47 +499,114 @@
         </range>
       </link>
 
-      <!-- Full note as object note -->
-      <link>
-        <path>
-          <source_relation>
-            <relation>note[normalize-space(.)]</relation>
-          </source_relation>
-          <target_relation>
-            <relationship>crm:P3_has_note</relationship>
-          </target_relation>
-        </path>
-        <range>
-          <source_node>note[normalize-space(.)]</source_node>
-          <target_node>
-            <entity>
-              <type>rdfs:Literal</type>
-              <instance_generator name="Literal">
-                <arg name="text" type="xpath">normalize-space(.)</arg>
-              </instance_generator>
-            </entity>
-          </target_node>
-        </range>
-      </link>
-
-      <!-- Material / dimension / inventory paragraph as note -->
+      <!-- Material / dimension / inventory paragraph as physical description -->
       <link>
         <path>
           <source_relation>
             <relation>note/p[normalize-space(.)]</relation>
           </source_relation>
           <target_relation>
-            <relationship>crm:P3_has_note</relationship>
+            <relationship>crm:P67i_is_referred_to_by</relationship>
           </target_relation>
         </path>
         <range>
           <source_node>note/p[normalize-space(.)]</source_node>
           <target_node>
             <entity>
-              <type>rdfs:Literal</type>
-              <instance_generator name="Literal">
-                <arg name="text" type="xpath">normalize-space(.)</arg>
+              <type>crm:E33_Linguistic_Object</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">physical-description</arg>
+                <arg name="level2_HASHED_CONTENTS" type="xpath">normalize-space(.)</arg>
               </instance_generator>
+              <additional>
+                <relationship>crm:P2_has_type</relationship>
+                <entity>
+                  <type>crm:E55_Type</type>
+                  <instance_generator name="URIorUUID">
+                    <arg name="text" type="constant">https://hwgw.uzh.ch/type/description/physical-description</arg>
+                  </instance_generator>
+                  <label_generator name="Literal">
+                    <arg name="text" type="constant">physical description</arg>
+                    <arg name="language" type="constant">en</arg>
+                  </label_generator>
+                </entity>
+              </additional>
+              <additional>
+                <relationship>crm:P190_has_symbolic_content</relationship>
+                <entity>
+                  <type>rdfs:Literal</type>
+                  <instance_generator name="Literal">
+                    <arg name="text" type="xpath">normalize-space(.)</arg>
+                  </instance_generator>
+                </entity>
+              </additional>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+
+      <!-- Structured material from note/p/material -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/p/material[normalize-space(.)]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P45_consists_of</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/p/material[normalize-space(.)]</source_node>
+          <target_node>
+            <entity>
+              <type>crm:E57_Material</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../../@xml:id</arg>
+                <arg name="level1" type="constant">material</arg>
+                <arg name="level2_HASHED_CONTENTS" type="xpath">normalize-space(.)</arg>
+              </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">normalize-space(.)</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+
+      <!-- Structured dimension from note/p/dim -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/p/dim[normalize-space(.)]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P43_has_dimension</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/p/dim[normalize-space(.)]</source_node>
+          <target_node>
+            <entity>
+              <type>crm:E54_Dimension</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../../@xml:id</arg>
+                <arg name="level1" type="constant">dimension</arg>
+                <arg name="level2_HASHED_CONTENTS" type="xpath">normalize-space(.)</arg>
+              </instance_generator>
+              <additional>
+                <relationship>crm:P90_has_value</relationship>
+                <entity>
+                  <type>rdfs:Literal</type>
+                  <instance_generator name="Literal">
+                    <arg name="text" type="xpath">normalize-space(.)</arg>
+                  </instance_generator>
+                </entity>
+              </additional>
             </entity>
           </target_node>
         </range>
@@ -852,6 +940,10 @@
                 <arg name="id" type="xpath">../../@xml:id</arg>
                 <arg name="level1" type="constant">production</arg>
               </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
             </entity>
             <relationship>crm:P14_carried_out_by</relationship>
           </target_relation>
@@ -889,6 +981,10 @@
                 <arg name="id" type="xpath">../../@xml:id</arg>
                 <arg name="level1" type="constant">production</arg>
               </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
             </entity>
             <relationship>crm:P4_has_time-span</relationship>
             <entity>
@@ -930,6 +1026,10 @@
                 <arg name="id" type="xpath">../../@xml:id</arg>
                 <arg name="level1" type="constant">production</arg>
               </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
             </entity>
             <relationship>crm:P4_has_time-span</relationship>
             <entity>
@@ -971,6 +1071,10 @@
                 <arg name="id" type="xpath">../../@xml:id</arg>
                 <arg name="level1" type="constant">production</arg>
               </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
             </entity>
             <relationship>crm:P4_has_time-span</relationship>
             <entity>
@@ -1017,6 +1121,10 @@
                 <arg name="id" type="xpath">../../@xml:id</arg>
                 <arg name="level1" type="constant">production</arg>
               </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
             </entity>
             <relationship>crm:P4_has_time-span</relationship>
             <entity>
@@ -1044,47 +1152,114 @@
         </range>
       </link>
 
-      <!-- Full note as object note -->
-      <link>
-        <path>
-          <source_relation>
-            <relation>note[normalize-space(.)]</relation>
-          </source_relation>
-          <target_relation>
-            <relationship>crm:P3_has_note</relationship>
-          </target_relation>
-        </path>
-        <range>
-          <source_node>note[normalize-space(.)]</source_node>
-          <target_node>
-            <entity>
-              <type>rdfs:Literal</type>
-              <instance_generator name="Literal">
-                <arg name="text" type="xpath">normalize-space(.)</arg>
-              </instance_generator>
-            </entity>
-          </target_node>
-        </range>
-      </link>
-
-      <!-- Material / dimension / inventory paragraph as note -->
+      <!-- Material / dimension / inventory paragraph as physical description -->
       <link>
         <path>
           <source_relation>
             <relation>note/p[normalize-space(.)]</relation>
           </source_relation>
           <target_relation>
-            <relationship>crm:P3_has_note</relationship>
+            <relationship>crm:P67i_is_referred_to_by</relationship>
           </target_relation>
         </path>
         <range>
           <source_node>note/p[normalize-space(.)]</source_node>
           <target_node>
             <entity>
-              <type>rdfs:Literal</type>
-              <instance_generator name="Literal">
-                <arg name="text" type="xpath">normalize-space(.)</arg>
+              <type>crm:E33_Linguistic_Object</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">physical-description</arg>
+                <arg name="level2_HASHED_CONTENTS" type="xpath">normalize-space(.)</arg>
               </instance_generator>
+              <additional>
+                <relationship>crm:P2_has_type</relationship>
+                <entity>
+                  <type>crm:E55_Type</type>
+                  <instance_generator name="URIorUUID">
+                    <arg name="text" type="constant">https://hwgw.uzh.ch/type/description/physical-description</arg>
+                  </instance_generator>
+                  <label_generator name="Literal">
+                    <arg name="text" type="constant">physical description</arg>
+                    <arg name="language" type="constant">en</arg>
+                  </label_generator>
+                </entity>
+              </additional>
+              <additional>
+                <relationship>crm:P190_has_symbolic_content</relationship>
+                <entity>
+                  <type>rdfs:Literal</type>
+                  <instance_generator name="Literal">
+                    <arg name="text" type="xpath">normalize-space(.)</arg>
+                  </instance_generator>
+                </entity>
+              </additional>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+
+      <!-- Structured material from note/p/material -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/p/material[normalize-space(.)]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P45_consists_of</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/p/material[normalize-space(.)]</source_node>
+          <target_node>
+            <entity>
+              <type>crm:E57_Material</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../../@xml:id</arg>
+                <arg name="level1" type="constant">material</arg>
+                <arg name="level2_HASHED_CONTENTS" type="xpath">normalize-space(.)</arg>
+              </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">normalize-space(.)</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+
+      <!-- Structured dimension from note/p/dim -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/p/dim[normalize-space(.)]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P43_has_dimension</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/p/dim[normalize-space(.)]</source_node>
+          <target_node>
+            <entity>
+              <type>crm:E54_Dimension</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels_Level2Hashed">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../../@xml:id</arg>
+                <arg name="level1" type="constant">dimension</arg>
+                <arg name="level2_HASHED_CONTENTS" type="xpath">normalize-space(.)</arg>
+              </instance_generator>
+              <additional>
+                <relationship>crm:P90_has_value</relationship>
+                <entity>
+                  <type>rdfs:Literal</type>
+                  <instance_generator name="Literal">
+                    <arg name="text" type="xpath">normalize-space(.)</arg>
+                  </instance_generator>
+                </entity>
+              </additional>
             </entity>
           </target_node>
         </range>
