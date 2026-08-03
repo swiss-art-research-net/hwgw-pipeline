@@ -156,12 +156,12 @@ tasks:
           else
             echo "{{.MODULE}}"
           fi
-      MODULE_UCFIRST:
-        sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) substr($0,2)}')"
+      # MODULE_UCFIRST:
+      #   sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) substr($0,2)}')"
     cmds:
       - task: _prepare-mapping-for-module-items
         vars:
-          MODULE: "{{.MODULE_UCFIRST}}"
+          MODULE: "{{.MODULE}}"
           
   perform-mapping-for-module-items:
     desc: Performs the mapping for a specific module. The module name should be passed as an argument or via the MODULE variable.
@@ -174,12 +174,12 @@ tasks:
           else
             echo "{{.MODULE}}"
           fi
-      MODULE_UCFIRST:
-        sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) tolower(substr($0,2))}')"
+      # MODULE_UCFIRST:
+      #   sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) tolower(substr($0,2))}')"
     cmds:
       - task: _perform-mapping-for-module-items
         vars:
-          MODULE: "{{.MODULE_UCFIRST}}"
+          MODULE: "{{.MODULE}}"
 
   _prepare-mapping-for-module-items:
     requires:
