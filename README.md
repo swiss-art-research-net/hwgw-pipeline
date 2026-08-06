@@ -30,7 +30,36 @@ The Dapytains api implementation of DTS will be available at http://localhost:80
 
 ## Tasks
 
-The pipeline can be controlled by the [Task](https://taskfile.dev/#/) runner. The tasks are defined in the `Taskfile.yml` file.
+The pipeline can be controlled by the [Task](https://taskfile.dev/#/) runner. The tasks are defined in the `scripts/Taskfile.yml` file.
+
+## Mappings
+
+Mapping definitions are in:
+- `mapping/mapping-objects.x3ml`
+- `mapping/mapping-organizations.x3ml`
+- `mapping/mapping-persons.x3ml`
+- `mapping/mapping-places.x3ml`
+
+Prepared mapping input is written to `mapping/input/<module>/` and mapping output TTL is written to `mapping/output/<module>/`.
+
+Supported mapping modules:
+- `objects`
+- `organizations`
+- `persons`
+- `places`
+
+Run mapping for one module:
+
+```sh
+docker compose exec jobs task prepare-mapping-for-module-items -- objects
+docker compose exec jobs task perform-mapping-for-module-items -- objects
+```
+
+Run mapping for all modules:
+
+```sh
+docker compose exec jobs task prepare-and-perform-mapping-for-items
+```
 
 To list available tasks, run:
 
@@ -72,5 +101,5 @@ docker compose exec jobs task ingest-items --force
 To add additional arguments to the task itself, enter the arguments after a `--` sign, e.g.:
 
 ```sh
-docker compose exec jobs task reset-last-mapped-metadata -- object
+docker compose exec jobs task reset-last-mapped-metadata -- objects
 ```
