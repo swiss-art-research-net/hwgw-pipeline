@@ -9,6 +9,7 @@ vars:
   SCHRIFTEN: 01,03,04 # 01,02,03,04,06,08
   SOURCE_FOLDER: /dts_source
   DTS_FOLDER: /dts_data
+  HWGW_DTS_ROOT: /external/hwgw-dts
 
 dotenv: 
   - /.env
@@ -202,6 +203,28 @@ tasks:
       - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
       - find {{.CATALOGFOLDER}} -maxdepth 1 -name "*.xml" -delete
       - python prepareDtsData.py --catalog {{.CATALOGFOLDER}} --inputFolder {{.INPUTFOLDER}} --outputFolder {{.OUTPUTFOLDER}} {{.CLI_ARGS}}
+
+  dts-harvest-jsonld:
+    desc: Harvest JSON-LD from a DTS endpoint using external/hwgw-dts and write a Turtle file.
+    vars:
+      ENTRYPOINT: '{{if .ENTRYPOINT}}{{.ENTRYPOINT}}{{else}}http://rs4.ethz.ch/dts/{{end}}'
+      COLLECTION_ID: '{{if .COLLECTION_ID}}{{.COLLECTION_ID}}{{else}}https://example.org/dts/collections/hwgw{{end}}'
+      OUTPUT: '{{if .OUTPUT}}{{.OUTPUT}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/dts_harvest.ttl{{end}}'
+      LOG_FILE: '{{if .LOG_FILE}}{{.LOG_FILE}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/dts_harvest.log{{end}}'
+    cmds:
+      - mkdir -p {{.HWGW_DTS_ROOT}}/data/output
+      - python {{.HWGW_DTS_ROOT}}/scripts/harvest_jsonld_to_ttl.py --entrypoint "{{.ENTRYPOINT}}" --collection-id "{{.COLLECTION_ID}}" --output "{{.OUTPUT}}" --log-file "{{.LOG_FILE}}" {{.CLI_ARGS}}
+
+  dts-build-entities-passages-index:
+    desc: Build entities-passages CSV index from DTS TEI documents using external/hwgw-dts.
+    vars:
+      ENTRYPOINT: '{{if .ENTRYPOINT}}{{.ENTRYPOINT}}{{else}}http://rs4.ethz.ch/dts/{{end}}'
+      RESOURCE_ID: '{{if .RESOURCE_ID}}{{.RESOURCE_ID}}{{else}}https://example.org/dts/collections/hwgw/s03/ed{{end}}'
+      OUTPUT: '{{if .OUTPUT}}{{.OUTPUT}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/entities_passages.csv{{end}}'
+      LOG_FILE: '{{if .LOG_FILE}}{{.LOG_FILE}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/entities_passages.log{{end}}'
+    cmds:
+      - mkdir -p {{.HWGW_DTS_ROOT}}/data/output
+      - python {{.HWGW_DTS_ROOT}}/scripts/build_entities_passages_index.py --entrypoint "{{.ENTRYPOINT}}" --resource-id "{{.RESOURCE_ID}}" --output "{{.OUTPUT}}" --log-file "{{.LOG_FILE}}" {{.CLI_ARGS}}
 
 
   _perform-mapping-for-module-items:
