@@ -41,11 +41,12 @@ services:
     container_name: ${PROJECT_NAME}_jobs
     restart: unless-stopped
     volumes:
-      # - ./mapping:/mapping
+      - ./mapping:/mapping
       - ./dts_data:/dts_data
       - ./dts_source:/dts_source
+      - ./external/hwgw-dts:/external/hwgw-dts
       - ./logs:/logs
-      # - ./scripts:/scripts
+      - ./scripts:/scripts
     environment:
       - JAVA_OPTS=-Xms512m -Xmx1024m
       - COMPOSE_PROJECT_NAME=${PROJECT_NAME}
