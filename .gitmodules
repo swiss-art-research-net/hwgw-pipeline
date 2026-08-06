@@ -1,0 +1,3 @@
+[submodule "external/hwgw-dts"]
+	path = external/hwgw-dts
+	url = https://github.com/swiss-art-research-net/hwgw-dts.git
