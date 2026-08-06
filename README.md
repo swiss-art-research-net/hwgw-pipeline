@@ -27,6 +27,34 @@ docker compose exec jobs task
 
 The Dapytains api implementation of DTS will be available at http://localhost:8000/collection/.
 
+### DTS Harvester Integration
+
+The hwgw-dts submodule is available in Docker at `/external/hwgw-dts` and can be executed through Task targets.
+
+Submodule install/update:
+
+```sh
+git submodule update --init --recursive
+git submodule update --remote external/hwgw-dts
+```
+
+The harvester task is scoped to the HWGW collection by default (`https://example.org/dts/collections/hwgw`).
+At the moment this corresponds to the three SCHRIFTEN collections (`s01`, `s03`, `s04`).
+
+```sh
+docker compose exec jobs task dts-harvest-jsonld
+docker compose exec jobs task dts-harvest-jsonld OUTPUT=/external/hwgw-dts/data/output/rs4_integration_test.ttl -- --max-resources 1
+docker compose exec jobs task dts-harvest-jsonld COLLECTION_ID=https://example.org/dts/collections/hwgw/s01
+docker compose exec jobs task dts-harvest-jsonld COLLECTION_ID=https://example.org/dts/collections/hwgw/s03
+docker compose exec jobs task dts-harvest-jsonld COLLECTION_ID=https://example.org/dts/collections/hwgw/s04
+```
+
+To build the entities-passages index:
+
+```sh
+docker compose exec jobs task dts-build-entities-passages-index RESOURCE_ID=https://example.org/dts/collections/hwgw/s03/ed
+```
+
 
 ## Tasks
 
@@ -44,6 +72,8 @@ This will output a list of tasks:
 * default:                                     Default task
 * download-all-data:                           Download all data from GitHub
 * download-mapping-files-from-3M:              Downloads the mapping file from the 3M
+* dts-build-entities-passages-index:           Build entities-passages CSV index from DTS TEI documents using external/hwgw-dts.
+* dts-harvest-jsonld:                          Harvest JSON-LD from a DTS endpoint using external/hwgw-dts and write a Turtle file.
 * ingest-classifications:                      Ingest classifications into the triplestore
 * ingest-items:                                Ingest items for all modules. Add --debug true To see the response from the triplestore
 * ingest-ontologies:                           Ingests the ontologies into individual named Graphs
