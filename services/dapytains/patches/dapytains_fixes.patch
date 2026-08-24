@@ -1,0 +1,35 @@
+diff --git a/dapytains/app/app.py b/dapytains/app/app.py
+index f12184e..3df1bdc 100644
+--- a/dapytains/app/app.py
++++ b/dapytains/app/app.py
+@@ -206,7 +206,8 @@ def get_templates(
+ ):
+     collection_template = uritemplate.URITemplate(base_uri+"collection/{?id}{&nav}")
+     document_template = uritemplate.URITemplate(base_uri+"document/{?resource}{&ref,start,end,tree}")
+-    navigation_template = uritemplate.URITemplate(base_uri+"navigation/{?resource}{&ref,start,end,tree,down}")
++    navigation_template = uritemplate.URITemplate(base_uri+"navigation{?resource,ref,start,end,tree,down}")
++    # navigation_template = uritemplate.URITemplate(base_uri+"navigation/{?resource}{&ref,start,end,tree,down}")
+ 
+     return collection_template, document_template, navigation_template
+ 
+@@ -284,8 +285,10 @@ if __name__ == "__main__":
+     import os
+     from dapytains.app.ingest import store_catalog
+     from dapytains.metadata.xml_parser import parse
++    from flask_cors import CORS
+ 
+     app = Flask(__name__)
++    CORS(app)
+     _, db = create_app(app)
+ 
+     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI", "sqlite:///../app.db")
+diff --git a/requirements.txt b/requirements.txt
+index 6419971..2c33352 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -7,3 +7,4 @@ uritemplate
+ tqdm
+ dotenv_flow
+ waitress
++flask-cors
+\ No newline at end of file

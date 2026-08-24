@@ -44,6 +44,7 @@ services:
       - ./mapping:/mapping
       - ./dts_data:/dts_data
       - ./dts_source:/dts_source
+      - ./external/hwgw-dts:/external/hwgw-dts
       - ./logs:/logs
       - ./scripts:/scripts
     environment:
@@ -59,7 +60,10 @@ services:
 
   
   dapytains:
-    build: ./services/dapytains
+    build: 
+      context: ./services/dapytains
+      args:
+        DAPYTAINS_VERSION: ${DAPYTAINS_VERSION}
     container_name: ${PROJECT_NAME}_dapytains
     restart: unless-stopped
     environment:

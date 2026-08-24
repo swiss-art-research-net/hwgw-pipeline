@@ -9,6 +9,7 @@ vars:
   SCHRIFTEN: 01,03,04 # 01,02,03,04,06,08
   SOURCE_FOLDER: /dts_source
   DTS_FOLDER: /dts_data
+  HWGW_DTS_ROOT: /external/hwgw-dts
   MODULES: objects,organizations,persons,places
 
 dotenv: 
@@ -26,6 +27,28 @@ tasks:
       - task: prepare-and-perform-mapping-for-items
       # - task: ingest-items
       # - task: ingest-ontologies
+
+  generate-entity-index:
+    desc: Generate CSV index of mapped person/object/org/place entities and URIs
+    vars:
+      REGISTER_ROOT:
+        sh: echo "${REGISTER_ROOT:-/dts_source/registers}"
+      MAPPING_ROOT:
+        sh: echo "${MAPPING_ROOT:-/mapping}"
+      OUTPUT:
+        sh: echo "${OUTPUT:-/mapping/output/register-entity-index.csv}"
+    cmds:
+      - python generateEntityIndex.py
+        --persons-xml {{.REGISTER_ROOT}}/persons/persons.xml
+        --organizations-xml {{.REGISTER_ROOT}}/organizations/organizations.xml
+        --places-xml {{.REGISTER_ROOT}}/places/places.xml
+        --objects-xml {{.REGISTER_ROOT}}/objects/objects.xml
+        --persons-mapping {{.MAPPING_ROOT}}/mapping-persons.x3ml
+        --organizations-mapping {{.MAPPING_ROOT}}/mapping-organizations.x3ml
+        --places-mapping {{.MAPPING_ROOT}}/mapping-places.x3ml
+        --objects-mapping {{.MAPPING_ROOT}}/mapping-objects.x3ml
+        --generator-policy {{.MAPPING_ROOT}}/generator-policy.xml
+        --output {{.OUTPUT}}
 
   
   download-all-data:
@@ -207,6 +230,28 @@ tasks:
       - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
       - find {{.CATALOGFOLDER}} -maxdepth 1 -name "*.xml" -delete
       - python prepareDtsData.py --catalog {{.CATALOGFOLDER}} --inputFolder {{.INPUTFOLDER}} --outputFolder {{.OUTPUTFOLDER}} {{.CLI_ARGS}}
+
+  dts-harvest-jsonld:
+    desc: Harvest JSON-LD from a DTS endpoint using external/hwgw-dts and write a Turtle file.
+    vars:
+      ENTRYPOINT: '{{if .ENTRYPOINT}}{{.ENTRYPOINT}}{{else}}http://rs4.ethz.ch/dts/{{end}}'
+      COLLECTION_ID: '{{if .COLLECTION_ID}}{{.COLLECTION_ID}}{{else}}https://example.org/dts/collections/hwgw{{end}}'
+      OUTPUT: '{{if .OUTPUT}}{{.OUTPUT}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/dts_harvest.ttl{{end}}'
+      LOG_FILE: '{{if .LOG_FILE}}{{.LOG_FILE}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/dts_harvest.log{{end}}'
+    cmds:
+      - mkdir -p {{.HWGW_DTS_ROOT}}/data/output
+      - python {{.HWGW_DTS_ROOT}}/scripts/harvest_jsonld_to_ttl.py --entrypoint "{{.ENTRYPOINT}}" --collection-id "{{.COLLECTION_ID}}" --output "{{.OUTPUT}}" --log-file "{{.LOG_FILE}}" {{.CLI_ARGS}}
+
+  dts-build-entities-passages-index:
+    desc: Build entities-passages CSV index from DTS TEI documents using external/hwgw-dts.
+    vars:
+      ENTRYPOINT: '{{if .ENTRYPOINT}}{{.ENTRYPOINT}}{{else}}http://rs4.ethz.ch/dts/{{end}}'
+      RESOURCE_ID: '{{if .RESOURCE_ID}}{{.RESOURCE_ID}}{{else}}https://example.org/dts/collections/hwgw/s03/ed{{end}}'
+      OUTPUT: '{{if .OUTPUT}}{{.OUTPUT}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/entities_passages.csv{{end}}'
+      LOG_FILE: '{{if .LOG_FILE}}{{.LOG_FILE}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/entities_passages.log{{end}}'
+    cmds:
+      - mkdir -p {{.HWGW_DTS_ROOT}}/data/output
+      - python {{.HWGW_DTS_ROOT}}/scripts/build_entities_passages_index.py --entrypoint "{{.ENTRYPOINT}}" --resource-id "{{.RESOURCE_ID}}" --output "{{.OUTPUT}}" --log-file "{{.LOG_FILE}}" {{.CLI_ARGS}}
 
 
   _perform-mapping-for-module-items:

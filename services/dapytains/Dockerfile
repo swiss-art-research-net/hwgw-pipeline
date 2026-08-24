@@ -3,7 +3,9 @@ FROM python:3.13.5-bookworm
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
         curl \
+        git \
         make \
+        patch \
         zsh \
     && \
     apt-get clean && \
@@ -14,10 +16,20 @@ RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/70f0e5285f802ce
 RUN echo "fbfcd1c0bf99acfcf77f7f999d75bb8c833d3b58643b603b3971d8cd1991fc2e install.sh" | sha256sum --check
 RUN chmod +x install.sh && ./install.sh && rm install.sh
 
-COPY . /app
-
 WORKDIR /app
+
+ARG DAPYTAINS_VERSION
+
+RUN echo "Building MyDapytains ${DAPYTAINS_VERSION}"
+RUN curl -L https://github.com/distributed-text-services/MyDapytains/archive/refs/tags/${DAPYTAINS_VERSION}.tar.gz \
+    | tar -xz --strip-components=1
+
+COPY patches/dapytains_fixes.patch /tmp/
+
+RUN git init && \
+    git apply /tmp/dapytains_fixes.patch
+
 
 RUN make install
 
-ENTRYPOINT exec python -m dapytains.app.app
+ENTRYPOINT ["python", "-m", "dapytains.app.app"]
