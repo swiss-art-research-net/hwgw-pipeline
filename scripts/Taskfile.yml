@@ -27,6 +27,28 @@ tasks:
       # - task: ingest-items
       # - task: ingest-ontologies
 
+  generate-entity-index:
+    desc: Generate CSV index of mapped person/object/org/place entities and URIs
+    vars:
+      REGISTER_ROOT:
+        sh: echo "${REGISTER_ROOT:-/dts_source/registers}"
+      MAPPING_ROOT:
+        sh: echo "${MAPPING_ROOT:-/mapping}"
+      OUTPUT:
+        sh: echo "${OUTPUT:-/mapping/output/register-entity-index.csv}"
+    cmds:
+      - python generateEntityIndex.py
+        --persons-xml {{.REGISTER_ROOT}}/persons/persons.xml
+        --organizations-xml {{.REGISTER_ROOT}}/organizations/organizations.xml
+        --places-xml {{.REGISTER_ROOT}}/places/places.xml
+        --objects-xml {{.REGISTER_ROOT}}/objects/objects.xml
+        --persons-mapping {{.MAPPING_ROOT}}/mapping-persons.x3ml
+        --organizations-mapping {{.MAPPING_ROOT}}/mapping-organizations.x3ml
+        --places-mapping {{.MAPPING_ROOT}}/mapping-places.x3ml
+        --objects-mapping {{.MAPPING_ROOT}}/mapping-objects.x3ml
+        --generator-policy {{.MAPPING_ROOT}}/generator-policy.xml
+        --output {{.OUTPUT}}
+
   
   download-all-data:
     desc: Download all data from GitHub
