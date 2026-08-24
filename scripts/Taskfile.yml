@@ -36,7 +36,7 @@ tasks:
       MAPPING_ROOT:
         sh: echo "${MAPPING_ROOT:-/mapping}"
       OUTPUT:
-        sh: echo "${OUTPUT:-/mapping/output/register-entity-index.csv}"
+        sh: echo "${OUTPUT:-/mapping/register-entity-index.csv}"
     cmds:
       - python generateEntityIndex.py
         --persons-xml {{.REGISTER_ROOT}}/persons/persons.xml
