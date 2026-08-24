@@ -10,6 +10,7 @@ vars:
   SOURCE_FOLDER: /dts_source
   DTS_FOLDER: /dts_data
   HWGW_DTS_ROOT: /external/hwgw-dts
+  MODULES: objects,organizations,persons,places
 
 dotenv: 
   - /.env
@@ -23,7 +24,7 @@ tasks:
     cmds:
       - task: download-all-data
       - task: prepare-dts-catalog-data
-      # - task: prepare-and-perform-mapping-for-items
+      - task: prepare-and-perform-mapping-for-items
       # - task: ingest-items
       # - task: ingest-ontologies
 
@@ -83,8 +84,8 @@ tasks:
       vars: [FILE_TYPE]
     vars:
       FILEPATH: "hw-anno/data/registers/{{.FILE_TYPE}}.xml" # ex. hw-anno/data/registers/bibliography.xml
-      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers" # ex. /dts_source/registers
-      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. /dts_source/bibliography.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers/{{.FILE_TYPE}}" # ex. /dts_source/registers/bibliography
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. /dts_source/registers/bibliography/bibliography.xml
     cmds:
       - mkdir -p {{.LOCAL_FOLDER}}
       - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
@@ -147,10 +148,14 @@ tasks:
     MAPPING_INPUTFOLDER:
       sh: echo "/mapping/input"
     cmds:
-      # - echo "Preparing mapping..."
-      # - task: _prepare-mapping-for-module-items
-      #   vars:
-      #     MODULE: "all"
+      - echo "Preparing mapping..."
+      - for:
+          var: MODULES
+          split: ','
+          as: MODULE
+        task: _prepare-mapping-for-module-items
+        vars:
+          MODULE: "{{.MODULE}}"
       - echo "Mapping..."
       - echo "" > /logs/mapping-log.log
       - for:
@@ -160,7 +165,7 @@ tasks:
         task: _perform-mapping-for-module-items
         vars:
           MODULE: "{{.MODULE}}"
-      # - find {{.MAPPING_INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
+      - find {{.MAPPING_INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
 
 
   prepare-mapping-for-module-items:
@@ -174,12 +179,12 @@ tasks:
           else
             echo "{{.MODULE}}"
           fi
-      MODULE_UCFIRST:
-        sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) substr($0,2)}')"
+      # MODULE_UCFIRST:
+      #   sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) substr($0,2)}')"
     cmds:
       - task: _prepare-mapping-for-module-items
         vars:
-          MODULE: "{{.MODULE_UCFIRST}}"
+          MODULE: "{{.MODULE}}"
           
   perform-mapping-for-module-items:
     desc: Performs the mapping for a specific module. The module name should be passed as an argument or via the MODULE variable.
@@ -192,12 +197,12 @@ tasks:
           else
             echo "{{.MODULE}}"
           fi
-      MODULE_UCFIRST:
-        sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) tolower(substr($0,2))}')"
+      # MODULE_UCFIRST:
+      #   sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) tolower(substr($0,2))}')"
     cmds:
       - task: _perform-mapping-for-module-items
         vars:
-          MODULE: "{{.MODULE_UCFIRST}}"
+          MODULE: "{{.MODULE}}"
 
   _prepare-mapping-for-module-items:
     requires:
@@ -205,9 +210,9 @@ tasks:
     vars:
       MODULE: "{{.MODULE}}"
       INPUTFOLDER:
-        sh: echo "/data/source/xml"
+        sh: echo "/dts_source/registers/$(echo "{{.MODULE}}")"
       OUTPUTFOLDER:
-        sh: echo "/mapping/input"
+        sh: echo "/mapping/input/$(echo "{{.MODULE}}")"
     cmds:
       - mkdir -p {{.OUTPUTFOLDER}}
       - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
@@ -255,8 +260,7 @@ tasks:
         vars: [MODULE]
       vars:
         INPUTFOLDER:
-          # sh: echo "/data/source/xml"
-          sh: echo "/mapping/input"
+          sh: echo "/mapping/input/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
         OUTPUTFOLDER:
           sh: echo "/mapping/output/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
         DESTINATIONFOLDER:
@@ -265,6 +269,8 @@ tasks:
           sh: echo "/mapping/mapping-$(echo "{{.MODULE}}" | awk '{print tolower($0)}').x3ml"
         MAX_MAPPING_LOG_LINES: 500000
       cmds:
+        - echo "Performing mapping for {{.MODULE}}..."
+        - mkdir -p /mapping/output
         - mkdir -p {{.OUTPUTFOLDER}}
         - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.ttl" -delete
         - mkdir -p /logs
@@ -286,21 +292,23 @@ tasks:
           echo $new_total_lines > /logs/log_marker_line        
         
         - echo "Full mapping log output /log/mapping-log.log"
-        - task: _update-metadata-for-module
-          vars:
-            KEY: lastMapped
-            VALUE:
-              sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
-            SOURCEFOLDER: "{{.INPUTFOLDER}}"
-            FILEEXTENSION: .xml
+
+        # HOLD ON WITH THIS
+        # - task: _update-metadata-for-module
+        #   vars:
+        #     KEY: lastMapped
+        #     VALUE:
+        #       sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
+        #     SOURCEFOLDER: "{{.INPUTFOLDER}}"
+        #     FILEEXTENSION: .xml
         # - find {{.INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
         - echo "Done for now..."
         # - task: _perform-post-mapping-tasks
         #   vars:
         #     MODULE: "{{.MODULE}}"
         #     FOLDER: "{{.OUTPUTFOLDER}}"
-        - mkdir -p {{.DESTINATIONFOLDER}}
-        - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.ttl" -exec mv -t {{.DESTINATIONFOLDER}} {} +
+        # - mkdir -p {{.DESTINATIONFOLDER}}
+        # - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.ttl" -exec mv -t {{.DESTINATIONFOLDER}} {} +
 
     
   _update-metadata-for-module:

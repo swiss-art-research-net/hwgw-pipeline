@@ -46,7 +46,7 @@ services:
       - ./dts_source:/dts_source
       - ./external/hwgw-dts:/external/hwgw-dts
       - ./logs:/logs
-      # - ./scripts:/scripts
+      - ./scripts:/scripts
     environment:
       - JAVA_OPTS=-Xms512m -Xmx1024m
       - COMPOSE_PROJECT_NAME=${PROJECT_NAME}
