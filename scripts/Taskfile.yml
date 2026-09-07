@@ -253,6 +253,24 @@ tasks:
       - mkdir -p {{.HWGW_DTS_ROOT}}/data/output
       - python {{.HWGW_DTS_ROOT}}/scripts/build_entities_passages_index.py --entrypoint "{{.ENTRYPOINT}}" --resource-id "{{.RESOURCE_ID}}" --output "{{.OUTPUT}}" --log-file "{{.LOG_FILE}}" {{.CLI_ARGS}}
 
+  dts-build-enriched-rdf:
+    desc: Build and verify enriched HWGW RDF from a DTS endpoint; writes only to external/hwgw-dts/data/output.
+    vars:
+      ENTRYPOINT: '{{if .ENTRYPOINT}}{{.ENTRYPOINT}}{{else}}http://rs4.ethz.ch/dts/{{end}}'
+      VIEWER_WORKAROUND: '{{if .VIEWER_WORKAROUND}}{{.VIEWER_WORKAROUND}}{{else}}false{{end}}'
+      COLLECTION_ID: '{{if .COLLECTION_ID}}{{.COLLECTION_ID}}{{else}}https://example.org/dts/collections/hwgw{{end}}'
+      RESOURCE_ID: '{{if .RESOURCE_ID}}{{.RESOURCE_ID}}{{else}}https://example.org/dts/collections/hwgw/s03/ed{{end}}'
+      TREE: '{{if .TREE}}{{.TREE}}{{else}}published_page{{end}}'
+      CITE_TYPE: '{{if .CITE_TYPE}}{{.CITE_TYPE}}{{else}}page{{end}}'
+      OUTPUT_PREFIX: '{{if .OUTPUT_PREFIX}}{{.OUTPUT_PREFIX}}{{else}}hwgw{{end}}'
+      OUTPUT_DIR: '{{if .OUTPUT_DIR}}{{.OUTPUT_DIR}}{{else}}{{.HWGW_DTS_ROOT}}/data/output{{end}}'
+    cmds:
+      - mkdir -p {{.OUTPUT_DIR}}
+      - python {{.HWGW_DTS_ROOT}}/scripts/harvest_jsonld_to_ttl.py --entrypoint "{{.ENTRYPOINT}}" {{if eq .VIEWER_WORKAROUND "true"}}--endpoint-style concrete{{end}} --collection-id "{{.COLLECTION_ID}}" --output "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.log"
+      - python {{.HWGW_DTS_ROOT}}/scripts/build_entities_passages_index.py --entrypoint "{{.ENTRYPOINT}}" {{if eq .VIEWER_WORKAROUND "true"}}--endpoint-style concrete{{end}} --resource-id "{{.RESOURCE_ID}}" --tree "{{.TREE}}" --cite-type "{{.CITE_TYPE}}" --output "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.csv" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.log"
+      - python {{.HWGW_DTS_ROOT}}/scripts/combine_entity_graph.py --ttl "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.ttl" --entities-passages "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.csv" --external-index /mapping/register-entity-index.csv --output "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_combined.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_combine.log"
+      - python {{.HWGW_DTS_ROOT}}/scripts/verify_pipeline.py --harvest-ttl "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.ttl" --harvest-log "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.log" --entities-passages "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.csv" --external-index /mapping/register-entity-index.csv --combined-ttl "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_combined.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_verify.log"
+
 
   _perform-mapping-for-module-items:
       internal: true
