@@ -25,7 +25,7 @@ docker compose exec jobs task
 
 ## DTS api
 
-The Dapytains api implementation of DTS will be available at http://localhost:8000/collection/.
+The DapyTains DTS API is available at `http://localhost:4000/`.
 
 ### DTS Harvester Integration
 
@@ -54,6 +54,40 @@ To build the entities-passages index:
 ```sh
 docker compose exec jobs task dts-build-entities-passages-index RESOURCE_ID=https://example.org/dts/collections/hwgw/s03/ed
 ```
+
+### Build enriched RDF
+
+`dts-build-enriched-rdf` harvests DTS data, indexes passage references, combines
+them with `mapping/register-entity-index.csv`, and verifies the resulting Turtle.
+All generated files are written to `external/hwgw-dts/data/output/`.
+
+Use the remote RS4 DTS endpoint (default):
+
+```sh
+docker compose exec jobs task dts-build-enriched-rdf
+```
+
+Use the local DapyTains endpoint and write `local_hwgw_combined.ttl`:
+
+```sh
+docker compose exec jobs task dts-build-enriched-rdf \
+	ENTRYPOINT=http://dapytains:4000/ \
+	OUTPUT_PREFIX=local_hwgw
+```
+
+Both local and remote runs use the API-compliant `uri-template` mode by default.
+
+The local viewer workaround is separate and disabled by default. To enable it,
+set `DAPYTAINS_VIEWER_WORKAROUND=true` in `.env` and rebuild DapyTains:
+
+```sh
+docker compose build dapytains
+docker compose up -d dapytains
+```
+
+When running the enriched RDF task against that viewer-enabled service, pass
+`VIEWER_WORKAROUND=true`; this is the only case where the task passes
+`--endpoint-style concrete` to the DTS scripts.
 
 
 ## Tasks
