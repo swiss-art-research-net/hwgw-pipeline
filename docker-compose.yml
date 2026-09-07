@@ -64,6 +64,7 @@ services:
       context: ./services/dapytains
       args:
         DAPYTAINS_VERSION: ${DAPYTAINS_VERSION}
+        DAPYTAINS_VIEWER_WORKAROUND: ${DAPYTAINS_VIEWER_WORKAROUND:-false}
     container_name: ${PROJECT_NAME}_dapytains
     restart: unless-stopped
     environment:
