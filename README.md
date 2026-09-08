@@ -55,24 +55,26 @@ To build the entities-passages index:
 docker compose exec jobs task dts-build-entities-passages-index RESOURCE_ID=https://example.org/dts/collections/hwgw/s03/ed
 ```
 
-### Build enriched RDF
+### Build combined RDF
 
-`dts-build-enriched-rdf` harvests DTS data, indexes passage references, combines
+`dts-build-combined-rdf` harvests DTS data, indexes passage references, combines
 them with `mapping/register-entity-index.csv`, and verifies the resulting Turtle.
 All generated files are written to `external/hwgw-dts/data/output/`.
 
-Use the remote RS4 DTS endpoint (default):
+By default, all `dts-*` tasks use the local DapyTains DTS endpoint
+(`http://dapytains:4000/`) and write `local_hwgw_*` files:
 
 ```sh
-docker compose exec jobs task dts-build-enriched-rdf
+docker compose exec jobs task dts-build-combined-rdf
 ```
 
-Use the local DapyTains endpoint and write `local_hwgw_combined.ttl`:
+To explicitly run against the remote RS4 DTS endpoint instead, override both
+`DTS_ENTRYPOINT` and `DTS_OUTPUT_PREFIX` together, so remote output never mixes with local output:
 
 ```sh
-docker compose exec jobs task dts-build-enriched-rdf \
-	ENTRYPOINT=http://dapytains:4000/ \
-	OUTPUT_PREFIX=local_hwgw
+docker compose exec jobs task dts-build-combined-rdf \
+	DTS_ENTRYPOINT=http://rs4.ethz.ch/dts/ \
+	DTS_OUTPUT_PREFIX=hwgw
 ```
 
 Both local and remote runs use the API-compliant `uri-template` mode by default.
@@ -88,6 +90,19 @@ docker compose up -d dapytains
 When running the enriched RDF task against that viewer-enabled service, pass
 `VIEWER_WORKAROUND=true`; this is the only case where the task passes
 `--endpoint-style concrete` to the DTS scripts.
+
+To add RDS `owl:sameAs` links for HWGW entities with GND identifiers, run:
+
+```sh
+docker compose exec jobs task dts-build-full-rdf
+```
+
+This first builds the combined RDF (`dts-build-combined-rdf`), then adds RDS
+links (`dts-add-rds-links`), which queries the RDS `extend` endpoint in
+batches using `https://d-nb.info/gnd/<id>` identifiers derived from the register.
+RDS links are written to a separate file from the combined DTS graph: `external/hwgw-dts/data/output/local_hwgw_rds_links.ttl`, containing
+only `owl:sameAs` triples, alongside the unmodified `local_hwgw_combined.ttl`.
+Override `RDS_ENDPOINT` when RDS is exposed at another host or port.
 
 
 ## Tasks
