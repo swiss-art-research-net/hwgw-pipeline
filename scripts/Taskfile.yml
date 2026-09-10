@@ -1,7 +1,7 @@
 version: '3'
 
 vars:
-  BLAZEGRAPH_ENDPOINT: http://blazegraph:8080/blazegraph/sparql
+  # BLAZEGRAPH_ENDPOINT: http://blazegraph:8080/blazegraph/sparql
   X3ML_ENDPOINT: http://localhost:8089/transform
   GENERATOR_POLICY: /mapping/generator-policy.xml
   NAMESPACE: http://hwgw.uzh.ch/
