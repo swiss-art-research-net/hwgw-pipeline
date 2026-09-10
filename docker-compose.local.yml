@@ -1,9 +1,9 @@
-services:
+# services:
 
-  blazegraph:
-    ports:
-      - $PORT_BLAZEGRAPH:8080
+  # blazegraph:
+  #   ports:
+  #     - $PORT_BLAZEGRAPH:8080
 
-  researchspace:
-    ports:
-      - $PORT_RESEARCHSPACE:8080
+  # researchspace:
+  #   ports:
+  #     - $PORT_RESEARCHSPACE:8080
