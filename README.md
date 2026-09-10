@@ -23,6 +23,51 @@ The pipeline can be controlled by the Task runner. You can run the default task 
 docker compose exec jobs task
 ```
 
+## Inspecting the RDF output with QLever
+
+A [QLever](https://github.com/ad-freiburg/qlever) SPARQL endpoint is available to browse and
+query the pipeline's RDF output (`local_hwgw_combined.ttl` + `local_hwgw_rds_links.ttl`).
+
+Start it:
+
+```sh
+docker compose up -d qlever
+```
+
+Build (or rebuild) the index from the current pipeline output and start the QLever server.
+This must be run on the **host**, not via `docker compose exec jobs task`, since it needs to
+run `docker compose exec` against the `qlever` service itself:
+
+```sh
+./scripts/reindex-qlever.sh
+```
+
+Then query the SPARQL endpoint at `http://localhost:${PORT_QLEVER}` (default `7011`, see
+`.env`), e.g.:
+
+```sh
+curl -s -X POST -H 'Content-Type: application/sparql-query' \
+  -H 'Accept: application/sparql-results+json' \
+  --data-binary 'SELECT (COUNT(*) AS ?n) WHERE { ?s ?p ?o }' \
+  http://localhost:7011
+```
+
+
+### QLever UI (browser interface)
+
+Start
+[QLever UI](https://github.com/ad-freiburg/qlever-ui):
+
+```sh
+docker compose up -d qlever-ui
+```
+
+Its database and `admin`/`admin` account are created automatically on first start - no manual setup step needed. Then, once (via the browser):
+1. Open `http://localhost:${PORT_QLEVER_UI}` (default `7012`) `/admin` and log in as `admin`/`admin`.
+2. Under "Backends", add a backend with SPARQL endpoint `http://localhost:${PORT_QLEVER}`
+   (default `http://localhost:7011`).
+3. Open `http://localhost:${PORT_QLEVER_UI}`, select the new backend, and start querying.
+
 ## DTS api
 
 The DapyTains DTS API is available at `http://localhost:4000/`.
