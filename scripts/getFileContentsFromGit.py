@@ -6,38 +6,6 @@ import re
 import os
 import sys
 from urllib.request import urlopen
-from datetime import datetime, timezone
-
-
-def _load_metadata(path):
-    if os.path.exists(path):
-        with open(path, 'r', encoding='utf-8') as f:
-            try:
-                return json.load(f)
-            except json.JSONDecodeError:
-                return {}
-    return {}
-
-
-def _write_metadata(path, metadata):
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(metadata, f, indent=4)
-
-
-def _update_metadata_for_download(localfile):
-    folder = os.path.dirname(localfile)
-    filename = os.path.basename(localfile)
-    metadata_path = os.path.join(folder, 'metadata.json')
-
-    metadata = _load_metadata(metadata_path)
-    files = metadata.setdefault('files', {})
-    file_metadata = files.setdefault(filename, {})
-
-    now_utc = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
-    file_metadata['lastDownloaded'] = now_utc
-    metadata['lastDownloaded'] = now_utc
-
-    _write_metadata(metadata_path, metadata)
 
 # Call with arguments:
 # 1: GitHub username
@@ -83,7 +51,6 @@ result = base64.b64decode( fileRequest.json()['content'] ).decode('UTF-8', 'igno
 if not "https://git-lfs.github.com/spec/v1" in result:
     with open(localfile, 'w', encoding='utf-8') as f:
         f.write(result)
-    _update_metadata_for_download(localfile)
 else:
     # Download from GIT LFS
     sha = re.findall(r'sha256:([a-z0-9]*)', result)[0]
@@ -114,6 +81,5 @@ else:
 
     with open(localfile, 'w', encoding='utf-8') as f:
         f.write(response.content.decode('UTF-8', 'ignore'))
-    _update_metadata_for_download(localfile)
 
 sys.stderr.write("Done!\n")

@@ -62,16 +62,6 @@ class ItemMetadata:
         else:
             return None
 
-    def getLastDownloadedDateForFile(self, filename):
-        """
-        Get the last downloaded date from the metadata file for a specific filename.
-        The last downloaded date is stored in the key 'lastDownloaded' for the given filename in the 'files' key.
-        """
-        if 'files' in self.metadata and filename in self.metadata['files'] and 'lastDownloaded' in self.metadata['files'][filename]:
-            return self.metadata['files'][filename]['lastDownloaded']
-        else:
-            return None
-
     def getLastUpdatedDate(self):
         """
         Get the last updated date from the metadata file.
@@ -168,23 +158,6 @@ class ItemMetadata:
         if write:
             self.writeMetadata()
 
-    def setLastDownloaded(self, lastDownloaded, *, write=True):
-        """
-        Set the last downloaded date for the module.
-        Adds the key 'lastDownloaded' to the metadata if it does not exist yet and
-        sets the value to the given lastDownloaded date.
-
-        args:
-            lastDownloaded (str or datetime): The last downloaded date to set
-            write (bool, optional): Whether to write the metadata to the metadata file. Defaults to True.
-        """
-        if isinstance(lastDownloaded, str):
-            self.metadata['lastDownloaded'] = lastDownloaded
-        elif isinstance(lastDownloaded, datetime):
-            self.metadata['lastDownloaded'] = lastDownloaded.strftime('%Y-%m-%dT%H:%M:%SZ')
-        if write:
-            self.writeMetadata()
-
     def setLastUpdatedForFile(self, filename, lastUpdated, *, write=True):
         """
         Set the last updated date for a specific file.
@@ -206,30 +179,10 @@ class ItemMetadata:
         if write:
             self.writeMetadata()
 
-    def setLastDownloadedForFile(self, filename, lastDownloaded, *, write=True):
-        """
-        Set the last downloaded date for a specific file.
-
-        args:
-            filename (str): The filename of the file to set the last downloaded date for
-            lastDownloaded (str or datetime): The last downloaded date to set
-            write (bool, optional): Whether to write the metadata to the metadata file. Defaults to True.
-        """
-        if not 'files' in self.metadata:
-            self.metadata['files'] = {}
-        if not filename in self.metadata['files'] or not isinstance(self.metadata['files'][filename], dict):
-            self.metadata['files'][filename] = {}
-        if isinstance(lastDownloaded, str):
-            self.metadata['files'][filename]['lastDownloaded'] = lastDownloaded
-        elif isinstance(lastDownloaded, datetime):
-            self.metadata['files'][filename]['lastDownloaded'] = lastDownloaded.strftime('%Y-%m-%dT%H:%M:%SZ')
-        if write:
-            self.writeMetadata()
-
     def setKeyValueForFile(self, filename, key, value, *, write=True):
         """
         Set a metadata key for a specific file to a given value.
-        Creates missing metadata structures for the file if needed.
+        The key for the specific file must exist already:
 
         args:
             filename (str): The filename of the file to set the last updated date for
@@ -237,10 +190,6 @@ class ItemMetadata:
             value (str): The value to set
             write (bool, optional): Whether to write the metadata to the metadata file. Defaults to True.
         """
-        if not 'files' in self.metadata:
-            self.metadata['files'] = {}
-        if not filename in self.metadata['files'] or not isinstance(self.metadata['files'][filename], dict):
-            self.metadata['files'][filename] = {}
         self.metadata['files'][filename][key] = value
         if write:
             self.writeMetadata()

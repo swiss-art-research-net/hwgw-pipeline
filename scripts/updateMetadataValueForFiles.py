@@ -25,7 +25,8 @@ def setMetadata(metadataFolder, inputFolder, key, value, *, fileExtension='.xml'
     files = [f for f in listdir(inputFolder) if isfile(join(inputFolder, f)) and f.endswith(fileExtension)]
     print('Updating metadata for {} files'.format(len(files)))
     for file in files:
-        fileKey = file.replace(fileExtension, '.xml')
+        # fileKey = file.replace(fileExtension, '.xml')
+        fileKey = file.replace(fileExtension, '.json')
         metadata.setKeyValueForFile(fileKey, key, value, write=False)
     metadata.writeMetadata()
 
