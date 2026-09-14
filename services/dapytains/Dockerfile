@@ -19,15 +19,20 @@ RUN chmod +x install.sh && ./install.sh && rm install.sh
 WORKDIR /app
 
 ARG DAPYTAINS_VERSION
+ARG DAPYTAINS_VIEWER_WORKAROUND=false
 
 RUN echo "Building MyDapytains ${DAPYTAINS_VERSION}"
 RUN curl -L https://github.com/distributed-text-services/MyDapytains/archive/refs/tags/${DAPYTAINS_VERSION}.tar.gz \
     | tar -xz --strip-components=1
 
 COPY patches/dapytains_fixes.patch /tmp/
+COPY patches/viewer_navigation.patch /tmp/
 
 RUN git init && \
-    git apply /tmp/dapytains_fixes.patch
+    git apply /tmp/dapytains_fixes.patch && \
+    if [ "$DAPYTAINS_VIEWER_WORKAROUND" = "true" ]; then \
+        git apply /tmp/viewer_navigation.patch; \
+    fi
 
 
 RUN make install

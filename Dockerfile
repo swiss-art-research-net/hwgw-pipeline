@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.11-bullseye
 
 RUN apt-get update && apt-get -y upgrade && \
     apt-get install -y \
@@ -24,9 +24,11 @@ RUN pip install --no-cache-dir \
     python-decouple \
     requests-toolbelt \
     date-parser-sari \
+    git+https://github.com/distributed-text-services/validator.git@main \
     lxml \
     urllib3 \
     requests \
+    uritemplate \
     edtf \
     tqdm \
     rdflib \
@@ -55,8 +57,7 @@ COPY services/jobs/x3ml/java/bin/ /java/bin/
 # Copy scripts
 COPY scripts/ /scripts/
 
-# no mappings yet
-# COPY mapping/ /mapping/
+COPY mapping/ /mapping/
 
 # VOLUME /data
 # VOLUME /mapping

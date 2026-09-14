@@ -1,14 +1,19 @@
 version: '3'
 
 vars:
-  BLAZEGRAPH_ENDPOINT: http://blazegraph:8080/blazegraph/sparql
+  # BLAZEGRAPH_ENDPOINT: http://blazegraph:8080/blazegraph/sparql
   X3ML_ENDPOINT: http://localhost:8089/transform
   GENERATOR_POLICY: /mapping/generator-policy.xml
   NAMESPACE: http://hwgw.uzh.ch/
   REGISTERS: bibliography,objects,organizations,persons,places
-  SCHRIFTEN: 01,03,04 # 01,02,03,04,06,08
+  SCHRIFTEN: 01,03 # 01,02,03,04,06,08
   SOURCE_FOLDER: /dts_source
   DTS_FOLDER: /dts_data
+  HWGW_DTS_ROOT: /external/hwgw-dts
+  MODULES: objects,organizations,persons,places
+  # Set for all dts-* tasks, so they don't mix local/remote data
+  DTS_ENTRYPOINT: http://dapytains:4000/
+  DTS_OUTPUT_PREFIX: local_hwgw
 
 dotenv: 
   - /.env
@@ -22,9 +27,33 @@ tasks:
     cmds:
       - task: download-all-data
       - task: prepare-dts-catalog-data
-      # - task: prepare-and-perform-mapping-for-items
+      - task: prepare-and-perform-mapping-for-items
+      - task: generate-entity-index
+      - task: dts-build-full-rdf
       # - task: ingest-items
       # - task: ingest-ontologies
+
+  generate-entity-index:
+    desc: Generate CSV index of mapped person/object/org/place entities and URIs
+    vars:
+      REGISTER_ROOT:
+        sh: echo "${REGISTER_ROOT:-/dts_source/registers}"
+      MAPPING_ROOT:
+        sh: echo "${MAPPING_ROOT:-/mapping}"
+      OUTPUT:
+        sh: echo "${OUTPUT:-/mapping/register-entity-index.csv}"
+    cmds:
+      - python generateEntityIndex.py
+        --persons-xml {{.REGISTER_ROOT}}/persons/persons.xml
+        --organizations-xml {{.REGISTER_ROOT}}/organizations/organizations.xml
+        --places-xml {{.REGISTER_ROOT}}/places/places.xml
+        --objects-xml {{.REGISTER_ROOT}}/objects/objects.xml
+        --persons-mapping {{.MAPPING_ROOT}}/mapping-persons.x3ml
+        --organizations-mapping {{.MAPPING_ROOT}}/mapping-organizations.x3ml
+        --places-mapping {{.MAPPING_ROOT}}/mapping-places.x3ml
+        --objects-mapping {{.MAPPING_ROOT}}/mapping-objects.x3ml
+        --generator-policy {{.MAPPING_ROOT}}/generator-policy.xml
+        --output {{.OUTPUT}}
 
   
   download-all-data:
@@ -60,8 +89,8 @@ tasks:
       vars: [FILE_TYPE]
     vars:
       FILEPATH: "hw-anno/data/registers/{{.FILE_TYPE}}.xml" # ex. hw-anno/data/registers/bibliography.xml
-      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers" # ex. /dts_source/registers
-      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. /dts_source/bibliography.xml
+      LOCAL_FOLDER: "{{.SOURCE_FOLDER}}/registers/{{.FILE_TYPE}}" # ex. /dts_source/registers/bibliography
+      LOCAL_PATH: "{{.LOCAL_FOLDER}}/{{.FILE_TYPE}}.xml" # ex. /dts_source/registers/bibliography/bibliography.xml
     cmds:
       - mkdir -p {{.LOCAL_FOLDER}}
       - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
@@ -124,10 +153,14 @@ tasks:
     MAPPING_INPUTFOLDER:
       sh: echo "/mapping/input"
     cmds:
-      # - echo "Preparing mapping..."
-      # - task: _prepare-mapping-for-module-items
-      #   vars:
-      #     MODULE: "all"
+      - echo "Preparing mapping..."
+      - for:
+          var: MODULES
+          split: ','
+          as: MODULE
+        task: _prepare-mapping-for-module-items
+        vars:
+          MODULE: "{{.MODULE}}"
       - echo "Mapping..."
       - echo "" > /logs/mapping-log.log
       - for:
@@ -137,7 +170,7 @@ tasks:
         task: _perform-mapping-for-module-items
         vars:
           MODULE: "{{.MODULE}}"
-      # - find {{.MAPPING_INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
+      - find {{.MAPPING_INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
 
 
   prepare-mapping-for-module-items:
@@ -151,12 +184,12 @@ tasks:
           else
             echo "{{.MODULE}}"
           fi
-      MODULE_UCFIRST:
-        sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) substr($0,2)}')"
+      # MODULE_UCFIRST:
+      #   sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) substr($0,2)}')"
     cmds:
       - task: _prepare-mapping-for-module-items
         vars:
-          MODULE: "{{.MODULE_UCFIRST}}"
+          MODULE: "{{.MODULE}}"
           
   perform-mapping-for-module-items:
     desc: Performs the mapping for a specific module. The module name should be passed as an argument or via the MODULE variable.
@@ -169,12 +202,12 @@ tasks:
           else
             echo "{{.MODULE}}"
           fi
-      MODULE_UCFIRST:
-        sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) tolower(substr($0,2))}')"
+      # MODULE_UCFIRST:
+      #   sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) tolower(substr($0,2))}')"
     cmds:
       - task: _perform-mapping-for-module-items
         vars:
-          MODULE: "{{.MODULE_UCFIRST}}"
+          MODULE: "{{.MODULE}}"
 
   _prepare-mapping-for-module-items:
     requires:
@@ -182,9 +215,9 @@ tasks:
     vars:
       MODULE: "{{.MODULE}}"
       INPUTFOLDER:
-        sh: echo "/data/source/xml"
+        sh: echo "/dts_source/registers/$(echo "{{.MODULE}}")"
       OUTPUTFOLDER:
-        sh: echo "/mapping/input"
+        sh: echo "/mapping/input/$(echo "{{.MODULE}}")"
     cmds:
       - mkdir -p {{.OUTPUTFOLDER}}
       - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
@@ -203,6 +236,158 @@ tasks:
       - find {{.CATALOGFOLDER}} -maxdepth 1 -name "*.xml" -delete
       - python prepareDtsData.py --catalog {{.CATALOGFOLDER}} --inputFolder {{.INPUTFOLDER}} --outputFolder {{.OUTPUTFOLDER}} {{.CLI_ARGS}}
 
+  dts-harvest-jsonld:
+    desc: Harvest JSON-LD from a DTS endpoint using external/hwgw-dts and write a Turtle file.
+    vars:
+      ENTRYPOINT: '{{if .ENTRYPOINT}}{{.ENTRYPOINT}}{{else}}{{.DTS_ENTRYPOINT}}{{end}}'
+      COLLECTION_ID: '{{if .COLLECTION_ID}}{{.COLLECTION_ID}}{{else}}https://example.org/dts/collections/hwgw{{end}}'
+      OUTPUT: '{{if .OUTPUT}}{{.OUTPUT}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/dts_harvest.ttl{{end}}'
+      LOG_FILE: '{{if .LOG_FILE}}{{.LOG_FILE}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/dts_harvest.log{{end}}'
+    cmds:
+      - mkdir -p {{.HWGW_DTS_ROOT}}/data/output
+      - python {{.HWGW_DTS_ROOT}}/scripts/harvest_jsonld_to_ttl.py --entrypoint "{{.ENTRYPOINT}}" --collection-id "{{.COLLECTION_ID}}" --output "{{.OUTPUT}}" --log-file "{{.LOG_FILE}}" {{.CLI_ARGS}}
+
+  dts-build-entities-passages-index:
+    desc: Build one entities-passages CSV index from all resources declared in the selected HWGW volume catalogs.
+    vars:
+      ENTRYPOINT: '{{if .ENTRYPOINT}}{{.ENTRYPOINT}}{{else}}{{.DTS_ENTRYPOINT}}{{end}}'
+      RESOURCE_LIST: # e.g. s01/app, s01/ed, s01/in, s03/app, ...
+        sh: |
+          if [ -n "{{.RESOURCE_ID}}" ]; then
+            printf '%s\n' "{{.RESOURCE_ID}}"
+          elif [ -n "{{.RESOURCE_IDS}}" ]; then
+            printf '%s\n' "{{.RESOURCE_IDS}}" | tr ',' '\n'
+          else
+            for schrift in $(printf '%s' "{{.SCHRIFTEN}}" | tr ',' ' '); do
+              catalog="{{.DTS_FOLDER}}/catalog/hwgw-edition/s${schrift}.xml"
+              if [ -f "$catalog" ]; then
+                sed -n 's/.*<resource identifier="\([^"]*\)".*/\1/p' "$catalog"
+              fi
+            done
+          fi
+      OUTPUT: '{{if .OUTPUT}}{{.OUTPUT}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/entities_passages.csv{{end}}'
+      LOG_FILE: '{{if .LOG_FILE}}{{.LOG_FILE}}{{else}}{{.HWGW_DTS_ROOT}}/data/output/entities_passages.log{{end}}'
+      PART_DIR: '{{.OUTPUT}}.parts'
+    cmds:
+      - mkdir -p {{.HWGW_DTS_ROOT}}/data/output
+      - mkdir -p "{{.PART_DIR}}"
+      - rm -f "{{.OUTPUT}}" "{{.LOG_FILE}}" "{{.PART_DIR}}"/*.csv "{{.PART_DIR}}"/*.log
+      - for:
+          var: RESOURCE_LIST
+          split: "\n"
+          as: RESOURCE_ID
+          parallel: false
+        task: _dts-build-entities-passages-index-for-resource
+        vars:
+          ENTRYPOINT: "{{.ENTRYPOINT}}"
+          RESOURCE_ID: "{{.RESOURCE_ID}}"
+          OUTPUT_DIR: "{{.PART_DIR}}"
+          CLI_ARGS: "{{.CLI_ARGS}}"
+      - |
+        set -eu
+        first=true
+        # iterates over every per-resource CSV file produced by the earlier 
+        # loop (each named like entities_passages_https___example.org_..._s01_app.csv)
+        for part in "{{.PART_DIR}}/entities_passages_"*.csv; do
+          [ -f "$part" ] || continue
+          if $first; then
+            cp "$part" "{{.OUTPUT}}"
+            first=false
+          else
+            tail -n +2 "$part" >> "{{.OUTPUT}}"
+          fi
+          cat "${part%.csv}.log" >> "{{.LOG_FILE}}"
+        done
+        if $first; then
+          echo "No DTS resources found in the selected catalogs." >&2
+          exit 1
+        fi
+        # Parts are fully merged into OUTPUT/LOG_FILE above; remove parts dir once the merge succeeds
+        rm -rf "{{.PART_DIR}}"
+
+  _dts-build-entities-passages-index-for-resource:
+    internal: true
+    requires:
+      vars: [ENTRYPOINT, RESOURCE_ID, OUTPUT_DIR]
+    vars:
+      SAFE_NAME:
+        sh: printf '%s' "{{.RESOURCE_ID}}" | tr '/:' '__'
+    cmds:
+      - python {{.HWGW_DTS_ROOT}}/scripts/build_entities_passages_index.py
+          --entrypoint "{{.ENTRYPOINT}}"
+          --resource-id "{{.RESOURCE_ID}}"
+          --tree published_page
+          --cite-type page
+          --output "{{.OUTPUT_DIR}}/entities_passages_{{.SAFE_NAME}}.csv"
+          --log-file "{{.OUTPUT_DIR}}/entities_passages_{{.SAFE_NAME}}.log" {{.CLI_ARGS}}
+
+  dts-build-combined-rdf:
+    desc: Harvest, index, combine and verify HWGW RDF from a DTS endpoint (no RDS enrichment); writes only to external/hwgw-dts/data/output.
+    vars:
+      ENTRYPOINT: '{{if .ENTRYPOINT}}{{.ENTRYPOINT}}{{else}}{{.DTS_ENTRYPOINT}}{{end}}'
+      VIEWER_WORKAROUND: '{{if .VIEWER_WORKAROUND}}{{.VIEWER_WORKAROUND}}{{else}}false{{end}}'
+      COLLECTION_ID: '{{if .COLLECTION_ID}}{{.COLLECTION_ID}}{{else}}https://example.org/dts/collections/hwgw{{end}}'
+      RESOURCE_IDS: '{{if .RESOURCE_IDS}}{{.RESOURCE_IDS}}{{end}}'
+      RESOURCE_ID: '{{if .RESOURCE_ID}}{{.RESOURCE_ID}}{{end}}'
+      TREE: '{{if .TREE}}{{.TREE}}{{else}}published_page{{end}}'
+      CITE_TYPE: '{{if .CITE_TYPE}}{{.CITE_TYPE}}{{else}}page{{end}}'
+      OUTPUT_PREFIX: '{{if .OUTPUT_PREFIX}}{{.OUTPUT_PREFIX}}{{else}}{{.DTS_OUTPUT_PREFIX}}{{end}}'
+      OUTPUT_DIR: '{{if .OUTPUT_DIR}}{{.OUTPUT_DIR}}{{else}}{{.HWGW_DTS_ROOT}}/data/output{{end}}'
+    cmds:
+      - mkdir -p {{.OUTPUT_DIR}}
+      - python {{.HWGW_DTS_ROOT}}/scripts/harvest_jsonld_to_ttl.py --entrypoint "{{.ENTRYPOINT}}" {{if eq .VIEWER_WORKAROUND "true"}}--endpoint-style concrete{{end}} --collection-id "{{.COLLECTION_ID}}" --output "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.log"
+      - task: dts-build-entities-passages-index
+        vars:
+          ENTRYPOINT: '{{.ENTRYPOINT}}'
+          RESOURCE_IDS: '{{.RESOURCE_IDS}}'
+          RESOURCE_ID: '{{.RESOURCE_ID}}'
+          OUTPUT: '{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.csv'
+          LOG_FILE: '{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.log'
+      - python {{.HWGW_DTS_ROOT}}/scripts/combine_entity_graph.py --ttl "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.ttl" --entities-passages "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.csv" --external-index /mapping/register-entity-index.csv --output "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_combined.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_combine.log"
+      - python {{.HWGW_DTS_ROOT}}/scripts/verify_pipeline.py --harvest-ttl "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.ttl" --harvest-log "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.log" --entities-passages "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.csv" --external-index /mapping/register-entity-index.csv --combined-ttl "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_combined.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_verify.log"
+
+  dts-add-rds-links:
+    desc: Build a standalone owl:sameAs Turtle graph (_rds_links.ttl) from RDS matches, kept separate from the DTS combined graph.
+    vars:
+      OUTPUT_PREFIX: '{{if .OUTPUT_PREFIX}}{{.OUTPUT_PREFIX}}{{else}}{{.DTS_OUTPUT_PREFIX}}{{end}}'
+      OUTPUT_DIR: '{{if .OUTPUT_DIR}}{{.OUTPUT_DIR}}{{else}}{{.HWGW_DTS_ROOT}}/data/output{{end}}'
+      RDS_ENDPOINT: '{{if .RDS_ENDPOINT}}{{.RDS_ENDPOINT}}{{else}}http://host.docker.internal:8000/{{end}}'
+      RDS_BATCH_SIZE: '{{if .RDS_BATCH_SIZE}}{{.RDS_BATCH_SIZE}}{{else}}100{{end}}'
+    cmds:
+      - python enrich_with_rds.py --external-index /mapping/register-entity-index.csv --endpoint "{{.RDS_ENDPOINT}}" --batch-size "{{.RDS_BATCH_SIZE}}" --output "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_rds_links.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_rds_enrichment.log"
+
+  dts-build-full-rdf:
+    desc: Full pipeline - build combined HWGW RDF (dts-build-combined-rdf) and a separate RDS owl:sameAs graph (dts-add-rds-links).
+    vars:
+      ENTRYPOINT: '{{if .ENTRYPOINT}}{{.ENTRYPOINT}}{{else}}{{.DTS_ENTRYPOINT}}{{end}}'
+      VIEWER_WORKAROUND: '{{if .VIEWER_WORKAROUND}}{{.VIEWER_WORKAROUND}}{{else}}false{{end}}'
+      COLLECTION_ID: '{{if .COLLECTION_ID}}{{.COLLECTION_ID}}{{else}}https://example.org/dts/collections/hwgw{{end}}'
+      RESOURCE_IDS: '{{if .RESOURCE_IDS}}{{.RESOURCE_IDS}}{{end}}'
+      RESOURCE_ID: '{{if .RESOURCE_ID}}{{.RESOURCE_ID}}{{end}}'
+      TREE: '{{if .TREE}}{{.TREE}}{{else}}published_page{{end}}'
+      CITE_TYPE: '{{if .CITE_TYPE}}{{.CITE_TYPE}}{{else}}page{{end}}'
+      OUTPUT_PREFIX: '{{if .OUTPUT_PREFIX}}{{.OUTPUT_PREFIX}}{{else}}{{.DTS_OUTPUT_PREFIX}}{{end}}'
+      OUTPUT_DIR: '{{if .OUTPUT_DIR}}{{.OUTPUT_DIR}}{{else}}{{.HWGW_DTS_ROOT}}/data/output{{end}}'
+      RDS_ENDPOINT: '{{if .RDS_ENDPOINT}}{{.RDS_ENDPOINT}}{{else}}http://host.docker.internal:8000/{{end}}'
+      RDS_BATCH_SIZE: '{{if .RDS_BATCH_SIZE}}{{.RDS_BATCH_SIZE}}{{else}}100{{end}}'
+    cmds:
+      - task: dts-build-combined-rdf
+        vars:
+          ENTRYPOINT: '{{.ENTRYPOINT}}'
+          VIEWER_WORKAROUND: '{{.VIEWER_WORKAROUND}}'
+          COLLECTION_ID: '{{.COLLECTION_ID}}'
+          RESOURCE_IDS: '{{.RESOURCE_IDS}}'
+          RESOURCE_ID: '{{.RESOURCE_ID}}'
+          TREE: '{{.TREE}}'
+          CITE_TYPE: '{{.CITE_TYPE}}'
+          OUTPUT_PREFIX: '{{.OUTPUT_PREFIX}}'
+          OUTPUT_DIR: '{{.OUTPUT_DIR}}'
+      - task: dts-add-rds-links
+        vars:
+          OUTPUT_PREFIX: '{{.OUTPUT_PREFIX}}'
+          OUTPUT_DIR: '{{.OUTPUT_DIR}}'
+          RDS_ENDPOINT: '{{.RDS_ENDPOINT}}'
+          RDS_BATCH_SIZE: '{{.RDS_BATCH_SIZE}}'
 
   _perform-mapping-for-module-items:
       internal: true
@@ -210,8 +395,7 @@ tasks:
         vars: [MODULE]
       vars:
         INPUTFOLDER:
-          # sh: echo "/data/source/xml"
-          sh: echo "/mapping/input"
+          sh: echo "/mapping/input/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
         OUTPUTFOLDER:
           sh: echo "/mapping/output/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
         DESTINATIONFOLDER:
@@ -220,6 +404,8 @@ tasks:
           sh: echo "/mapping/mapping-$(echo "{{.MODULE}}" | awk '{print tolower($0)}').x3ml"
         MAX_MAPPING_LOG_LINES: 500000
       cmds:
+        - echo "Performing mapping for {{.MODULE}}..."
+        - mkdir -p /mapping/output
         - mkdir -p {{.OUTPUTFOLDER}}
         - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.ttl" -delete
         - mkdir -p /logs
@@ -241,21 +427,23 @@ tasks:
           echo $new_total_lines > /logs/log_marker_line        
         
         - echo "Full mapping log output /log/mapping-log.log"
-        - task: _update-metadata-for-module
-          vars:
-            KEY: lastMapped
-            VALUE:
-              sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
-            SOURCEFOLDER: "{{.INPUTFOLDER}}"
-            FILEEXTENSION: .xml
+
+        # HOLD ON WITH THIS
+        # - task: _update-metadata-for-module
+        #   vars:
+        #     KEY: lastMapped
+        #     VALUE:
+        #       sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
+        #     SOURCEFOLDER: "{{.INPUTFOLDER}}"
+        #     FILEEXTENSION: .xml
         # - find {{.INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
         - echo "Done for now..."
         # - task: _perform-post-mapping-tasks
         #   vars:
         #     MODULE: "{{.MODULE}}"
         #     FOLDER: "{{.OUTPUTFOLDER}}"
-        - mkdir -p {{.DESTINATIONFOLDER}}
-        - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.ttl" -exec mv -t {{.DESTINATIONFOLDER}} {} +
+        # - mkdir -p {{.DESTINATIONFOLDER}}
+        # - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.ttl" -exec mv -t {{.DESTINATIONFOLDER}} {} +
 
     
   _update-metadata-for-module:
