@@ -23,6 +23,15 @@ from os.path import join, isfile
 
 from lib.Metadata import ItemMetadata
 
+
+def _parse_utc_timestamp(value):
+    if value is None:
+        return None
+    try:
+        return datetime.strptime(value, '%Y-%m-%dT%H:%M:%SZ')
+    except ValueError:
+        return None
+
 def prepareDataForMapping(*, module, inputFolder, outputFolder, filenamePrefix='item-', limit=None, offset=None, ids=None):
     metadata = ItemMetadata(inputFolder)
     files = [f for f in listdir(inputFolder) if isfile(join(inputFolder, f)) and f.endswith('.xml')]
@@ -61,10 +70,19 @@ def prepareFileForMapping(*, file, inputFolder, outputFolder, preprocessor, modu
 
 def shouldBeMapped(*, file, metadata):
     lastMapped = metadata.getLastMappedDateForFile(file)
-    lastUpdated = metadata.getLastUpdatedDateForFile(file)
-    if lastMapped is None or lastUpdated is None:
+    lastDownloaded = metadata.getLastDownloadedDateForFile(file)
+
+    if lastMapped is None or lastDownloaded is None:
         return True
-    if lastUpdated is not None and datetime.strptime(lastUpdated, '%Y-%m-%dT%H:%M:%SZ') > datetime.strptime(lastMapped, '%Y-%m-%dT%H:%M:%SZ'):
+
+    lastMappedDt = _parse_utc_timestamp(lastMapped)
+    lastDownloadedDt = _parse_utc_timestamp(lastDownloaded)
+
+    # Fail-safe behavior: if metadata is malformed, re-map rather than skip.
+    if lastMappedDt is None or lastDownloadedDt is None:
+        return True
+
+    if lastDownloadedDt > lastMappedDt:
         return True
     return False
 
