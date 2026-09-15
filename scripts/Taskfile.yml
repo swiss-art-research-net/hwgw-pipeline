@@ -1,12 +1,11 @@
 version: '3'
 
 vars:
-  # BLAZEGRAPH_ENDPOINT: http://blazegraph:8080/blazegraph/sparql
   X3ML_ENDPOINT: http://localhost:8089/transform
   GENERATOR_POLICY: /mapping/generator-policy.xml
   NAMESPACE: http://hwgw.uzh.ch/
   REGISTERS: bibliography,objects,organizations,persons,places
-  SCHRIFTEN: 01,03 # 01,02,03,04,06,08
+  SCHRIFTEN: 01,03,04 # 01,02,03,04,06,08
   SOURCE_FOLDER: /dts_source
   DTS_FOLDER: /dts_data
   HWGW_DTS_ROOT: /external/hwgw-dts
@@ -30,8 +29,6 @@ tasks:
       - task: prepare-and-perform-mapping-for-items
       - task: generate-entity-index
       - task: dts-build-full-rdf
-      # - task: ingest-items
-      # - task: ingest-ontologies
 
   generate-entity-index:
     desc: Generate CSV index of mapped person/object/org/place entities and URIs
@@ -123,35 +120,12 @@ tasks:
       - mkdir -p {{.LOCAL_FOLDER}}
       - python getFileContentsFromGit.py {{.GITHUB_USERNAME}} {{.GITHUB_PERSONAL_ACCESS_TOKEN}} biblhertz/hwgw-anno-data {{.FILEPATH}} {{.LOCAL_PATH}} staging
 
-  download-mapping-files-from-3M:
-    desc: Downloads the mapping file from the 3M
-    cmds:
-      - echo "Downloading mapping files..."
-      - for:
-          var: MODULES
-          split: ','
-          as: MODULE
-        task: _download_individual_mapping_file_from_3M
-        vars:
-          MODULE: "{{.MODULE}}"
-
-  _download_individual_mapping_file_from_3M:
-    internal: true
-    requires:
-      vars: [MODULE]
-    vars:
-        MAPPING_ID:
-          sh: awk -F, '$1 == "{{.MODULE}}" {print $2}' {{.MAPPING_TABLE}}
-        MAPPINGFILE:
-          sh: echo "/mapping/mapping-$(echo "{{.MODULE}}" | awk '{print tolower($0)}').x3ml"  
-    cmds:
-      - wget -q -O {{.MAPPINGFILE}} "https://3m-export.swissartresearch.net/mapping/{{.MAPPING_ID}}"
-
 # MAPPING
   prepare-and-perform-mapping-for-items:
     desc: Prepares and performs the mapping for all modules
-    MAPPING_INPUTFOLDER:
-      sh: echo "/mapping/input"
+    vars:
+      MAPPING_INPUTFOLDER:
+        sh: echo "/mapping/input"
     cmds:
       - echo "Preparing mapping..."
       - for:
@@ -184,8 +158,6 @@ tasks:
           else
             echo "{{.MODULE}}"
           fi
-      # MODULE_UCFIRST:
-      #   sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) substr($0,2)}')"
     cmds:
       - task: _prepare-mapping-for-module-items
         vars:
@@ -202,8 +174,6 @@ tasks:
           else
             echo "{{.MODULE}}"
           fi
-      # MODULE_UCFIRST:
-      #   sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) tolower(substr($0,2))}')"
     cmds:
       - task: _perform-mapping-for-module-items
         vars:
@@ -226,6 +196,11 @@ tasks:
   
   prepare-dts-catalog-data:
     desc: Prepares the data for the DTS catalog. This includes creating the collection XML and preparing the TEI files.
+    # NOTE: dapytains reads the catalog (DTSCATALOG) at container startup, so after
+    # this task changes the catalog / TEI files (e.g. adding a SCHRIFTEN such as s04),
+    # the running dapytains service keeps serving the OLD catalog and returns 404 for
+    # new collections until it is restarted. Restart it before the harvest/index steps,
+    # from the host:  docker compose restart dapytains
     vars:
       INPUTFOLDER: "{{.SOURCE_FOLDER}}"
       OUTPUTFOLDER: "{{.DTS_FOLDER}}/tei/hwgw-edition"
@@ -351,7 +326,7 @@ tasks:
     vars:
       OUTPUT_PREFIX: '{{if .OUTPUT_PREFIX}}{{.OUTPUT_PREFIX}}{{else}}{{.DTS_OUTPUT_PREFIX}}{{end}}'
       OUTPUT_DIR: '{{if .OUTPUT_DIR}}{{.OUTPUT_DIR}}{{else}}{{.HWGW_DTS_ROOT}}/data/output{{end}}'
-      RDS_ENDPOINT: '{{if .RDS_ENDPOINT}}{{.RDS_ENDPOINT}}{{else}}http://host.docker.internal:8000/{{end}}'
+      RDS_ENDPOINT: '{{.RDS_ENDPOINT | default "https://reconcile.rds.swissartresearch.net/"}}'
       RDS_BATCH_SIZE: '{{if .RDS_BATCH_SIZE}}{{.RDS_BATCH_SIZE}}{{else}}100{{end}}'
     cmds:
       - python enrich_with_rds.py --external-index /mapping/register-entity-index.csv --endpoint "{{.RDS_ENDPOINT}}" --batch-size "{{.RDS_BATCH_SIZE}}" --output "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_rds_links.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_rds_enrichment.log"
@@ -368,7 +343,7 @@ tasks:
       CITE_TYPE: '{{if .CITE_TYPE}}{{.CITE_TYPE}}{{else}}page{{end}}'
       OUTPUT_PREFIX: '{{if .OUTPUT_PREFIX}}{{.OUTPUT_PREFIX}}{{else}}{{.DTS_OUTPUT_PREFIX}}{{end}}'
       OUTPUT_DIR: '{{if .OUTPUT_DIR}}{{.OUTPUT_DIR}}{{else}}{{.HWGW_DTS_ROOT}}/data/output{{end}}'
-      RDS_ENDPOINT: '{{if .RDS_ENDPOINT}}{{.RDS_ENDPOINT}}{{else}}http://host.docker.internal:8000/{{end}}'
+      RDS_ENDPOINT: '{{.RDS_ENDPOINT | default "https://reconcile.rds.swissartresearch.net/"}}'
       RDS_BATCH_SIZE: '{{if .RDS_BATCH_SIZE}}{{.RDS_BATCH_SIZE}}{{else}}100{{end}}'
     cmds:
       - task: dts-build-combined-rdf
@@ -398,8 +373,6 @@ tasks:
           sh: echo "/mapping/input/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
         OUTPUTFOLDER:
           sh: echo "/mapping/output/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
-        DESTINATIONFOLDER:
-          sh: echo "/data/ttl/main/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
         MAPPINGFILE:
           sh: echo "/mapping/mapping-$(echo "{{.MODULE}}" | awk '{print tolower($0)}').x3ml"
         MAX_MAPPING_LOG_LINES: 500000
@@ -428,216 +401,11 @@ tasks:
         
         - echo "Full mapping log output /log/mapping-log.log"
 
-        # HOLD ON WITH THIS
-        # - task: _update-metadata-for-module
-        #   vars:
-        #     KEY: lastMapped
-        #     VALUE:
-        #       sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
-        #     SOURCEFOLDER: "{{.INPUTFOLDER}}"
-        #     FILEEXTENSION: .xml
-        # - find {{.INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
+        - find {{.INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
+
         - echo "Done for now..."
-        # - task: _perform-post-mapping-tasks
-        #   vars:
-        #     MODULE: "{{.MODULE}}"
-        #     FOLDER: "{{.OUTPUTFOLDER}}"
-        # - mkdir -p {{.DESTINATIONFOLDER}}
-        # - find {{.OUTPUTFOLDER}} -maxdepth 1 -name "*.ttl" -exec mv -t {{.DESTINATIONFOLDER}} {} +
 
     
-  _update-metadata-for-module:
-    internal: true
-    requires:
-      vars: [KEY, VALUE, SOURCEFOLDER, FILEEXTENSION]
-    vars:
-      METADATAFOLDER:
-        sh: echo "/data/source/json"
-      SOURCEFOLDER: "{{.SOURCEFOLDER}}"
-      KEY: "{{.KEY}}"
-      VALUE: "{{.VALUE}}"
-      FILEEXTENSION: "{{.FILEEXTENSION}}"
-    cmds:
-      - python updateMetadataValueForFiles.py --metadataFolder {{.METADATAFOLDER}} --inputFolder {{.SOURCEFOLDER}} --key {{.KEY}} --value "{{.VALUE}}" --fileExtension {{.FILEEXTENSION}}
-
-
-  _perform-post-mapping-tasks:
-    internal: true
-    requires:
-      vars: [MODULE, FOLDER]
-    cmds:
-      - echo "Performing post-mapping tasks for {{.MODULE}}"
-      - task: _validate-turtle-files-in-folder
-        vars:
-          FOLDER: "{{.FOLDER}}"
-
-  _validate-turtle-files-in-folder:
-      internal: true
-      requires:
-        vars: [FOLDER]
-      vars:
-        SHAPES_GRAPH: /mapping/shapesGraph.ttl
-        SCHEMA_GRP: /mapping/schemas/grp-ontology.ttl
-        REPORTS_GRAPH: "{{.NAMESPACE}}graph/shaclReports"
-        LIMIT: 100
-      interactive: True
-      cmds:
-        - python validateTurtleWithShacl.py --directory "{{.FOLDER}}" --shapesGraph {{.SHAPES_GRAPH}} --ontologyFile {{.SCHEMA_GRP}} --endpoint {{.BLAZEGRAPH_ENDPOINT}} --namedGraph {{.REPORTS_GRAPH}} --limit {{.LIMIT}} {{if .DEBUG}}--debug{{end}}
-
-
-# INGEST
-  ingest-items:
-    desc: Ingest items for all modules. Add --debug true To see the response from the triplestore
-    cmds:
-      - for:
-        - xxx
-        task: _ingest_module_items
-        vars:
-          MODULE: "{{.ITEM}}"
-
-  _ingest_module_items:
-    internal: true
-    requires:
-      vars: [MODULE, NAMESPACE]
-    vars:
-      INPUTFOLDER:
-        sh: echo "/data/ttl/main/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
-      TEMPFOLDER:
-        sh: echo "/data/temp/ingest/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
-      XMLFOLDER:
-        sh: echo "/data/source/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
-      FILENAMEPREFIX:
-        sh: echo "$(echo "{{.MODULE}}" | awk '{print tolower($0)}')-item-"
-      NAMEDGRAPHBASE: "{{.NAMESPACE}}graph/"
-      DEBUG:
-        sh: |
-          # Your input string of arguments
-          args="{{.CLI_ARGS}}"
-          # Check if "--debug" is present in the input string
-          if [[ "$args" == *"--debug"* ]]; then
-            # Use parameter expansion to extract the value after "--debug"
-            value="${args#*--debug }"
-            # Split the arguments by space and get the first part as the value
-            value="${value%% *}"
-            echo "$value"
-          else
-            if [ -z "{{.DEBUG}}" ]; then
-              echo "false"
-            else
-              echo "{{.DEBUG}}"
-            fi
-          fi
-    interactive: True
-    cmds:
-      - mkdir -p {{.TEMPFOLDER}}
-      - |
-        # If folder contains already ingested files we skip the preparation step
-        if [ "$(find {{.TEMPFOLDER}} -type f -name '*.ttl.ingested' | wc -l)" -gt 0 ]; then
-          echo "Skipping preparation step for {{.MODULE}} as there are already ingested files"
-        else
-          echo "Preparing {{.MODULE}} for ingest"
-          python prepareDataForIngest.py  --inputFolder {{.INPUTFOLDER}} --outputFolder {{.TEMPFOLDER}} --xmlFolder {{.XMLFOLDER}}
-        fi
-      - |
-        numfiles=$(find {{.TEMPFOLDER}} -type f -name '*.ttl' | wc -l)        
-        count=1
-        for f in $(find {{.TEMPFOLDER}} -type f -name '*.ttl' ); do
-          identifier=$(basename "$f" | sed "s/{{.FILENAMEPREFIX}}//; s/\\.ttl//")
-          graph="{{.NAMEDGRAPHBASE}}{{.FILENAMEPREFIX}}$identifier"
-          echo "Ingesting {{.MODULE}} item $count of $numfiles into graph $graph"
-          # Drop graph
-          curl --silent -X POST {{.BLAZEGRAPH_ENDPOINT}} --data-urlencode "update=DROP GRAPH <$graph>" {{if eq .DEBUG "true"}}{{else}} > /dev/null{{end}}
-          # Ingest into graph
-          curl --silent -X POST --data-binary "uri=file://$f" "{{.BLAZEGRAPH_ENDPOINT}}?context-uri=$graph" {{if eq .DEBUG "true"}}{{else}} > /dev/null{{end}}
-          count=$((count+1)) 
-          mv $f $f.ingested
-        done
-      - task: _update-metadata-for-module
-        vars:
-          MODULE: "{{.MODULE}}"
-          KEY: lastIngested
-          VALUE:
-            sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
-          SOURCEFOLDER: "{{.TEMPFOLDER}}"
-          FILEEXTENSION: .ttl.ingested
-      - find {{.TEMPFOLDER}} -maxdepth 1 -name "*.ttl.ingested" -delete
-
-  ingest-classifications:
-    desc: Ingest classifications into the triplestore
-    sources:
-      - /data/ttl/additional/classifications/*.ttl
-    cmds:
-      - for: sources
-        task: _ingest-data-from-file
-        vars:
-          NAME:
-            sh: echo "$(basename {{.ITEM}} .ttl)"
-          FILE: "{{.ITEM}}"
-          TYPE: application/x-turtle
-          GRAPH: 
-            sh: echo "{{.NAMESPACE}}graph/classifications/$(basename {{.ITEM}} .ttl)"
-          ENDPOINT: "{{.BLAZEGRAPH_ENDPOINT_SECONDARY}}"
-  
-
-  _ingest-data-from-file:
-    internal: true
-    vars:
-      ENDPOINT: 
-        sh: echo "{{if .ENDPOINT}}{{.ENDPOINT}}{{else}}{{.BLAZEGRAPH_ENDPOINT}}{{end}}"
-    cmds:
-      - echo "Ingest {{.NAME}}"
-      - curl --silent -X POST {{.ENDPOINT}} --data-urlencode 'update={{if .GRAPH}}DROP GRAPH <{{.GRAPH}}>{{end}}'
-      - curl -X POST -H 'Content-Type:{{.TYPE}}' --data-binary '@{{.FILE}}' {{.ENDPOINT}}{{if .GRAPH}}?context-uri={{.GRAPH}}{{end}}
-
-
-  ingest-ontologies:
-    desc: Ingests the ontologies into individual named Graphs
-    sources:
-      - /mapping/schemas/*.*
-    cmds:
-      - task: _ingest-data-from-file
-        vars:
-          NAME: CIDOC-CRM
-          FILE: /mapping/schemas/CIDOC_CRM_7.1.1_RDFS_Impl_v1.1.rdfs
-          TYPE: application/rdf+xml
-          GRAPH: http://www.cidoc-crm.org/cidoc-crm
-      - task: _ingest-data-from-file
-        vars:
-          NAME: CIDOC-CRM PC
-          FILE: /mapping/schemas/CIDOC_CRM_v7.1.3_PC.rdf
-          TYPE: application/rdf+xml
-          GRAPH: http://www.cidoc-crm.org/cidoc-crm/pc
-      - task: _ingest-data-from-file
-        vars:
-          NAME: CRMdig
-          FILE: /mapping/schemas/CRMdig_v3.2.1.rdfs
-          TYPE: application/rdf+xml
-          GRAPH: http://www.ics.forth.gr/isl/CRMdig
-      - task: _ingest-data-from-file
-        vars:
-          NAME: CRMsci
-          FILE: /mapping/schemas/CRMsci_v2.0.rdfs
-          TYPE: application/rdf+xml
-          GRAPH: http://www.cidoc-crm.org/extensions/crmsci
-      - task: _ingest-data-from-file
-        vars:
-          NAME: FRBRoo
-          FILE: /mapping/schemas/FRBR2.4.rdfs
-          TYPE: application/rdf+xml
-          GRAPH: http://iflastandards.info/ns/fr/frbr/frbroo
-      - task: _ingest-data-from-file
-        vars:
-          NAME: Linked.Art
-          FILE: /mapping/schemas/LinkedArt.rdfs
-          TYPE: application/rdf+xml
-          GRAPH: https://linked.art/ns/terms
-      - task: _ingest-data-from-file
-        vars:
-          NAME: ResearchSpace Ontology
-          FILE: /mapping/schemas/rs-ontology.ttl
-          TYPE: application/x-turtle
-          GRAPH: http://www.researchspace.org/ontology
-
 # RESET FUNCTIONS
   reset:
     desc: Delete all artefacts produced by the pipeline.
@@ -649,7 +417,6 @@ tasks:
         task: reset-module
         vars:
           MODULE: "{{.ITEM}}"
-      # - task: _reset-iiif-and-vocabularies
       - echo "Done!"
 
   reset-module:
@@ -665,8 +432,6 @@ tasks:
           fi
       MODULE_LOWERCASE:
         sh: echo "$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
-      MODULE_UCFIRST:
-        sh: echo "$(echo "{{.MODULE}}" | awk '{print toupper(substr($0,0,1)) tolower(substr($0,2))}')"
     cmds:
       - |
         if [ -z "{{.MODULE}}" ]; then
@@ -674,73 +439,10 @@ tasks:
           exit 1
         fi
       - echo "Deleting files for {{.MODULE}}..."
-      - rm -rf /data/temp/download/temp_{{.MODULE_UCFIRST}}
-      - rm -rf /data/temp/ingest/{{.MODULE_LOWERCASE}}
-      - rm -rf /data/ttl/main/{{.MODULE_LOWERCASE}}
+      - rm -rf /dts_source/registers
+      - rm -rf /dts_source/s0*
+      - rm -rf /dts_source/catalog/hwgw-edition/*.xml
+      - rm -rf /dts_data/catalog/hwgw-edition/*.xml
+      - rm -rf /dts_data/tei/hwgw-edition
       - rm -rf /mapping/input/{{.MODULE_LOWERCASE}}
       - rm -rf /mapping/output/{{.MODULE_LOWERCASE}}
-      - echo "Resetting metadata for {{.MODULE}}.."
-      - task: recreate-folder-metadata
-        vars:
-          MODULE: "{{.MODULE_LOWERCASE}}"
-
-  reset-last-ingested-metadata:
-    desc: Resets the last ingested metadata for a specific module. Pass the module name as an argument and optionally a new date (YYYY-MM-DD).
-    vars:
-      MODULE:
-        sh: |
-          if [ -z "{{.MODULE}}" ]; then
-            echo "$(echo "{{.CLI_ARGS}}" | awk '{print $1}')"
-          else
-            echo "{{.MODULE}}"
-          fi
-      DATE:
-        sh: |
-          ARG_DATE=$(echo "{{.CLI_ARGS}}" | awk '{print $2}')
-          if [ -z "$ARG_DATE" ]; then
-            echo "1970-01-01T00:00:00Z"
-          else
-            echo "$ARG_DATET00:00:00Z"
-          fi
-      SOURCEFOLDER:
-        sh: |
-          echo "/data/source/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
-    cmds:
-      - task: _update-metadata-for-module
-        vars:
-          MODULE: "{{.MODULE}}"
-          KEY: lastIngested
-          VALUE: "{{.DATE}}"
-          SOURCEFOLDER: "{{.SOURCEFOLDER}}"
-          FILEEXTENSION: .xml
-
-  reset-last-mapped-metadata:
-    desc: Resets the last mapped metadata for a specific module. Pass the module name as an argument and optionally a new date (YYYY-MM-DD).
-    vars:
-      MODULE:
-        sh: |
-          if [ -z "{{.MODULE}}" ]; then
-            echo "$(echo "{{.CLI_ARGS}}" | awk '{print $1}')"
-          else
-            echo "{{.MODULE}}"
-          fi
-      DATE:
-        sh: |
-          ARG_DATE=$(echo "{{.CLI_ARGS}}" | awk '{print $2}')
-          if [ -z "$ARG_DATE" ]; then
-            echo "1970-01-01T00:00:00Z"
-          else
-            echo "${ARG_DATE}T00:00:00Z"
-          fi
-      SOURCEFOLDER:
-        sh: |
-          echo "/data/source/$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
-    cmds:
-      - task: _update-metadata-for-module
-        vars:
-          MODULE: "{{.MODULE}}"
-          KEY: lastMapped
-          VALUE: "{{.DATE}}"
-          SOURCEFOLDER: "{{.SOURCEFOLDER}}"
-          FILEEXTENSION: .xml
-          
