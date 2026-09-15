@@ -1,0 +1,93 @@
+services:
+
+  jobs:
+    build: .
+    container_name: ${PROJECT_NAME}_jobs
+    restart: unless-stopped
+    volumes:
+      - ./mapping:/mapping
+      - ./dts_data:/dts_data
+      - ./dts_source:/dts_source
+      - ./external/hwgw-dts:/external/hwgw-dts
+      - ./logs:/logs
+      # - ./scripts:/scripts
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx1024m
+      - COMPOSE_PROJECT_NAME=${PROJECT_NAME}
+      - GITHUB_USERNAME=${GITHUB_USERNAME}
+      - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
+      - RDS_ENDPOINT=${RDS_ENDPOINT:-https://reconcile.rds.swissartresearch.net/}
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  dapytains:
+    build: 
+      context: ./services/dapytains
+      args:
+        DAPYTAINS_VERSION: ${DAPYTAINS_VERSION}
+        DAPYTAINS_VIEWER_WORKAROUND: ${DAPYTAINS_VIEWER_WORKAROUND:-false}
+    container_name: ${PROJECT_NAME}_dapytains
+    restart: unless-stopped
+    environment:
+      - DATABASE_URI=${DATABASE_URI}
+      - DTSCATALOG=${DTSCATALOG}
+      - SERVER_ENV=${SERVER_ENV}
+      - SERVER_HOST=${SERVER_HOST}
+      - SERVER_PORT=${SERVER_PORT}
+    volumes:
+      - ./dts_data:/dts_data
+      - ./scripts:/scripts
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  qlever:
+    build: ./services/qlever
+    container_name: ${PROJECT_NAME}_qlever
+    restart: unless-stopped
+    environment:
+      - QLEVER_ACCESS_TOKEN=${QLEVER_ACCESS_TOKEN}
+    volumes:
+      - qlever-index:/index
+      - ./external/hwgw-dts/data/output:/data:ro
+      - ./mapping/output:/mapping-output:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  qlever-ui:
+    image: adfreiburg/qlever-ui:latest
+    container_name: ${PROJECT_NAME}_qlever-ui
+    restart: unless-stopped
+    depends_on:
+      - qlever
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=${QLEVER_UI_USERNAME:-admin}
+      - DJANGO_SUPERUSER_EMAIL=${QLEVER_UI_EMAIL:-admin@example.com}
+      - DJANGO_SUPERUSER_PASSWORD=${QLEVER_UI_PASSWORD}
+    volumes:
+      - qlever-ui-db:/app/db
+    # migrate and createsuperuser
+    command:
+      - sh
+      - -c
+      - >
+        python manage.py migrate &&
+        (python manage.py createsuperuser --noinput || true) &&
+        exec gunicorn --bind :7000 --workers 3 --limit-request-line 10000 qlever.wsgi:application
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+volumes:
+  qlever-index:
+  qlever-ui-db:

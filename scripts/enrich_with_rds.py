@@ -26,13 +26,14 @@ RDS_DEFAULT_ENDPOINT = "http://localhost:8000/"
 # Matches outside these namespaces are not real RDS datasets and are dropped
 RDS_DATASET_NAMESPACES = (
     "http://vocab.getty.edu/aat/",
+    "https://resource.swissartresearch.net",
     "https://sws.geonames.org/",
     "https://d-nb.info/gnd/",
     "https://resource.gta.arch.ethz.ch/",
     "http://id.loc.gov/authorities/names/",
-    "https://recherche.sik-isea.ch/person-",
-    "http://data.culture.fr/thesaurus/resource/ark:/67717/T96/",
-    "http://data.culture.fr/thesaurus/resource/ark:/67717/T69/",
+    "https://recherche.sik-isea.ch/",
+    "http://data.culture.fr/thesaurus/resource/ark:/67717/T96-",
+    "http://data.culture.fr/thesaurus/resource/ark:/67717/T69-",
     "http://vocab.getty.edu/ulan/",
     "http://www.wikidata.org/entity/",
 )
