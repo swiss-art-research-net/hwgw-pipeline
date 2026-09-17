@@ -14,6 +14,7 @@
     <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema#"/>
     <namespace prefix="xsd" uri="http://www.w3.org/2001/XMLSchema#"/>
     <namespace prefix="aat" uri="http://vocab.getty.edu/aat/"/>
+    <namespace prefix="gnd" uri="https://d-nb.info/gnd/"/>
   </namespaces>
 
   <mappings>
