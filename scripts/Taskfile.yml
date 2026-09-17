@@ -3,7 +3,7 @@ version: '3'
 vars:
   X3ML_ENDPOINT: http://localhost:8089/transform
   GENERATOR_POLICY: /mapping/generator-policy.xml
-  NAMESPACE: http://hwgw.uzh.ch/
+  NAMESPACE: '{{.HWGW_NAMESPACE | default "http://hwgw.uzh.ch/"}}'
   REGISTERS: bibliography,objects,organizations,persons,places
   SCHRIFTEN: 01,03,04 # 01,02,03,04,06,08
   SOURCE_FOLDER: /dts_source
@@ -11,7 +11,7 @@ vars:
   HWGW_DTS_ROOT: /external/hwgw-dts
   MODULES: objects,organizations,persons,places
   # Set for all dts-* tasks, so they don't mix local/remote data
-  DTS_ENTRYPOINT: http://dapytains:4000/
+  DTS_ENTRYPOINT: 'http://dapytains:{{.SERVER_PORT | default 8000}}/'
   DTS_OUTPUT_PREFIX: local_hwgw
 
 dotenv: 
