@@ -12,7 +12,7 @@ vars:
   MODULES: objects,organizations,persons,places
   # Set for all dts-* tasks, so they don't mix local/remote data
   DTS_ENTRYPOINT: 'http://dapytains:{{.SERVER_PORT | default 8000}}/'
-  DTS_OUTPUT_PREFIX: local_hwgw
+  DTS_OUTPUT_PREFIX: hwgw
 
 dotenv: 
   - /.env
