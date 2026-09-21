@@ -1,0 +1,135 @@
+# usage: `scp -rp docker-compose.rs4.yml rs@rs4.ethz.ch:~/hwgw-pipeline/docker-compose.rs4.yml`
+services:
+  # jobs:
+  #   build: .
+  #   container_name: ${PROJECT_NAME}_jobs
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./mapping:/mapping
+  #     - ./dts_data:/dts_data
+  #     - ./dts_source:/dts_source
+  #     - ./external/hwgw-dts:/external/hwgw-dts
+  #     - ./logs:/logs
+  #     # - ./scripts:/scripts
+  #   environment:
+  #     - JAVA_OPTS=-Xms512m -Xmx1024m
+  #     - COMPOSE_PROJECT_NAME=${PROJECT_NAME}
+  #     - GITHUB_USERNAME=${GITHUB_USERNAME}
+  #     - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
+  #     - RDS_ENDPOINT=${RDS_ENDPOINT:-https://reconcile.rds.swissartresearch.net/}
+    # logging:
+    #   driver: json-file
+    #   options:
+    #     max-size: "200k"
+    #     max-file: "10"
+
+  # dapytains:
+  #   build: 
+  #     context: ./services/dapytains
+  #     args:
+  #       DAPYTAINS_VERSION: ${DAPYTAINS_VERSION}
+  #       DAPYTAINS_VIEWER_WORKAROUND: ${DAPYTAINS_VIEWER_WORKAROUND:-false}
+  #   container_name: ${PROJECT_NAME}_dapytains
+  #   restart: unless-stopped
+  #   environment:
+  #     - DATABASE_URI=${DATABASE_URI}
+  #     - DTSCATALOG=${DTSCATALOG}
+  #     - SERVER_ENV=${SERVER_ENV}
+  #     - SERVER_HOST=${SERVER_HOST}
+  #     - SERVER_PORT=${SERVER_PORT}
+  #   volumes:
+  #     - ./dts_data:/dts_data
+  #     - ./scripts:/scripts
+    # logging:
+    #   driver: json-file
+    #   options:
+    #     max-size: "200k"
+    #     max-file: "10"
+
+  qlever:
+    build: ./services/qlever
+    container_name: ${PROJECT_NAME}_qlever
+    restart: unless-stopped
+    environment:
+      - QLEVER_ACCESS_TOKEN=${QLEVER_ACCESS_TOKEN}
+    ports:      # Not proxyied by traefik
+      - "7001:7001" # no need for another ENVVAR here, og: - "${PORT_QLEVER:-7011}:7001"
+    volumes:
+      - qlever-index:/index
+      - ./external/hwgw-dts/data/output:/data:ro
+      - ./mapping/output:/mapping-output:ro
+    labels:
+      # autoheal-app: true
+      traefik.enable: "true"
+      traefik.http.routers.hwgwqlever.rule: "Host(`rs4.ethz.ch`) && PathPrefix(`/hwgwqlever`)"
+      traefik.http.routers.hwgwqlever.entrypoints: "websecure"
+      traefik.http.routers.hwgwqlever.tls: "true"
+      traefik.http.routers.hwgwqlever.tls.certresolver: "letsencrypt"
+      traefik.http.routers.hwgwqlever.priority: "5"
+      traefik.http.middlewares.hwgwqlever-strip.stripprefix.prefixes: "/hwgwqlever"
+      traefik.http.routers.hwgwqlever.middlewares: "hwgwqlever-strip"
+      traefik.http.services.hwgwqlever.loadbalancer.server.port: "7001"
+    networks:
+      - hwgw_internal
+      - proxy
+      # - proxy
+    # logging:
+    #   driver: json-file
+    #   options:
+    #     max-size: "200k"
+    #     max-file: "10"
+
+  qlever-ui:
+    image: adfreiburg/qlever-ui:latest
+    container_name: ${PROJECT_NAME}_qlever-ui
+    restart: unless-stopped
+    depends_on:
+      - qlever
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=${QLEVER_UI_USERNAME:-admin}
+      - DJANGO_SUPERUSER_EMAIL=${QLEVER_UI_EMAIL:-admin@example.com}
+      - DJANGO_SUPERUSER_PASSWORD=${QLEVER_UI_PASSWORD}
+      - QLEVERUI_ALLOWED_HOSTS=graph.rs4.ethz.ch
+      - QLEVERUI_CSRF_TRUSTED_ORIGINS=https://graph.rs4.ethz.ch
+    volumes:
+      - qlever-ui-db:/app/db
+    # migrate and createsuperuser
+    command:
+      - sh
+      - -c
+      - >
+        python manage.py migrate &&
+        (python manage.py createsuperuser --noinput || true) &&
+        exec gunicorn --bind :7000 --workers 3 --limit-request-line 10000 qlever.wsgi:application
+    # logging:
+    #   driver: json-file
+    #   options:
+    #     max-size: "200k"
+    #     max-file: "10"
+    labels:
+      # autoheal-app: true
+      traefik.enable: "true"
+      # traefik.http.routers.hwgwgraph.rule: "Host(`${DEFAULT_HOST}`) && PathPrefix(`/hwgw-graph`)"
+      traefik.http.routers.hwgwgraph.rule: "Host(`graph.rs4.ethz.ch`)" # subdomain, qlever over subpath = galere
+      traefik.http.routers.hwgwgraph.entrypoints: "websecure"
+      traefik.http.routers.hwgwgraph.tls: "true"
+      traefik.http.routers.hwgwgraph.tls.certresolver: "letsencrypt"
+      traefik.http.routers.hwgwgraph.priority: "5"
+      traefik.http.services.hwgwgraph.loadbalancer.server.port: "7000"
+    networks:
+      - hwgw_internal
+      - proxy
+
+volumes:
+  qlever-index:
+  qlever-ui-db:
+
+networks:
+  hwgw_internal:
+  proxy:
+    name: ${PROXY_NETWORK_NAME} 
+    external: true
+
+
+# curl -s -X POST -H 'Content-Type: application/sparql-query' -H 'Accept: application/sparql-results+json' --data-binary 'SELECT (COUNT(*) AS ?n) WHERE { ?s ?p ?o }' http://localhost:7001
+# curl -s -X POST -H 'Content-Type: application/sparql-query' -H 'Accept: application/sparql-results+json' --data-binary 'SELECT (COUNT(*) AS ?n) WHERE { ?s ?p ?o }' http://rs4.ethz.ch/hwgwqlever

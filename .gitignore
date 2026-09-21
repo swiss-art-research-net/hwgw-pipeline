@@ -1,3 +1,5 @@
+_data-rdf
+
 # Ignore macOS system files
 .DS_Store
 
@@ -19,6 +21,7 @@ node_modules/
 
 # Ignore environment variables files
 .env
+.env.rs4
 
 # Ignore Python cache files
 __pycache__/
