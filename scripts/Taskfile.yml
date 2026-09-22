@@ -11,7 +11,7 @@ vars:
   HWGW_DTS_ROOT: /external/hwgw-dts
   MODULES: objects,organizations,persons,places
   # Set for all dts-* tasks, so they don't mix local/remote data
-  DTS_ENTRYPOINT: 'http://dapytains:{{.SERVER_PORT | default 8000}}/'
+  DTS_ENTRYPOINT: '{{.DTS_ENDPOINT | default "https://rs4.ethz.ch/dts/"}}'
   DTS_OUTPUT_PREFIX: hwgw
 
 dotenv: 
