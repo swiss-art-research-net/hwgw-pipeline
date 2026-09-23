@@ -252,3 +252,6 @@ To add additional arguments to the task itself, enter the arguments after a `--`
 ```sh
 docker compose exec jobs task reset-last-mapped-metadata -- objects
 ```
+
+## Credits
+This pipeline has been developed by SARI/UZH in the context of a project funded by Digital Visual Studies/UZH and the The Bibliotheca Hertziana – Max Planck Institute for Art History.  
