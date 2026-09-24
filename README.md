@@ -143,6 +143,82 @@ Its database and `admin` account are created automatically on first start - no m
    (default `http://localhost:7011`).
 3. Open `http://localhost:${PORT_QLEVER_UI}`, select the new backend, and start querying.
 
+### Example SPARQL queries
+
+```
+# Most mentioned people, with wikidata, gnd, and ulan sameAs links
+
+PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX dts: <https://dtsapi.org/v1.0#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?person (SAMPLE(?rawName) AS ?name) (COUNT(DISTINCT ?page) AS ?mentions) (SAMPLE(?wikidata) AS ?wikidataLink) (SAMPLE(?gnd) AS ?gndLink) (SAMPLE(?ulan) AS ?ulanLink) WHERE {
+  ?pageCU a dts:CitableUnit ;
+          dts:identifier ?page ;
+          crm:P67_refers_to ?pageDO .
+  ?pageDO crm:P67_refers_to ?person .
+  FILTER (STRSTARTS(STR(?person),"https://hwgw.uzh.ch/person/"))
+  ?person rdfs:label ?rawName .
+  OPTIONAL {
+    ?person owl:sameAs ?wikidata .
+    FILTER (STRSTARTS(STR(?wikidata),"http://www.wikidata.org/entity/"))
+  }
+  BIND (IF(CONTAINS(STR(?person),"gnd-"),CONCAT("https://d-nb.info/gnd/", STRAFTER(STR(?person),"gnd-")),"") AS ?gnd)
+  OPTIONAL {
+    ?person owl:sameAs ?ulan .
+    FILTER (STRSTARTS(STR(?ulan),"http://vocab.getty.edu/ulan/"))
+  }
+}
+GROUP BY ?person ?gnd
+ORDER BY DESC(?mentions)
+LIMIT 15
+```
+
+```
+# Persons, their date of birth, date qualifier, page, DTS document
+
+PREFIX crm:    <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX crmdig: <http://www.ics.forth.gr/isl/CRMdig/>
+PREFIX dts:    <https://dtsapi.org/v1.0#>
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT
+       ?person
+       ?name
+       ?dateOfBirth
+       ?dateQualifier
+       ?page
+       ?documentEndpointNode
+WHERE {
+  ?pageCU a dts:CitableUnit ;
+          dts:identifier ?page ;
+          crm:P67_refers_to ?pageDO .
+
+  ?pageDO a crmdig:D1_Digital_Object ;
+          crm:P67_refers_to ?person ;
+          crm:P1_is_identified_by ?documentIdentifier .
+
+  ?documentIdentifier a crm:E42_Identifier ;
+                      rdf:value ?documentEndpointNode .
+
+  ?person a crm:E21_Person ;
+          rdfs:label ?name ;
+          crm:P98i_was_born ?birth .
+
+  ?birth a crm:E67_Birth ;
+         crm:P4_has_time-span ?birthTimeSpan .
+
+  ?birthTimeSpan a crm:E52_Time-Span ;
+                 rdfs:label ?dateOfBirth ;
+                 crm:P2_has_type ?qualifierType .
+
+  ?qualifierType a crm:E55_Type ;
+                 rdfs:label ?dateQualifier .
+
+}
+ORDER BY ?name ?page
+```
 
 ## Production deployment
 
