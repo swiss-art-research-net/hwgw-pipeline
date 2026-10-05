@@ -65,6 +65,7 @@ E22_Human-Made_Object
 | `@preprocessed_dateLower` | `crm:P82a_begin_of_the_begin → xsd:gYear` |
 | `@preprocessed_dateUpper` | `crm:P82b_end_of_the_end → xsd:gYear` |
 | `@preprocessed_dateQualifier` | `crm:P2_has_type → crm:E55_Type` |
+| `@preprocessed_dateEDTF` | `crm:P170i_time_is_defined_by → edtf:EDTF` literal (`edtf` = `http://id.loc.gov/datatypes/edtf/`) |
 | `note/p` | `crm:P67i_is_referred_to_by → crm:E33_Linguistic_Object` |
 | `note/p/material` | `crm:P45_consists_of → crm:E57_Material` |
 | `note/p/dim` | `crm:P43_has_dimension → crm:E54_Dimension` |

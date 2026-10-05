@@ -50,46 +50,195 @@ def _format_year(year):
     return f"{year:04d}"
 
 
-def _normalize_text(raw):
-    txt = (raw or '').strip()
-    txt = txt.replace('—', '-').replace('–', '-')
-    txt = re.sub(r'\s+', ' ', txt)
-    return txt
+_ORDINAL_WORDS = {
+    'erst': 1, 'zweit': 2, 'dritt': 3, 'viert': 4, 'fünft': 5, 'sechst': 6, 'siebt': 7,
+    'acht': 8, 'neunt': 9, 'zehnt': 10, 'elft': 11, 'zwölft': 12, 'dreizehnt': 13,
+    'vierzehnt': 14, 'fünfzehnt': 15, 'sechzehnt': 16, 'siebzehnt': 17, 'achtzehnt': 18,
+    'neunzehnt': 19, 'zwanzigst': 20, 'einundzwanzigst': 21,
+}
+_ORDINAL_RE = '|'.join(sorted(_ORDINAL_WORDS, key=len, reverse=True))
+
+_CENTURY_RE = r'(?<!\d)(\d{1,2})\.?\s*(?:jh\b\.?|jahrhundert\w*)'
+_HALF_RE = r'(?<!\d)([12])\.\s*h(?:\.|älfte)|\b(erste|zweite)\s+hälfte'
+_BCE_RE = r'v\.\s*chr\b\.?|\bbce?\b'
+_CE_RE = r'n\.\s*chr\b\.?|\bce\b|\ba\.\s*d\.'
+_APPROX_RE = r'\b(?:um|ca|circa|etwa|gegen)\b\.?'
+_GROUP_SEPARATOR_RE = r'\s+(?:oder|or|und|and)\b:?\s*|\s+u\.\s*'
 
 
-def _extract_century_range(text):
-    lower_text = text.lower()
-    century_match = re.search(r'(\d{1,2})\.?\s*(jahrhundert|jh\.)', lower_text)
-    if not century_match:
+def _clean_date_text(raw):
+    """
+    Normalise punctuation and strip editorial annotations. Returns (text, notes).
+    """
+    text = re.sub(r'[\u2012-\u2015\u2212]', '-', (raw or '').strip()) # replace various dash characters with a standard hyphen
+    text = re.sub(r'\s+', ' ', text) # replace multiple whitespace characters with a single space
+
+    notes = re.findall(r'\{([^}]*)\}', text) # extract notes enclosed in curly braces
+    text = re.sub(r'\{[^}]*\}', ' ', text) # remove notes enclosed in curly braces
+    text = re.sub(r'\(\s*\?\s*\)', ' ? ', text) # replace "(?)" with " ? "
+    notes += re.findall(r'\(([^)]*)\)', text) # extract notes enclosed in parentheses
+    text = re.sub(r'\([^)]*\)', ' ', text) # remove notes enclosed in parentheses
+
+    # A trailing [..] is a correction note (e.g. "1730 [eigtl. 1729]") unless it is the only date.
+    trailing = re.search(r'\s\[([^\]]*)\]\s*$', text) 
+    if trailing and re.search(r'\d{3,4}', text[:trailing.start()]):
+        notes.append(trailing.group(1))
+        text = text[:trailing.start()]
+    text = text.replace('[', '').replace(']', '')
+
+    text = re.sub(
+        rf'\b({_ORDINAL_RE})(?:e[nmrs]?)?(?=\s+(?:jh\b|jahrhundert))',
+        lambda m: f"{_ORDINAL_WORDS[m.group(1).lower()]}.",
+        text, flags=re.IGNORECASE,
+    ) # e.g., "drittes Jahrhundert" -> "3. Jh."
+    text = re.sub(r'\bzwischen\s+(.+?)\s+und\s+', r'\1 - ', text, flags=re.IGNORECASE) # replace "zwischen X und Y" with "X - Y"
+    # "1.-2. Jh." -> "1. Jh. - 2. Jh."
+    text = re.sub(r'(?<!\d)(\d{1,2})\.\s*-\s*(?=\d{1,2}\.\s*(?:jh\b|jahrhundert))', r'\1. Jh. - ', text, flags=re.IGNORECASE) # expand century ranges like "1.-2. Jh." to "1. Jh. - 2. Jh."
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text, [n.strip() for n in notes if n.strip()]
+
+
+def _shift_year(year, delta):
+    """Shift a year in the historical (no year zero) convention."""
+    shifted = year + delta
+    return shifted if shifted != 0 else delta
+
+
+def _parse_endpoint(text, bce, prev_year, allow_short):
+    """
+    Parse a single date expression into a (lower, upper) pair of years.
+    Returns (lower, upper, kind, anchor_year) or None.
+    """
+    s = text.strip()
+    sign = -1 if bce else 1
+    lower = upper = kind = None
+
+    m = re.search(_CENTURY_RE, s, re.IGNORECASE)
+    if m and int(m.group(1)) > 0:
+        # CE centuries as "hundreds" (3rd c. = 200-299); BCE counted back from c*100 (4th c. BCE = 400-301 BCE).
+        c = int(m.group(1))
+        start, end = ((-c * 100, -((c - 1) * 100 + 1)) if bce else (max((c - 1) * 100, 1), c * 100 - 1))
+        half = re.search(_HALF_RE, s, re.IGNORECASE)
+        if half:
+            if half.group(1) == '1' or (half.group(2) or '').lower() == 'erste':
+                end = start + 49
+            else:
+                start = start + 50
+        lower, upper, kind = start, end, 'century'
+    if kind is None:
+        m = re.search(r'(?<!\d)(\d{3})0er\b', s) # e.g., "1980er"
+        if m:
+            decade = int(m.group(1)) * 10
+            start, end = ((-(decade + 9), -decade) if bce else (decade, decade + 9))
+            lower, upper, kind = start, end, 'decade'
+    if kind is None:
+        m = re.search(r'(?<!\d)(\d{2})XX\b|(?<!\d)(\d{3})X\b', s) # e.g., "19XX" or "198X"
+        if m:
+            digits = m.group(1) or m.group(2)
+            pad = 4 - len(digits)
+            start, end = int(digits + '0' * pad), int(digits + '9' * pad)
+            if bce:
+                start, end = -end, -start
+            lower, upper, kind = start, end, 'range'
+    if kind is None:
+        for m in re.finditer(r'(?<![\d.])(\d{1,4})(?!\d)', s):
+            token = m.group(1)
+            if len(token) <= 2:
+                if s[m.end():m.end() + 1] == '.':
+                    continue  # ordinal number, not a year
+                if not bce and prev_year is not None and prev_year >= 1000:
+                    # Abbreviated end year, e.g. "1788-93" or "1502/03".
+                    year = int(str(prev_year)[:4 - len(token)] + token.zfill(len(token)))
+                elif allow_short:
+                    year = int(token)
+                else:
+                    continue
+            else:
+                year = int(token)
+            lower = upper = sign * year
+            kind = 'year'
+            break
+
+    if kind is None:
         return None
+    anchor = abs(upper) if kind == 'year' else prev_year
 
-    century = int(century_match.group(1))
-    bce = bool(re.search(r'v\.?\s*chr\.?', lower_text))
-    first_half = bool(re.search(r'1\.\s*h\.', lower_text))
-    second_half = bool(re.search(r'2\.\s*h\.', lower_text))
+    if re.search(r'\b(?:vor|ante|before)\b', s, re.IGNORECASE):
+        lower, upper = None, _shift_year(lower, -1)
+    elif re.search(r'\b(?:nach|post|after)\b', s, re.IGNORECASE):
+        lower, upper = _shift_year(upper, 1), None
+    return lower, upper, kind, anchor
 
-    if bce:
-        start = -century * 100
-        end = -(century - 1) * 100 - 1
-    else:
-        start = (century - 1) * 100
-        end = century * 100 - 1
 
-    if first_half:
-        end = start + 49
-    elif second_half:
-        start = start + 50
+def _parse_alternative(text, bce, prev_year, allow_short):
+    """
+    Parse one alternative, which may be a range "A - B". Returns (lower, upper, kinds, prev_year) or None.
+    """
+    parts = re.split(r'\s*-\s*', text.strip())
+    start = _parse_endpoint(parts[0], bce, prev_year, allow_short) if parts[0] else None
+    if start is not None:
+        prev_year = start[3]
+    if len(parts) == 1:
+        if start is None:
+            return None
+        return start[0], start[1], {start[2]}, prev_year
 
-    return start, end, bce
+    end = _parse_endpoint(parts[-1], bce, prev_year, allow_short) if parts[-1] else None
+    if end is not None:
+        prev_year = end[3]
+    if start is None and end is None:
+        return None
+    if start is None:
+        return None, end[1], {end[2]}, prev_year
+    if end is None:
+        # "1978-" is an open-ended range; otherwise ignore the unparseable end.
+        return start[0], (None if not parts[-1] else start[1]), {start[2]}, prev_year
+
+    lower, upper = start[0], end[1]
+    if lower is not None and upper is not None and lower > upper:
+        lower, upper = (end[0] if end[0] is not None else lower), (start[1] if start[1] is not None else upper)
+    return lower, upper, {start[2], end[2]}, prev_year
+
+
+def _edtf_point(year):
+    # 1 BCE = 0000, 400 BCE = -0399.
+    if year < 0:
+        year += 1
+    return f"-{abs(year):04d}" if year < 0 else f"{year:04d}"
+
+
+def _to_edtf(alternatives):
+    """
+    Serialise parsed alternatives as an EDTF string (single date, interval or one-of set).
+    """
+    in_set = len(alternatives) > 1
+    if in_set:
+        # EDTF only allows ".." on the first (earlier) or last (later) set member.
+        alternatives = sorted(alternatives, key=lambda a: (
+            a[0] is not None, a[1] is None, a[0] if a[0] is not None else 0))
+    parts = []
+    for lower, upper, approximate, uncertain in alternatives:
+        qualifier = '%' if (approximate and uncertain) else '~' if approximate else '?' if uncertain else ''
+        if lower is not None and lower == upper:
+            parts.append(_edtf_point(lower) + qualifier)
+        elif in_set:
+            # Set ranges ("a..b") do not take qualifiers; the qualifier string still records them.
+            parts.append(('' if lower is None else _edtf_point(lower)) + '..' + ('' if upper is None else _edtf_point(upper)))
+        else:
+            start = '..' if lower is None else _edtf_point(lower) + qualifier
+            end = '..' if upper is None else _edtf_point(upper) + qualifier
+            parts.append(f"{start}/{end}")
+    return f"[{','.join(parts)}]" if in_set else parts[0]
 
 
 def normalize_object_date(raw_date):
     """
-    Normalize free-text object dates into structured bounds and lightweight EDTF.
+    Normalize free-text dates into gYear bounds (historical convention, no year zero)
+    and an EDTF expression (ISO 8601 astronomical years).
     The original value must always be preserved by the caller.
     """
     original = raw_date or ''
-    text = _normalize_text(original)
+    text, notes = _clean_date_text(original)
 
     result = {
         'original': original,
@@ -104,130 +253,96 @@ def normalize_object_date(raw_date):
         'disjunction': False,
         'open_interval': False,
         'parse_status': 'fail',
-        'note': ''
+        'note': '; '.join(notes)
     }
 
     if not text:
         result['parse_status'] = 'unknown'
-        result['note'] = 'empty'
+        result['note'] = result['note'] or 'empty'
         return result
 
-    if text.lower() in {'o.j.', 'ohne jahr'}:
+    if re.fullmatch(r'o\.?\s*j\.?|ohne jahr', text, re.IGNORECASE):
         result['parse_status'] = 'unknown'
         result['precision'] = 'unknown'
         result['note'] = 'no date marker'
         return result
 
-    # Strip editorial notes like {HW: 1513} but keep note info.
-    brace_notes = re.findall(r'\{([^}]*)\}', text)
-    if brace_notes:
-        text = re.sub(r'\{[^}]*\}', '', text).strip()
-        text = re.sub(r'\s+', ' ', text)
-        result['normalized_text'] = text
-        result['note'] = '; '.join(brace_notes)
+    alternatives = []  # (lower, upper, approximate, uncertain)
+    kinds = set()
 
-    lower_text = text.lower()
-    result['approximate'] = bool(re.search(r'\bum\b|\bca\.?\b|\bcirca\b', lower_text))
-    result['uncertain'] = '?' in text
-    result['bce'] = bool(re.search(r'v\.?\s*chr\.?', lower_text))
-    result['disjunction'] = ('/' in text) or bool(re.search(r'\border\b|\boder\b|\bu\.', lower_text))
+    iso = re.fullmatch(r'(-?\d{4})(?:-\d{2}(?:-\d{2})?)?', text)
+    if iso and int(iso.group(1)) != 0:
+        # ISO/TEI @when value (XSD 1.0: -0469 = 469 BCE); only the year is used.
+        year = int(iso.group(1))
+        alternatives.append((year, year, False, False))
+        kinds.add('year')
+    else:
+        groups = [g for g in re.split(_GROUP_SEPARATOR_RE, text, flags=re.IGNORECASE) if g.strip()]
+        eras = [
+            True if re.search(_BCE_RE, g, re.IGNORECASE) else False if re.search(_CE_RE, g, re.IGNORECASE) else None
+            for g in groups
+        ]
+        plain_number = bool(re.fullmatch(r'\d{1,4}', text))
+        for i, group in enumerate(groups):
+            # An unmarked group inherits the era of the next marked one ("348/347 v.Chr.").
+            era = eras[i] if eras[i] is not None else next((e for e in eras[i + 1:] if e is not None), None)
+            approximate = bool(re.search(_APPROX_RE, group, re.IGNORECASE))
+            uncertain = '?' in group
+            body = re.sub(f'{_BCE_RE}|{_CE_RE}|{_APPROX_RE}', ' ', group, flags=re.IGNORECASE).replace('?', ' ')
+            prev_year = None
+            for alternative in body.split('/'):
+                parsed = _parse_alternative(alternative, era is True, prev_year, era is not None or plain_number)
+                if parsed is None:
+                    continue
+                lower, upper, alt_kinds, prev_year = parsed
+                alternatives.append((lower, upper, approximate, uncertain))
+                kinds |= alt_kinds
 
-    # Remove uncertainty marks and approximation words for numeric extraction.
-    cleaned = re.sub(r'\(\?\)|\?', '', text)
-    cleaned = re.sub(r'\bum\b|\bca\.?\b|\bcirca\b', '', cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+    # "nach 1278/vor 1284" describes one bounded interval, not two alternatives.
+    if len(alternatives) == 2:
+        (a_lo, a_hi, a_ap, a_un), (b_lo, b_hi, b_ap, b_un) = alternatives
+        if a_hi is None and b_lo is None and a_lo is not None and b_hi is not None and a_lo <= b_hi:
+            alternatives = [(a_lo, b_hi, a_ap or b_ap, a_un or b_un)]
 
-    # Century expressions first.
-    century_range = _extract_century_range(cleaned)
-    if century_range is not None:
-        year_start, year_end, _ = century_range
-        result['precision'] = 'century'
-        result['lower'] = _format_year(min(year_start, year_end))
-        result['upper'] = _format_year(max(year_start, year_end))
-        result['parse_status'] = 'ok'
-        result['edtf'] = f"{min(year_start, year_end):04d}/{max(year_start, year_end):04d}"
-        return result
+    unique = []
+    for alternative in alternatives:
+        if alternative not in unique:
+            unique.append(alternative)
+    alternatives = unique
 
-    before_match = re.search(r'\bvor\s+(\d{3,4})\b', cleaned.lower())
-    after_match = re.search(r'\bnach\s+(\d{3,4})\b', cleaned.lower())
-
-    # Preserve explicitly signed numeric years from attributes like when="-0106".
-    signed_years = [int(y) for y in re.findall(r'(?<!\d)-\d{1,4}(?!\d)', cleaned)]
-
-    # Extract unsigned long years, but do not treat the digits of a signed year
-    # as a separate positive token.
-    unsigned_long_years = []
-    for match in re.finditer(r'\b(\d{3,4})\b', cleaned):
-        if match.start() > 0 and cleaned[match.start() - 1] == '-':
-            # Treat as a signed year only when '-' is not a range separator
-            # between digits (e.g. keep 1511 in "1508-1511").
-            if match.start() == 1 or not cleaned[match.start() - 2].isdigit():
-                continue
-        unsigned_long_years.append(int(match.group(1)))
-
-    years = signed_years + unsigned_long_years
-
-    if before_match:
-        y = int(before_match.group(1))
-        result['open_interval'] = True
-        result['upper'] = _format_year(y - 1)
-        result['precision'] = 'open'
-        result['edtf'] = f"../{y - 1:04d}"
-        result['parse_status'] = 'partial'
-        return result
-
-    if after_match:
-        y = int(after_match.group(1))
-        result['open_interval'] = True
-        result['lower'] = _format_year(y + 1)
-        result['precision'] = 'open'
-        result['edtf'] = f"{y + 1:04d}/.."
-        result['parse_status'] = 'partial'
-        return result
-
-    if not years:
-        # Some historical dates are recorded with 1-2 digits (e.g., "39", "17/18 n.Chr.").
-        has_explicit_ce = bool(re.search(r'n\.?\s*chr\.?|a\.?\s*d\.?', lower_text))
-        is_plain_short_year = bool(re.fullmatch(r'\d{1,2}', cleaned))
-        if result['bce'] or has_explicit_ce or is_plain_short_year:
-            years = [int(y) for y in re.findall(r'\b(\d{1,2})\b', cleaned)]
-
-    if not years:
+    if not alternatives:
         result['parse_status'] = 'unknown'
         result['precision'] = 'unknown'
         result['note'] = (result['note'] + '; ' if result['note'] else '') + 'no year token found'
         return result
 
-    if any(y < 0 for y in years):
-        result['bce'] = True
+    lowers = [a[0] for a in alternatives]
+    uppers = [a[1] for a in alternatives]
+    open_interval = any(p is None for p in lowers + uppers)
+    lower_year = None if any(p is None for p in lowers) else min(lowers)
+    upper_year = None if any(p is None for p in uppers) else max(uppers)
 
-    # If BCE is marked textually (e.g., "v.Chr.") and years are unsigned,
-    # apply BCE sign once.
-    if result['bce'] and all(y >= 0 for y in years):
-        years = [-abs(y) for y in years]
-
-    year_start = min(years)
-    year_end = max(years)
-
-    lower_year = min(year_start, year_end)
-    upper_year = max(year_start, year_end)
-    result['lower'] = _format_year(lower_year)
-    result['upper'] = _format_year(upper_year)
-
-    if lower_year == upper_year:
-        result['precision'] = 'year'
-        edtf_value = f"{lower_year:04d}"
+    if open_interval:
+        precision = 'open'
+    elif 'century' in kinds:
+        precision = 'century'
+    elif len(alternatives) == 1 and lowers[0] == uppers[0]:
+        precision = 'year'
     else:
-        result['precision'] = 'range'
-        edtf_value = f"{lower_year:04d}/{upper_year:04d}"
+        precision = 'range'
 
-    if result['approximate'] and '/' not in edtf_value:
-        edtf_value += '~'
-    elif result['uncertain'] and '/' not in edtf_value:
-        edtf_value += '?'
-
-    result['edtf'] = edtf_value
-    result['parse_status'] = 'ok'
+    result.update({
+        'edtf': _to_edtf(alternatives),
+        'lower': None if lower_year is None else _format_year(lower_year),
+        'upper': None if upper_year is None else _format_year(upper_year),
+        'precision': precision,
+        'approximate': any(a[2] for a in alternatives),
+        'uncertain': any(a[3] for a in alternatives),
+        'bce': any(p is not None and p < 0 for p in lowers + uppers),
+        'disjunction': len(alternatives) > 1,
+        'open_interval': open_interval,
+        'parse_status': 'partial' if open_interval else 'ok',
+    })
     return result
 
 

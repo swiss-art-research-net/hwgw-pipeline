@@ -120,6 +120,8 @@ class BasePreprocessor(Preprocessor):
                 preprocessed_elem.set(f'{self.PREFIX}dateLower', normalized['lower'])
             if normalized['upper']:
                 preprocessed_elem.set(f'{self.PREFIX}dateUpper', normalized['upper'])
+            if normalized['edtf']:
+                preprocessed_elem.set(f'{self.PREFIX}dateEDTF', normalized['edtf'])
 
             qualifier = self.buildDateQualifier(normalized)
             if qualifier:
