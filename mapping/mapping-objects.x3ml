@@ -13,6 +13,7 @@
     <namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
     <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema#"/>
     <namespace prefix="xsd" uri="http://www.w3.org/2001/XMLSchema#"/>
+    <namespace prefix="edtf" uri="http://id.loc.gov/datatypes/edtf/"/>
     <namespace prefix="aat" uri="http://vocab.getty.edu/aat/"/>
     <namespace prefix="gnd" uri="https://d-nb.info/gnd/"/>
   </namespaces>
@@ -56,7 +57,7 @@
             <relation>head[@type='main']</relation>
           </source_relation>
           <target_relation>
-            <relationship>crm:P1_is_identified_by</relationship>
+              <relationship>crm:P1_is_identified_by</relationship>
           </target_relation>
         </path>
         <range>
@@ -399,6 +400,51 @@
               <type>xsd:gYear</type>
               <instance_generator name="typedLiteralGen">
                 <arg name="text" type="xpath">@preprocessed_dateUpper</arg>
+              </instance_generator>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+      <!-- Production date as EDTF. Keep before the qualifier link: X3ML reuses the qualifier URI for a later non-xsd entity on the same node. -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/preprocessed_date[@preprocessed_dateEDTF]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P108i_was_produced_by</relationship>
+            <entity>
+              <type>crm:E12_Production</type>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
+              </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
+            </entity>
+            <relationship>crm:P4_has_time-span</relationship>
+            <entity>
+              <type>crm:E52_Time-Span</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels">
+                <arg name="type" type="constant">artwork</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">creation</arg>
+                <arg name="level2" type="constant">date</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P170i_time_is_defined_by</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/preprocessed_date[@preprocessed_dateEDTF]</source_node>
+          <target_node>
+            <entity>
+              <type>edtf:EDTF</type>
+              <instance_generator name="typedLiteralGen">
+                <arg name="text" type="xpath">@preprocessed_dateEDTF</arg>
               </instance_generator>
             </entity>
           </target_node>
@@ -1052,6 +1098,51 @@
               <type>rdfs:Literal</type>
               <instance_generator name="Literal">
                 <arg name="text" type="xpath">@preprocessed_dateUpper</arg>
+              </instance_generator>
+            </entity>
+          </target_node>
+        </range>
+      </link>
+      <!-- Production date as EDTF. Keep before the qualifier link: X3ML reuses the qualifier URI for a later non-xsd entity on the same node. -->
+      <link>
+        <path>
+          <source_relation>
+            <relation>note/preprocessed_date[@preprocessed_dateEDTF]</relation>
+          </source_relation>
+          <target_relation>
+            <relationship>crm:P108i_was_produced_by</relationship>
+            <entity>
+              <type>crm:E12_Production</type>
+              <instance_generator name="URIwithTypeIdAnd1Level">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">production</arg>
+              </instance_generator>
+              <label_generator name="Literal">
+                <arg name="text" type="xpath">concat('Production of ', normalize-space(../../head[@type='main'][1]))</arg>
+                <arg name="language" type="constant"/>
+              </label_generator>
+            </entity>
+            <relationship>crm:P4_has_time-span</relationship>
+            <entity>
+              <type>crm:E52_Time-Span</type>
+              <instance_generator name="URIwithTypeIdAnd2Levels">
+                <arg name="type" type="constant">built_work</arg>
+                <arg name="id" type="xpath">../../@xml:id</arg>
+                <arg name="level1" type="constant">creation</arg>
+                <arg name="level2" type="constant">date</arg>
+              </instance_generator>
+            </entity>
+            <relationship>crm:P170i_time_is_defined_by</relationship>
+          </target_relation>
+        </path>
+        <range>
+          <source_node>note/preprocessed_date[@preprocessed_dateEDTF]</source_node>
+          <target_node>
+            <entity>
+              <type>edtf:EDTF</type>
+              <instance_generator name="typedLiteralGen">
+                <arg name="text" type="xpath">@preprocessed_dateEDTF</arg>
               </instance_generator>
             </entity>
           </target_node>
