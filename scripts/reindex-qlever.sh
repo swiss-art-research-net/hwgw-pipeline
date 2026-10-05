@@ -1,14 +1,14 @@
 #!/bin/sh
 set -eu
 
-# Rebuild the QLever index from the DTS pipeline output and (re)start the QLever server.
+# Rebuild the QLever index from the final TTL files in data/ttl and (re)start the QLever server.
 # Run this on the HOST from the repository root:
 #
 #   ./scripts/reindex-qlever.sh [OUTPUT_PREFIX]
 #
-# OUTPUT_PREFIX defaults to local_hwgw, matching DTS_OUTPUT_PREFIX in scripts/Taskfile.yml.
+# OUTPUT_PREFIX defaults to hwgw, matching DTS_OUTPUT_PREFIX in scripts/Taskfile.yml.
 
-PREFIX="${1:-local_hwgw}"
+PREFIX="${1:-hwgw}"
 
 FILES=""
 for name in "${PREFIX}_combined.ttl" "${PREFIX}_rds_links.ttl"; do
@@ -19,17 +19,18 @@ for name in "${PREFIX}_combined.ttl" "${PREFIX}_rds_links.ttl"; do
   fi
 done
 
-# x3ml-mapped register data
+# x3ml-mapped register data, copied to data/ttl by the mapping tasks
 for name in persons/persons.ttl organizations/organizations.ttl places/places.ttl objects/objects.ttl; do
-  if docker compose exec -T qlever sh -c "[ -f /mapping-output/$name ]"; then
-    FILES="$FILES -f /mapping-output/$name"
+  basename=${name##*/}
+  if docker compose exec -T qlever sh -c "[ -f /data/$basename ]"; then
+    FILES="$FILES -f /data/$basename"
   else
-    echo "Skipping missing /mapping-output/$name" >&2
+    echo "Skipping missing /data/$basename" >&2
   fi
 done
 
 if [ -z "$FILES" ]; then
-  echo "No input files found under external/hwgw-dts/data/output for prefix '$PREFIX'." >&2
+  echo "No input files found under data/ttl for prefix '$PREFIX'." >&2
   exit 1
 fi
 
