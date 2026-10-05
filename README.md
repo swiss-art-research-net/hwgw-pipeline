@@ -1,16 +1,27 @@
-# Data Extraction Pipeline for the digital »Heinrich Wölfflin - Gesammelte Werke« project
-Semantic transformations of the Digital Edition of the »Heinrich Wölfflin - Gesammelte Werke« project 
+# Pipeline for the semantification of the digital »Heinrich Wölfflin - Gesammelte Werke«
+
+The code contained in this repository implements a pipeline to integrate data from the digital edition of the »Heinrich Wölfflin - Gesammelte Werke« project into a semantic knowledge graph.
+
+The input to this pipeline are the TEI/XML files of this digital edition, together with TEI registry files containing authority data about persons, objects, organizations, and places mentioned in the edition.
+
+The digital edition TEI files are loaded into and served via a Distributed Text Services (DTS) server, which is used for programmatic access to the contents of the digital edition. From the DTS API, the pipeline harvests citable units (volumes, documents, and passages) and the entities they mention, and represents them as RDF.
+
+The TEI registries follow a different processing path: they go through a mapping step (performed by means of the X3ML tool), whereby specific TEI elements are mapped to CIDOC-CRM classes and properties.
+
+The two streams are then joined. Passages from the edition are linked to the mapped register entities, and those entities are further aligned with external authority records (via SARI's [RDS Global]([https://rds-cloud.swissartresearch.net/](https://rds-cloud.swissartresearch.net/)) `owl:sameAs` links based on GND identifiers). The resulting graph can be queried through a local SPARQL endpoint (QLever), as well as at [http://graph.rs4.ethz.ch/](http://graph.rs4.ethz.ch/).
 
 ## How to use
 
 Prerequisites: [Docker](http://docker.io) including Docker Compose, and `git` with the `external/hwgw-dts` submodule checked out.
 
 Copy the `.env.example` into `.env` and edit as required (ex. GITHUB_USERNAME, GITHUB_PERSONAL_ACCESS_TOKEN, QLEVER_ACCESS_TOKEN, and the ports):
+
 ```sh
 cp .env.example .env
 ```
 
 The repository root has a `docker-compose.yml` that composes the **base + local** overlays by default, so a plain `docker compose up` publishes the service ports directly on the host.
+
 ```sh
 docker compose up -d
 ```
@@ -58,6 +69,8 @@ To build the entities-passages index:
 ```sh
 docker compose exec jobs task dts-build-entities-passages-index RESOURCE_ID=https://example.org/dts/collections/hwgw/s03/ed
 ```
+
+
 
 ### Build combined RDF
 
@@ -128,6 +141,7 @@ curl -s -X POST -H 'Content-Type: application/sparql-query' \
 ```
 
 
+
 ### QLever UI (browser interface)
 
 Start [QLever UI](https://github.com/ad-freiburg/qlever-ui):
@@ -137,11 +151,92 @@ docker compose up -d qlever-ui
 ```
 
 Its database and `admin` account are created automatically on first start - no manual setup step needed. The superuser credentials come from `.env` (`QLEVER_UI_USERNAME`/`QLEVER_UI_PASSWORD`, default `admin`/`changeme`), to be  changed before deploying in production. Then, once (via the browser):
+
 1. Open `http://localhost:${PORT_QLEVER_UI}` (default `7012`) `/admin` and log in with
-   `QLEVER_UI_USERNAME`/`QLEVER_UI_PASSWORD`.
+  `QLEVER_UI_USERNAME`/`QLEVER_UI_PASSWORD`.
 2. Under "Backends", add a backend with SPARQL endpoint `http://localhost:${PORT_QLEVER}`
-   (default `http://localhost:7011`).
+  (default `http://localhost:7011`).
 3. Open `http://localhost:${PORT_QLEVER_UI}`, select the new backend, and start querying.
+
+
+
+### Example SPARQL queries
+
+```
+# Most mentioned people, with wikidata, gnd, and ulan sameAs links
+
+PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX dts: <https://dtsapi.org/v1.0#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?person (SAMPLE(?rawName) AS ?name) (COUNT(DISTINCT ?page) AS ?mentions) (SAMPLE(?wikidata) AS ?wikidataLink) (SAMPLE(?gnd) AS ?gndLink) (SAMPLE(?ulan) AS ?ulanLink) WHERE {
+  ?pageCU a dts:CitableUnit ;
+          dts:identifier ?page ;
+          crm:P67_refers_to ?pageDO .
+  ?pageDO crm:P67_refers_to ?person .
+  FILTER (STRSTARTS(STR(?person),"https://hwgw.uzh.ch/person/"))
+  ?person rdfs:label ?rawName .
+  OPTIONAL {
+    ?person owl:sameAs ?wikidata .
+    FILTER (STRSTARTS(STR(?wikidata),"http://www.wikidata.org/entity/"))
+  }
+  BIND (IF(CONTAINS(STR(?person),"gnd-"),CONCAT("https://d-nb.info/gnd/", STRAFTER(STR(?person),"gnd-")),"") AS ?gnd)
+  OPTIONAL {
+    ?person owl:sameAs ?ulan .
+    FILTER (STRSTARTS(STR(?ulan),"http://vocab.getty.edu/ulan/"))
+  }
+}
+GROUP BY ?person ?gnd
+ORDER BY DESC(?mentions)
+LIMIT 15
+```
+
+```
+# Persons, their date of birth, date qualifier, page, DTS document
+
+PREFIX crm:    <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX crmdig: <http://www.ics.forth.gr/isl/CRMdig/>
+PREFIX dts:    <https://dtsapi.org/v1.0#>
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT
+       ?person
+       ?name
+       ?dateOfBirth
+       ?dateQualifier
+       ?page
+       ?documentEndpointNode
+WHERE {
+  ?pageCU a dts:CitableUnit ;
+          dts:identifier ?page ;
+          crm:P67_refers_to ?pageDO .
+
+  ?pageDO a crmdig:D1_Digital_Object ;
+          crm:P67_refers_to ?person ;
+          crm:P1_is_identified_by ?documentIdentifier .
+
+  ?documentIdentifier a crm:E42_Identifier ;
+                      rdf:value ?documentEndpointNode .
+
+  ?person a crm:E21_Person ;
+          rdfs:label ?name ;
+          crm:P98i_was_born ?birth .
+
+  ?birth a crm:E67_Birth ;
+         crm:P4_has_time-span ?birthTimeSpan .
+
+  ?birthTimeSpan a crm:E52_Time-Span ;
+                 rdfs:label ?dateOfBirth ;
+                 crm:P2_has_type ?qualifierType .
+
+  ?qualifierType a crm:E55_Type ;
+                 rdfs:label ?dateQualifier .
+
+}
+ORDER BY ?name ?page
+```
+
 
 
 ## Production deployment
@@ -154,20 +249,22 @@ via `COMPOSE_FILE` in `.env`:
 - `docker-compose.prod.yml` — reverse-proxy overlay for a deployed server.
 
 Local/development (default):
+
 ```sh
 COMPOSE_FILE=./docker-compose.base.yml:./docker-compose.local.yml
 docker compose up -d
 ```
 
 Production (behind a reverse proxy):
+
 ```sh
 COMPOSE_FILE=./docker-compose.base.yml:./docker-compose.prod.yml
 PROXY_NETWORK_NAME=<name-of-your-proxy-network>
 docker compose up -d
 ```
 
-
 Production checklist:
+
 1. **Secrets** — set `GITHUB_PERSONAL_ACCESS_TOKEN`, `QLEVER_ACCESS_TOKEN`, and `QLEVER_UI_USERNAME`/`QLEVER_UI_PASSWORD`.
 2. **Build on the server** (`docker compose build --no-cache`) — the base image is Debian Bookworm
 3. Check out the `external/hwgw-dts` submodule (`git submodule update --init --recursive`).
@@ -175,9 +272,11 @@ Production checklist:
 5. Configure the reverse proxy to forward to `DTS_ENDPOINT`, `qlever:7001` and `qlever-ui:7000` on the proxy network.
 
 
+
 ## Mappings
 
 Mapping definitions are in:
+
 - `mapping/mapping-objects.x3ml`
 - `mapping/mapping-organizations.x3ml`
 - `mapping/mapping-persons.x3ml`
@@ -187,6 +286,7 @@ Prepared mapping input is written to `mapping/input/<module>/` and mapping outpu
 The final register TTL files are also copied to `data/ttl/`, alongside the final DTS and RDS Turtle files. QLever indexing reads all final TTL inputs from `data/ttl/`.
 
 Supported mapping modules:
+
 - `objects`
 - `organizations`
 - `persons`
@@ -218,7 +318,6 @@ Centuries are read as `200–299` (3rd century AD); BC centuries as `400–301 B
 ## Tasks
 
 The pipeline can be controlled by the [Task](https://taskfile.dev/#/) runner. The tasks are defined in the `scripts/Taskfile.yml` file.
-
 
 To list available tasks, run:
 
@@ -262,3 +361,8 @@ To add additional arguments to the task itself, enter the arguments after a `--`
 ```sh
 docker compose exec jobs task prepare-mapping-for-module-items -- objects
 ```
+
+## Credits
+
+This pipeline has been developed by SARI/UZH in the context of a project funded by Digital Visual Studies/UZH and the The Bibliotheca Hertziana – Max Planck Institute for Art History.  
+
