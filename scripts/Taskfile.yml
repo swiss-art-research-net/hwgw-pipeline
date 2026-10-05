@@ -144,7 +144,8 @@ tasks:
         task: _perform-mapping-for-module-items
         vars:
           MODULE: "{{.MODULE}}"
-      - find {{.MAPPING_INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
+      - mkdir -p /data/ttl
+      - find /mapping/output -mindepth 2 -maxdepth 2 -type f -name "*.ttl" -exec cp {} /data/ttl/ \;
 
 
   prepare-mapping-for-module-items:
@@ -298,7 +299,7 @@ tasks:
           --log-file "{{.OUTPUT_DIR}}/entities_passages_{{.SAFE_NAME}}.log" {{.CLI_ARGS}}
 
   dts-build-combined-rdf:
-    desc: Harvest, index, combine and verify HWGW RDF from a DTS endpoint (no RDS enrichment); writes only to external/hwgw-dts/data/output.
+    desc: Harvest, index, combine and verify HWGW RDF from a DTS endpoint (no RDS enrichment); copies the final combined Turtle to data/ttl.
     vars:
       ENTRYPOINT: '{{if .ENTRYPOINT}}{{.ENTRYPOINT}}{{else}}{{.DTS_ENTRYPOINT}}{{end}}'
       VIEWER_WORKAROUND: '{{if .VIEWER_WORKAROUND}}{{.VIEWER_WORKAROUND}}{{else}}false{{end}}'
@@ -320,10 +321,13 @@ tasks:
           OUTPUT: '{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.csv'
           LOG_FILE: '{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.log'
       - python {{.HWGW_DTS_ROOT}}/scripts/combine_entity_graph.py --ttl "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.ttl" --entities-passages "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.csv" --external-index /mapping/register-entity-index.csv --output "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_combined.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_combine.log"
+      - mkdir -p /data/ttl
+      - cp "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_combined.ttl" /data/ttl/
       - python {{.HWGW_DTS_ROOT}}/scripts/verify_pipeline.py --harvest-ttl "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.ttl" --harvest-log "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_harvest.log" --entities-passages "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_entities_passages.csv" --external-index /mapping/register-entity-index.csv --combined-ttl "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_combined.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_verify.log"
+      
 
   dts-add-rds-links:
-    desc: Build a standalone owl:sameAs Turtle graph (_rds_links.ttl) from RDS matches, kept separate from the DTS combined graph.
+    desc: Build a standalone owl:sameAs Turtle graph (_rds_links.ttl) from RDS matches and copy it to data/ttl.
     vars:
       OUTPUT_PREFIX: '{{if .OUTPUT_PREFIX}}{{.OUTPUT_PREFIX}}{{else}}{{.DTS_OUTPUT_PREFIX}}{{end}}'
       OUTPUT_DIR: '{{if .OUTPUT_DIR}}{{.OUTPUT_DIR}}{{else}}{{.HWGW_DTS_ROOT}}/data/output{{end}}'
@@ -331,6 +335,8 @@ tasks:
       RDS_BATCH_SIZE: '{{if .RDS_BATCH_SIZE}}{{.RDS_BATCH_SIZE}}{{else}}100{{end}}'
     cmds:
       - python enrich_with_rds.py --external-index /mapping/register-entity-index.csv --endpoint "{{.RDS_ENDPOINT}}" --batch-size "{{.RDS_BATCH_SIZE}}" --output "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_rds_links.ttl" --log-file "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_rds_enrichment.log"
+      - mkdir -p /data/ttl
+      - cp "{{.OUTPUT_DIR}}/{{.OUTPUT_PREFIX}}_rds_links.ttl" /data/ttl/
 
   dts-build-full-rdf:
     desc: Full pipeline - build combined HWGW RDF (dts-build-combined-rdf) and a separate RDS owl:sameAs graph (dts-add-rds-links).
@@ -400,9 +406,9 @@ tasks:
           new_total_lines=$(wc -l < /logs/mapping-log.log)
           echo $new_total_lines > /logs/log_marker_line        
         
+        - mkdir -p /data/ttl
         - echo "Full mapping log output /log/mapping-log.log"
 
-        - find {{.INPUTFOLDER}} -maxdepth 1 -name "*.xml" -delete
 
         - echo "Done for now..."
 
@@ -413,37 +419,11 @@ tasks:
     prompt: This will delete all artefacts produced by the pipeline... Do you want to continue?
     cmds:
       - rm -f /scripts/.task/checksum/*
-      - for:
-        - xxx
-        task: reset-module
-        vars:
-          MODULE: "{{.ITEM}}"
-      - echo "Done!"
-
-  reset-module:
-    desc: Delete all artefacts produced by the pipeline for a given module. The module name should be passed as an argument or via the MODULE variable.
-    silent: true
-    vars:
-      MODULE:
-        sh: |
-          if [ -z "{{.MODULE}}" ]; then
-            echo "{{.CLI_ARGS}}"
-          else
-            echo "{{.MODULE}}"
-          fi
-      MODULE_LOWERCASE:
-        sh: echo "$(echo "{{.MODULE}}" | awk '{print tolower($0)}')"
-    cmds:
-      - |
-        if [ -z "{{.MODULE}}" ]; then
-          echo "No module specified as variable or cli argument. Exiting script."
-          exit 1
-        fi
-      - echo "Deleting files for {{.MODULE}}..."
+      - rm -f /data/ttl/*.ttl
       - rm -rf /dts_source/registers
       - rm -rf /dts_source/s0*
       - rm -rf /dts_source/catalog/hwgw-edition/*.xml
       - rm -rf /dts_data/catalog/hwgw-edition/*.xml
       - rm -rf /dts_data/tei/hwgw-edition
-      - rm -rf /mapping/input/{{.MODULE_LOWERCASE}}
-      - rm -rf /mapping/output/{{.MODULE_LOWERCASE}}
+      - rm -rf /mapping/input/* /mapping/output/*
+      - echo "Done!"
