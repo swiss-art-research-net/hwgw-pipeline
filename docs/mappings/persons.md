@@ -50,6 +50,7 @@ E21_Person
 | `@preprocessed_dateLower` (birth) | `crm:P82a_begin_of_the_begin → xsd:gYear` |
 | `@preprocessed_dateUpper` (birth) | `crm:P82b_end_of_the_end → xsd:gYear` |
 | `@preprocessed_dateQualifier` (birth) | `crm:P2_has_type → crm:E55_Type` |
+| `@preprocessed_dateEDTF` (birth/death) | `crm:P170i_time_is_defined_by → edtf:EDTF` literal (`edtf` = `http://id.loc.gov/datatypes/edtf/`) |
 | text of `preprocessed_birth` | `rdfs:label → Literal` on `crm:E52_Time-Span` |
 | `preprocessed_death` | `crm:P100i_died_in → crm:E69_Death → crm:P4_has_time-span → crm:E52_Time-Span` |
 | `@preprocessed_dateLower` (death) | `crm:P82a_begin_of_the_begin → xsd:gYear` |

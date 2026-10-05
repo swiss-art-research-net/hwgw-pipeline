@@ -63,20 +63,20 @@ docker compose exec jobs task dts-build-entities-passages-index RESOURCE_ID=http
 
 `dts-build-combined-rdf` harvests DTS data, indexes passage references, combines them with `mapping/register-entity-index.csv`, and verifies the resulting Turtle.
 All generated files are written to `external/hwgw-dts/data/output/`.
+The final Turtle files are also copied to `data/ttl/`.
 
-By default, all `dts-*` tasks use the local DapyTains DTS endpoint
-(`http://dapytains:4000/`) and write `local_hwgw_*` files:
+All `dts-*` tasks use the endpoint set in `DTS_ENDPOINT` (`.env`; e.g. `http://dapytains:${SERVER_PORT}` for the local DapyTains service, falling back to `https://rs4.ethz.ch/dts/`) and write `hwgw_*` files:
 
 ```sh
 docker compose exec jobs task dts-build-combined-rdf
 ```
 
-To explicitly run against the remote RS4 DTS endpoint instead, override both `DTS_ENTRYPOINT` and `DTS_OUTPUT_PREFIX` together, so remote output never mixes with local output:
+To run against another endpoint without touching `.env`, override `DTS_ENTRYPOINT`; also set `DTS_OUTPUT_PREFIX` so the outputs don't overwrite each other:
 
 ```sh
 docker compose exec jobs task dts-build-combined-rdf \
-	DTS_ENTRYPOINT=http://rs4.ethz.ch/dts/ \
-	DTS_OUTPUT_PREFIX=hwgw
+	DTS_ENTRYPOINT=https://rs4.ethz.ch/dts/ \
+	DTS_OUTPUT_PREFIX=rs4_hwgw
 ```
 
 Both local and remote runs use the API-compliant `uri-template` mode by default.
@@ -98,7 +98,7 @@ docker compose exec jobs task dts-build-full-rdf
 
 This first builds the combined RDF (`dts-build-combined-rdf`), then adds RDS links (`dts-add-rds-links`), which queries the RDS `extend` endpoint in batches using `https://d-nb.info/gnd/<id>` identifiers derived from the register. 
 
-RDS links are written to a separate file from the combined DTS graph: `external/hwgw-dts/data/output/local_hwgw_rds_links.ttl`, containing only `owl:sameAs` triples, alongside the unmodified `local_hwgw_combined.ttl`.
+RDS links are written to a separate file from the combined DTS graph: `external/hwgw-dts/data/output/hwgw_rds_links.ttl`, containing only `owl:sameAs` triples, alongside the unmodified `hwgw_combined.ttl`.
 
 The RDS endpoint is configurable via `RDS_ENDPOINT` in `.env` (default `https://reconcile.rds.swissartresearch.net/`) and must be reachable from the `jobs` container.
 
@@ -172,7 +172,7 @@ Production checklist:
 2. **Build on the server** (`docker compose build --no-cache`) — the base image is Debian Bookworm
 3. Check out the `external/hwgw-dts` submodule (`git submodule update --init --recursive`).
 4. Run the pipeline (`docker compose exec jobs task --force`). If `DTS` catalog/volumes changed (e.g. a new `SCHRIFTEN`), restart `dapytains` after `prepare-dts-catalog-data` so it serves the new catalog, then build the QLever index: `./scripts/reindex-qlever.sh`.
-5. Configure the reverse proxy to forward to `dapytains:${SERVER_PORT}`, `qlever:7001` and `qlever-ui:7000` on the proxy network.
+5. Configure the reverse proxy to forward to `DTS_ENDPOINT`, `qlever:7001` and `qlever-ui:7000` on the proxy network.
 
 
 ## Mappings
@@ -184,6 +184,7 @@ Mapping definitions are in:
 - `mapping/mapping-places.x3ml`
 
 Prepared mapping input is written to `mapping/input/<module>/` and mapping output TTL is written to `mapping/output/<module>/`.
+The final register TTL files are also copied to `data/ttl/`, alongside the final DTS and RDS Turtle files. QLever indexing reads all final TTL inputs from `data/ttl/`.
 
 Supported mapping modules:
 - `objects`
@@ -204,6 +205,16 @@ Run mapping for all modules:
 docker compose exec jobs task prepare-and-perform-mapping-for-items
 ```
 
+### Dates
+
+Object production dates and person birth/death dates are normalised during preparation (`scripts/lib/DateUtils.py`). The original text is kept as `rdfs:label`; each `crm:E52_Time-Span` additionally gets:
+
+- `crm:P82a_begin_of_the_begin` / `crm:P82b_end_of_the_end` — outer bounds as `xsd:gYear` (historical numbering, no year 0: `-0400` = 400 BC).
+- `crm:P170i_time_is_defined_by` — the full date as an [EDTF](https://www.loc.gov/standards/datetime/) literal (`^^edtf:EDTF`), e.g. `1500~`, `1508/1511`, `../1499`, `[1503,1504]`. EDTF uses astronomical years, so BC years are shifted by one (`400 BC` = `-0399`).
+- `crm:P2_has_type` — a qualifier type such as `century-derived`, `approximate`, `alternative-years`, `uncertain`, `bce`.
+
+Centuries are read as `200–299` (3rd century AD); BC centuries as `400–301 BC` (4th century BC). Year-level precision only.
+
 ## Tasks
 
 The pipeline can be controlled by the [Task](https://taskfile.dev/#/) runner. The tasks are defined in the `scripts/Taskfile.yml` file.
@@ -220,8 +231,8 @@ This will output a list of tasks:
 ```
 * default:                                     Default task
 * download-all-data:                           Download all data from GitHub
-* dts-add-rds-links:                           Build a standalone owl:sameAs Turtle graph (_rds_links.ttl) from RDS matches, kept separate from the DTS combined graph.
-* dts-build-combined-rdf:                      Harvest, index, combine and verify HWGW RDF from a DTS endpoint (no RDS enrichment); writes only to external/hwgw-dts/data/output.
+* dts-add-rds-links:                           Build a standalone owl:sameAs Turtle graph (_rds_links.ttl) from RDS matches and copy it to data/ttl.
+* dts-build-combined-rdf:                      Harvest, index, combine and verify HWGW RDF from a DTS endpoint (no RDS enrichment); copies the final combined Turtle to data/ttl.
 * dts-build-entities-passages-index:           Build one entities-passages CSV index from all resources declared in the selected HWGW volume catalogs.
 * dts-build-full-rdf:                          Full pipeline - build combined HWGW RDF (dts-build-combined-rdf) and a separate RDS owl:sameAs graph (dts-add-rds-links).
 * dts-harvest-jsonld:                          Harvest JSON-LD from a DTS endpoint using external/hwgw-dts and write a Turtle file.
@@ -231,7 +242,6 @@ This will output a list of tasks:
 * prepare-dts-catalog-data:                    Prepares the data for the DTS catalog. This includes creating the collection XML and preparing the TEI files.
 * prepare-mapping-for-module-items:            Prepares the mapping for a specific module. The module name should be passed as an argument or via the MODULE variable.
 * reset:                                       Delete all artefacts produced by the pipeline.
-* reset-module:                                Delete all artefacts produced by the pipeline for a given module. The module name should be passed as an argument or via the MODULE variable.
 ```
 
 To run a specific task type `task` followed by the task name, e.g.:
@@ -250,5 +260,5 @@ docker compose exec jobs task dts-build-combined-rdf --force
 To add additional arguments to the task itself, enter the arguments after a `--` sign, e.g.:
 
 ```sh
-docker compose exec jobs task reset-last-mapped-metadata -- objects
+docker compose exec jobs task prepare-mapping-for-module-items -- objects
 ```
