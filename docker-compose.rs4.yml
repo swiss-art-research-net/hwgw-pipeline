@@ -56,8 +56,7 @@ services:
       - "7001:7001" # no need for another ENVVAR here, og: - "${PORT_QLEVER:-7011}:7001"
     volumes:
       - qlever-index:/index
-      - ./external/hwgw-dts/data/output:/data:ro
-      - ./mapping/output:/mapping-output:ro
+      - ./data/ttl:/data:ro
     labels:
       # autoheal-app: true
       traefik.enable: "true"
