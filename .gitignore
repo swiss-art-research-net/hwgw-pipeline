@@ -68,3 +68,6 @@ services/dapytains/setup.py
 services/dapytains/teststuff.py
 services/dapytains/tests
 services/dapytains/requirements-dev.txt
+
+data/ttl/*
+!data/ttl/.gitkeep
